@@ -38,4 +38,4 @@ nombres_entidades["cve_geo"] = nombres_entidades["cve_geo"].fillna(0).apply(lamb
 df_proyecciones_ent = df_proyecciones_ent.drop(columns="entidad").merge(nombres_entidades, on = "cve_geo").rename(columns = {"nombre_estado_comun": "nombre_estado"})[["date_year_n", "nombre_estado", "cve_geo","edad","genero","poblacion_inicio_date_year_n","poblacion_mitad_date_year_n"]]
 
 # = = GUARDAR CSV = = #
-df_proyecciones_ent.to_csv(os.getcwd() + "/Gobierno-Mexicano/CONAPO_PROYECCIONES_1950-2070/entidades/conapo_proyecciones_inicio-mitad_1950-2070.csv", index = False)
+df_proyecciones_ent.to_csv(os.getcwd() + "/Gobierno-Mexicano/CONAPO_PROYECCIONES_1950-2070/entidades/conapo_proyecciones_ent-nac_inicio-mitad_1950-2070", index = False)
