@@ -31,11 +31,11 @@ df_proyecciones_ent = pd.merge(left = df_inicio, right = df_mitad.drop(columns =
 df_proyecciones_ent["poblacion_mitad_date_year_n"] = df_proyecciones_ent["poblacion_mitad_date_year_n"].astype("Int64")
 
 # = = CAMBIAR LOS NOMBRES DE LOS ESTADOS A SUS NOMBRES 'COMUNES' = = #
-# - - Cargar los datos del repositorio de N+ Focus - - #
-nombres_entidades = pd.read_csv("https://raw.githubusercontent.com/nmasfocusdatos/desplazamiento-climatico/main/datos/base_nombres_entidades.csv")
+
+nombres_entidades = pd.read_csv(os.getcwd() + "/Gobierno-Mexicano/nombres_claves_entidades.csv")
 nombres_entidades["cve_geo"] = nombres_entidades["cve_geo"].fillna(0).apply(lambda x : f"0{int(x)}" if x < 10 else str(int(x)))
 
-df_proyecciones_ent = df_proyecciones_ent.drop(columns="entidad").merge(nombres_entidades, on = "cve_geo").rename(columns = {"nombre_estado_2": "nombre_estado"})[["date_year_n", "nombre_estado", "cve_geo","edad","genero","poblacion_inicio_date_year_n","poblacion_mitad_date_year_n"]]
+df_proyecciones_ent = df_proyecciones_ent.drop(columns="entidad").merge(nombres_entidades, on = "cve_geo").rename(columns = {"nombre_estado_comun": "nombre_estado"})[["date_year_n", "nombre_estado", "cve_geo","edad","genero","poblacion_inicio_date_year_n","poblacion_mitad_date_year_n"]]
 
 # = = GUARDAR CSV = = #
 df_proyecciones_ent.to_csv(os.getcwd() + "/Gobierno-Mexicano/CONAPO_PROYECCIONES_1950-2070/entidades/conapo_proyecciones_inicio-mitad_1950-2070.csv", index = False)

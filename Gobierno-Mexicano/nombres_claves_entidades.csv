@@ -1,0 +1,34 @@
+nombre_estado_estandar,nombre_estado_inegi,nombre_estado_comun,cve_geo
+aguascalientes,Aguascalientes,Aguascalientes,01
+baja_california,Baja California,Baja California,02
+baja_california_sur,Baja California Sur,Baja California Sur,03
+campeche,Campeche,Campeche,04
+chiapas,Chiapas,Chiapas,07
+chihuahua,Chihuahua,Chihuahua,08
+cdmx,Ciudad de México,Ciudad de México,09
+coahuila,Coahuila de Zaragoza,Coahuila,05
+colima,Colima,Colima,06
+durango,Durango,Durango,10
+guanajuato,Guanajuato,Guanajuato,11
+guerrero,Guerrero,Guerrero,12
+hidalgo,Hidalgo,Hidalgo,13
+jalisco,Jalisco,Jalisco,14
+edo_mex,México,Estado de México,15
+michoacan,Michoacán de Ocampo,Michoacán,16
+morelos,Morelos,Morelos,17
+nayarit,Nayarit,Nayarit,18
+nuevo_leon,Nuevo León,Nuevo León,19
+oaxaca,Oaxaca,Oaxaca,20
+puebla,Puebla,Puebla,21
+queretaro,Querétaro,Querétaro,22
+quintana_roo,Quintana Roo,Quintana Roo,23
+san_luis_potosi,San Luis Potosí,San Luis Potosí,24
+sinaloa,Sinaloa,Sinaloa,25
+sonora,Sonora,Sonora,26
+tabasco,Tabasco,Tabasco,27
+tamaulipas,Tamaulipas,Tamaulipas,28
+tlaxcala,Tlaxcala,Tlaxcala,29
+veracruz,Veracruz de Ignacio de la Llave,Veracruz,30
+yucatan,Yucatán,Yucatán,31
+zacatecas,Zacatecas,Zacatecas,32
+nacional,Nacional,Nacional,00
