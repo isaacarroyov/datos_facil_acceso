@@ -5,6 +5,8 @@
 1. [Población a mitad e inicio de año](#población-a-mitad-e-inicio-de-año)
 
 ## Población a mitad e inicio de año
+> Nota  
+> Actualización del 4 de Agosto del 2023 (Entidades y Nacional)
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque eros erat, gravida vel fermentum vitae, bibendum vel erat. Nullam ut arcu id purus sodales commodo. Mauris vehicula, ligula eget imperdiet sagittis, turpis ipsum dictum diam, vitae tempus velit orci a nunc. Integer efficitur scelerisque urna, at cursus lorem gravida non. Sed varius diam sed enim semper, at tincidunt ipsum fringilla. Aenean tincidunt placerat dignissim. Donec porttitor egestas mauris ac mollis.
 
