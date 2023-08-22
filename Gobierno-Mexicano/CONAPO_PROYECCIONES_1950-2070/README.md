@@ -1,16 +1,18 @@
 # Proyecciones de la población del Consejo Nacional de Población (CONAPO)
 
-## Contenidos
+## Población a mitad e inicio de año de los estados de México (1950-2070)
 
-1. [Población a mitad e inicio de año](#población-a-mitad-e-inicio-de-año)
-
-## Población a mitad e inicio de año
 > Nota  
-> Actualización del 4 de Agosto del 2023 (Entidades y Nacional)
+> Actualización del 4 de Agosto del 2023
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque eros erat, gravida vel fermentum vitae, bibendum vel erat. Nullam ut arcu id purus sodales commodo. Mauris vehicula, ligula eget imperdiet sagittis, turpis ipsum dictum diam, vitae tempus velit orci a nunc. Integer efficitur scelerisque urna, at cursus lorem gravida non. Sed varius diam sed enim semper, at tincidunt ipsum fringilla. Aenean tincidunt placerat dignissim. Donec porttitor egestas mauris ac mollis.
 
 Curabitur auctor dapibus erat, sit amet porta arcu consectetur non. Nulla a quam in diam volutpat congue at vel purus. Duis hendrerit enim in imperdiet ornare. Morbi venenatis mauris in felis fringilla luctus. Nulla facilisi. In tristique congue massa nec efficitur. Cras ac lectus id ipsum volutpat semper. Pellentesque tincidunt tellus lectus, in vehicula magna porttitor et. Proin euismod neque tristique nisi euismod, sed porta ante scelerisque. Quisque a placerat odio. Nam mattis convallis magna id mollis. Phasellus facilisis dui lacus, tempor elementum eros vulputate ac. Maecenas vel magna a justo posuere porta in et urna. Etiam eleifend, nunc molestie rutrum facilisis, augue massa condimentum lorem, nec ornare velit metus in augue.
+
+## Población de los municipios de México (2015-2030)
+
+> Nota  
+> Actualización del 2 de septiembre de 2019
 
 Nulla facilisi. Nulla facilisi. Maecenas ut vehicula mi, eget mollis odio. In lorem tellus, porttitor eu fringilla ac, condimentum tempor odio. Mauris eget ornare nibh. Donec ornare commodo sodales. Aenean imperdiet volutpat nulla, eget lobortis lacus feugiat vitae. Quisque mollis, risus vel laoreet gravida, neque elit aliquam mauris, ut tempor nibh eros lacinia magna. Pellentesque vehicula euismod augue, sed posuere enim convallis auctor. Quisque sed nulla ut ante finibus bibendum et vitae turpis. Phasellus ultrices, orci quis malesuada ultricies, lacus sapien efficitur risus, id venenatis massa leo pharetra tortor.
 
