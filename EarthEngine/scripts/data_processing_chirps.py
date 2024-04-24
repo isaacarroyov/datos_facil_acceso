@@ -35,66 +35,175 @@
 """
 # Sobre los datos
 
-(Prueba de renderización)
+Los fuente de los datos se llama **CHIRPS (Climate Hazards Group InfraRed 
+Precipitation With Station Data) Daily**, se puede encontrar en diferentes 
+lugares, uno de estos la plataforma **Google Earth Engine**.
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent 
-dignissim, lacus sed tincidunt vehicula, tellus erat dictum libero, vel 
-facilisis tellus ipsum eget lorem. Nunc lobortis congue nisl vitae cursus. 
-Pellentesque eu fringilla elit, sed tristique neque. Aenean sagittis justo 
-vitae posuere consectetur. Integer sit amet nisl consectetur, suscipit 
-libero at, aliquet massa. Phasellus eget aliquet tortor. In semper, turpis 
-id ornare interdum, risus elit placerat purus, a dapibus enim purus id mi. 
-Curabitur suscipit, ante eu tincidunt feugiat, erat nunc pharetra elit, 
-sit amet bibendum mi turpis in nibh. Ut non nisi imperdiet, dictum augue 
-eget, bibendum mauris. Donec laoreet non arcu vel malesuada. Sed et dictum 
-risus, eget tempor tellus.
+De acuerdo con la descripción:
+
+> _Climate Hazards Group InfraRed Precipitation with Station data (CHIRPS) 
+is a 30+ year quasi-global rainfall dataset. CHIRPS incorporates 0.05° 
+resolution satellite imagery with in-situ station data to create gridded 
+rainfall time series for trend analysis and seasonal drought monitoring._
+
+
+Estos datos cuentan con la **precipitación diaria** medida en milímetros 
+(mm) desde Enero 01, de 1981 hasta el mes inmediato anterior a la 
+fecha actual^[Esto quiere decir, que si la fecha _actual_ es Marzo 2024, 
+entonces los datos cubren hasta Abril 2024]
+
+El procesamiento de texto es similar al realizado en el proyecto 
+["Desplazamiento climático: La migración que no 
+vemos"](https://github.com/nmasfocusdatos/desplazamiento-climatico).
+
 """
 
 # %%
-import pandas as pd # <1>
-import seaborn as sns # <2>
+import ee # <1>
+import geemap # <2>
+
+try:
+    ee.Initialize() # <3>
+    print("Se ha inicializado correctamente")
+except:
+    print("Error en la inicialización")
 
 # %% [markdown]
 """
-1. Cargar Pandas
-2. Importar para hacer datavis decente
+1. Importar API de (Google) Earth Engine
+2. Importar `geemap` para la creación de mapas interactivos tipo folium 
+3. Inicializar API
 """
 
 # %% [markdown]
 """
-# Procesamiento 1
+# Varibles y constantes
 
-Praesent consectetur blandit felis ut fringilla. Fusce consequat, justo a 
-ultricies mattis, est est rhoncus libero, id dapibus neque leo quis ligula. 
-Praesent mattis, purus sed pretium tempus, justo ante euismod felis, 
-malesuada tristique augue nisl ac urna. Praesent est sem, commodo id mi 
-sit amet, dignissim varius diam. Phasellus tincidunt enim et molestie 
-malesuada. Phasellus libero dolor, blandit id dolor vel, semper commodo 
-purus. Donec eu aliquam turpis, et vestibulum ligula. Nulla aliquam massa 
-et augue vulputate, non sodales sem placerat. Integer imperdiet orci quis 
-augue efficitur, eget convallis libero tristique. Curabitur porta placerat 
-sapien et porttitor^[Holi]. Sed massa nisl, accumsan in libero non, 
-iaculis varius massa. Cras imperdiet nulla quis placerat posuere. 
-In eu gravida lorem.
+La extracción de datos se planea que sea periódica a niveles estatales y 
+municipales, por lo que se dejan declarados variables que se mantendrán 
+constantes (como el rango del promedio _normal_ o histórico) o (valga la 
+redundancia) cambiarán dependiendo de los datos que se quieran. La 
+@tbl-vars-const-notes entra a mayor detalle de lo que se esta haciendo
+
+|**Variable**|**Tipo**|**Notas**|
+|:---|:---|:---|
+|`date_base_start`|Constante|Inicio del periodo de 30 años de base: **`"1981-01-01"`**|
+|`date_base_end`|Constante|Fin del periodo de 30 años de base: **`"2010-12-31"`**|
+|`scale_img_coll`|Constante|Escala de la `ee.ImageCollection`. Para [CHIRPS Daily](https://developers.google.com/earth-engine/datasets/catalog/UCSB-CHG_CHIRPS_DAILY#bands) es de 5,566 m|
+|`geom_mex`|Constante|Geometría del perímetro de México, usada para delimitar espacialmente la información|
+|`fc`|Cambiante|`ee.FeatureCollection` de las geomtrías e información de los Estados o Municipios de México|
+|`chirps`|Constante|`ee.ImageCollection` de [CHIRPS Daily](https://developers.google.com/earth-engine/datasets/catalog/UCSB-CHG_CHIRPS_DAILY)|
+
+: Variables y constantes {#tbl-vars-const-notes}
+
+"""
+
+# %% 
+date_base_start = "1981-01-01" # <1>
+date_base_end = "2010-12-31" # <2>
+scale_img_coll = 5566 # <3>
+
+geom_mex = (ee.FeatureCollection("USDOS/LSIB/2017") # <4>
+  .filter(ee.Filter.eq("COUNTRY_NA", "Mexico")) # <5>
+  .first() # <6>
+  .geometry()) # <7>
+
+path_fc = "'projects/ee-unisaacarroyov/assets/GEOM-MX/MX_ENT_2022'" # <8>
+fc = ee.FeatureCollection(path_fc) # <8>
+
+chirps = (ee.ImageCollection('UCSB-CHG/CHIRPS/DAILY') # <9>
+  .select("precipitation") # <9>
+  .filter(ee.Filter.bounds(geom_mex))) 
+
+
+# %% [markdown]
+"""
+1. Inicio de periodo _base/histórico/normal_
+2. Fin de periodo _base/histórico/normal_
+3. Escala del raster CHIRPS Daily
+4. `ee.FeatureCollection` de división politica de los países del mundo
+5. Filtro donde la propiedad `COUNTRY_NA` sea igual a **Mexico**
+6. Selección de la primera `ee.Feature`
+7. Extracción de únicamente la geometría
+8. `ee.FeatureCollection` de las divisiones de los estados o municipios 
+de México
+9. `ee.ImageCollection` de CHIRPS Daily
+"""
+
+# %% [markdown]
+"""
+# Modificiación de la `ee.ImageCollection`
+
+La manera en la que se organiza `chirps` es tener la colección de más de 
+15,700 imágenes de una sola banda de información (la precipitación del día).
+
+Lo que se busca hacer es tener una colección de poco más de 40 imágenes con 
+52 bandas, estas bandas son las semanas del año y la información de cada 
+banda será la misma: la precipitación semanal.
+
+## Etiquetado de año y semana del año
+
+Para ir agrupando y sumando la precipitación semanal, hay que tener 
+etiquetadas con el año y semana del año para poder agruparlas y sumar 
+la precipitación. Para ello se crea una función que haga ese etiquetado en 
+cada una de las imágenes
+"""
+
+# %% 
+def func_tag_year_week(img): # <1>
+  full_date = ee.Date(ee.Number(img.get("system:time_start"))) # <2>
+  n_year = ee.Number(full_date.get("year")) # <3>
+  n_week = ee.Number(full_date.get("week")) # <4>
+  return img.set({"n_week": n_week, "n_year": n_year}) # <5>
+
+chirps_year_week = chirps.map(func_tag_year_week) # <6>
+
+# %% [markdown]
+"""
+1. La función toma una sola `ee.Image`
+2. Obtener la fecha de la imagen, como esta en formato UNIX, se tiene que 
+transformar a fecha con `ee.Date`
+3. De la fecha se obtiene el valor numérico del año
+4. De la fecha se obtiene el valor numérico de la semana del año
+5. Asignación de año y semana del año como propiedades de la `ee.Image`
+6. Crear nueva `ee.ImageCollection` con el etiquetado
+"""
+
+# %% [markdown]
+"""
+## Agrupar años y semanas
+
+Antes de crear la colección de $\approx$ 40 imágenes con 52 bandas cada 
+una, hay que reducir la colección de 365 imagenes por año a 52 imágenes 
+por año, donde cada imagen tenga la precipitación de la semana.
 """
 
 # %%
-import numpy as np
 
-# %% [markdown]
-"""
-# Procesamiento 2
+# TODO: Crear ee.ImageCollection de ~ 42 imagenes de a 52 bandas (semanas)
+# TODO: Comentar codigo
 
-Fusce dictum neque quis cursus cursus. Nulla pulvinar **scelerisque** 
-pharetra. In at ipsum ac neque interdum mollis. Orci varius _natoque_ 
-penatibus et magnis dis parturient montes, nascetur ridiculus mus. Ut 
-commodo ex vitae urna mattis, ut semper enim lobortis. Praesent eget 
-consectetur leo, ut aliquet enim. Aenean nunc sapien, sodales in tortor 
-id, dignissim tempus lorem.
-"""
+list_of_img_coll_year_week = ee.List([])
 
-# %%
-import ee
+for number_year in range(1981, 2024):
+    # Filtrar por año
+    # (tiene 365~366 imagenes)
+    img_coll_number_year = chirps_year_week.filter(
+        ee.Filter.eq("n_year", ee.Number(number_year)))
+    
+    # Filtrar reducir por semanas
+    # Lista de 52 imagenes imagenes
+    list_of_weeks = ee.List.sequence(1, 52).map(
+        lambda number_week: (img_coll_number_year
+            .filter(ee.Filter.eq("n_week", number_week))
+            .sum()
+            .set({"n_week": number_week, "n_year": ee.Number(number_year)}))
+        )
+    
+    # Crear image collection de 52 imagenes por año
+    img_coll_reduced = ee.ImageCollection.fromImages(list_of_weeks)
+    print(img_coll_reduced.size().getInfo())   
+
 
 # %% [markdown]
 """
@@ -113,7 +222,7 @@ nunc, rhoncus non mi ac, placerat interdum eros.
 """
 
 # %% 
-import geemap
+# Espacio
 
 # %% [markdown]
 """
@@ -129,4 +238,4 @@ purus laoreet.
 """
 
 # %% 
-import eemont
+# Espacio
