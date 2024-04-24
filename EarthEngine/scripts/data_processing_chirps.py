@@ -113,7 +113,7 @@ fc = ee.FeatureCollection(path_fc) # <8>
 
 chirps = (ee.ImageCollection('UCSB-CHG/CHIRPS/DAILY') # <9>
   .select("precipitation") # <9>
-  .filter(ee.Filter.bounds(geom_mex))) 
+  .filter(ee.Filter.bounds(geom_mex))) # <10>
 
 
 # %% [markdown]
@@ -128,6 +128,7 @@ chirps = (ee.ImageCollection('UCSB-CHG/CHIRPS/DAILY') # <9>
 8. `ee.FeatureCollection` de las divisiones de los estados o municipios 
 de México
 9. `ee.ImageCollection` de CHIRPS Daily
+10. Limitar el raster a la geometría de México
 """
 
 # %% [markdown]
@@ -183,26 +184,34 @@ por año, donde cada imagen tenga la precipitación de la semana.
 # TODO: Crear ee.ImageCollection de ~ 42 imagenes de a 52 bandas (semanas)
 # TODO: Comentar codigo
 
-list_of_img_coll_year_week = ee.List([])
+def func_reduce_year_week(element_year):
+    img_coll_year = (chirps_year_week
+      .filter(ee.Filter.eq("n_year", element_year)))
 
-for number_year in range(1981, 2024):
-    # Filtrar por año
-    # (tiene 365~366 imagenes)
-    img_coll_number_year = chirps_year_week.filter(
-        ee.Filter.eq("n_year", ee.Number(number_year)))
+    img_coll_year_sum_weeks = ee.List.sequence(1, 52).map(
+        lambda element_week: (img_coll_year
+          .filter(ee.Filter.eq("n_week", element_week))
+          .sum()))
     
-    # Filtrar reducir por semanas
-    # Lista de 52 imagenes imagenes
-    list_of_weeks = ee.List.sequence(1, 52).map(
-        lambda number_week: (img_coll_number_year
-            .filter(ee.Filter.eq("n_week", number_week))
-            .sum()
-            .set({"n_week": number_week, "n_year": ee.Number(number_year)}))
-        )
-    
-    # Crear image collection de 52 imagenes por año
-    img_coll_reduced = ee.ImageCollection.fromImages(list_of_weeks)
-    print(img_coll_reduced.size().getInfo())   
+    week_bands = [str(i) if i > 9 else f"0{i}" for i in range(1,53)]
+
+    img_year_weekly_precipitation = (ee.ImageCollection
+      .fromImages(img_coll_year_sum_weeks)
+      .toBands()
+      .set({"n_year": element_year})
+      .rename(week_bands))
+
+    return img_year_weekly_precipitation
+
+
+list_of_years = ee.List.sequence(2020, 2024)
+print("Se crea lista de años")
+
+list_of_img_year_weekly_precipitation = list_of_years.map(func_reduce_year_week)
+print("Se aplica funcion de reduccion")
+
+img_coll_year_weekly_precipitation = ee.ImageCollection.fromImages(list_of_img_year_weekly_precipitation)
+print("Se crea image collection reducida")
 
 
 # %% [markdown]
