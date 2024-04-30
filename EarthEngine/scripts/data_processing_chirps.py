@@ -9,11 +9,12 @@
 # jupyter: python3
 # format:
 #   pdf:
+#     toc: true
 #     fontsize: 12pt
 #     mainfont: Charter
 #     geometry:
-#       - top=0.6in
-#       - bottom=0.6in
+#       - top=1in
+#       - bottom=1in
 #       - left=1in
 #       - right=1in
 #     documentclass: report
@@ -61,6 +62,7 @@ vemos"](https://github.com/nmasfocusdatos/desplazamiento-climatico).
 # %%
 import ee # <1>
 import geemap # <2>
+import time
 
 try:
     ee.Initialize() # <3>
@@ -370,6 +372,32 @@ def func_create_list_of_fc(imgcoll, featurecoll, scale_img_coll = 5566):
 
     return list_fc
 
+def save_all_years_fc(
+        list_of_fc,
+        descrp,
+        filename,
+        folder_name,
+        fc_type= select_fc):
+    
+    iteracion = 0
+    
+    for vector in list_of_fc:
+        print(f"Mandando a guardar la tabla de {1981 + iteracion}")
+        print(f"Bajo el asunto {descrp}")
+        final_filename = f"{filename}_{fc_type}_{1981 + iteracion}"
+        final_descrp = f"{descrp}_{fc_type}_{1981 + iteracion}"
+        geemap.ee_export_vector_to_drive(
+            collection= vector,
+            description= final_descrp,
+            fileNamePrefix= final_filename,
+            fileFormat= "CSV",
+            folder= folder_name)
+        print(f"El nombre del archivo es {final_filename}.csv")
+        iteracion += 1
+
+        time.sleep(120)
+    
+    return None
 # %% [markdown]
 """
 ## Acumulación de lluvias
@@ -394,9 +422,22 @@ list_fc_pr = func_create_list_of_fc(
     imgcoll= img_coll_year_monthly_pr_bands,
     featurecoll= fc)
 
-#TODO: Falta crear codigo para guardar 
+# %% [markdown]
+"""
+El siguiente bloque de código es el que se usa para guardar la información 
+del periodo 1981 - 2023. Las solicitudes son enviadas al servidor y el 
+archivo CSV se guardará en la carpeta de Google Drive cuando el 
+servidor haya terminado de ejecutar la solicitud.
 
-
+```
+save_all_years_fc(
+    list_of_fc= list_fc_pr,
+    descrp= "chirps_daily_precipitation",
+    filename= "chirps_daily_pr",
+    folder_name= "gee_chirps_daily_pr"
+)
+```
+"""
 
 # %% [markdown]
 """
@@ -425,9 +466,6 @@ list_fc_anomaly_pr_mm = func_create_list_of_fc(
     imgcoll= img_coll_year_monthly_anomaly_mm,
     featurecoll= fc)
 
-#TODO: Falta crear codigo para guardar  
-
-
 # %% [markdown]
 """
 ### Anomalía en porcentaje
@@ -449,9 +487,158 @@ at velit.
 # %% 
 #TODO: COMENTAR 08
 
-list_fc_pr = func_create_list_of_fc(
+list_fc_anomaly_pr_prop = func_create_list_of_fc(
     imgcoll= img_coll_year_monthly_anomaly_prop,
     featurecoll= fc)
 
+# %% [markdown]
+"""
+El siguiente bloque de código es el que se usa para guardar la información 
+del periodo 1981 - 2023. Las solicitudes son enviadas al servidor y el 
+archivo CSV se guardará en la carpeta de Google Drive cuando el 
+servidor haya terminado de ejecutar la solicitud.
 
-#TODO: Falta crear codigo para guardar  
+
+```Python
+save_all_years_fc(
+    list_of_fc= list_fc_anomaly_pr_prop,
+    descrp= "chirps_daily_precipitation_anomaly_prop",
+    filename= "chirps_daily_anomaly_pr_prop",
+    folder_name= "gee_chirps_daily_anomaly_pr_prop"
+)
+```
+"""
+
+# %% [markdown]
+"""
+# Caso específico: 2024
+
+Nullam accumsan dolor a justo dapibus, sit amet interdum metus rhoncus. 
+Praesent ac libero hendrerit, dapibus metus ac, dignissim tellus. Nunc ut 
+enim ut ligula posuere eleifend. Vestibulum ac lorem in massa lacinia 
+condimentum sed eget ligula. Maecenas imperdiet felis sit amet arcu 
+viverra tristique. Maecenas suscipit mattis massa, ut malesuada erat 
+consequat tristique. Nulla tincidunt augue vel ante aliquam, in ultricies 
+purus laoreet.
+"""
+
+# %%
+#TODO: explicar por qué es el caso especifo
+#TODO: Traducir JavaScript a Python
+
+# %% [markdown]
+"""
+```JavaScript
+/* *  Crear ee.Image de 12 bandas cada una * */
+/*
+list_year_month = list_months
+                .map(function(number){
+                return chirps_tagged
+                        .filter(ee.Filter.eq("n_year", n_year_interes))
+                        .filter(ee.Filter.eq("n_month", number))
+                        .sum()
+                        .set({"n_month": number});
+                });
+img_year_month = ee.ImageCollection
+                .fromImages(list_year_month)
+                .toBands()
+                //.rename(["01","02","03"])
+                ;
+*/
+
+/* * Crear ee.FeatureCollection de 12 columnas y n_estados/municipios * */
+
+// Limitar a un anño en especifico 
+n_year_interes = 2020;
+img_year_month = img_coll_year_monthly_pr_bands
+                .filter(ee.Filter.eq("n_year", n_year_interes))
+                .first();
+
+fc_from_image = img_year_month
+                .reduceRegions({
+                    'reducer': ee.Reducer.mean(),
+                    'collection': fc,
+                    'scale': scale_img_coll})
+                .map(function(feature){
+                    return ee.Feature(feature)
+                            .set({'n_year': n_year_interes})
+                            .setGeometry(null)});
+
+fc_final = ee.FeatureCollection(fc_from_image.toList(3000).flatten());
+```
+"""
+# %%
+#TODO: explicar por qué es el caso especifo
+#TODO: Traducir JavaScript a Python
+
+# %% [markdown]
+"""
+## Acumulación de la precipitación
+
+Nullam accumsan dolor a justo dapibus, sit amet interdum metus rhoncus. 
+Praesent ac libero hendrerit, dapibus metus ac, dignissim tellus. Nunc ut 
+enim ut ligula posuere eleifend. Vestibulum ac lorem in massa lacinia 
+condimentum sed eget ligula. Maecenas imperdiet felis sit amet arcu 
+viverra tristique. Maecenas suscipit mattis massa, ut malesuada erat 
+consequat tristique. Nulla tincidunt augue vel ante aliquam, in ultricies 
+purus laoreet.
+"""
+
+# %%
+#TODO: explicar por qué es el caso especifo
+#TODO: Traducir JavaScript a Python
+
+
+# %% [markdown]
+"""
+## Anomalía de la precipitación
+
+### Anomalía en milimetros
+
+Nullam accumsan dolor a justo dapibus, sit amet interdum metus rhoncus. 
+Praesent ac libero hendrerit, dapibus metus ac, dignissim tellus. Nunc ut 
+enim ut ligula posuere eleifend. Vestibulum ac lorem in massa lacinia 
+condimentum sed eget ligula. Maecenas imperdiet felis sit amet arcu 
+viverra tristique. Maecenas suscipit mattis massa, ut malesuada erat 
+consequat tristique. Nulla tincidunt augue vel ante aliquam, in ultricies 
+purus laoreet.
+"""
+
+# %%
+#TODO: explicar por qué es el caso especifo
+#TODO: Traducir JavaScript a Python
+
+# %% [markdown]
+"""
+### Anomalía en porcentaje
+
+Nullam accumsan dolor a justo dapibus, sit amet interdum metus rhoncus. 
+Praesent ac libero hendrerit, dapibus metus ac, dignissim tellus. Nunc ut 
+enim ut ligula posuere eleifend. Vestibulum ac lorem in massa lacinia 
+condimentum sed eget ligula. Maecenas imperdiet felis sit amet arcu 
+viverra tristique. Maecenas suscipit mattis massa, ut malesuada erat 
+consequat tristique. Nulla tincidunt augue vel ante aliquam, in ultricies 
+purus laoreet.
+"""
+
+# %%
+#TODO: explicar por qué es el caso especifo
+#TODO: Traducir JavaScript a Python
+
+
+# %% [markdown]
+"""
+## Guardar información actualizada
+
+Nullam accumsan dolor a justo dapibus, sit amet interdum metus rhoncus. 
+Praesent ac libero hendrerit, dapibus metus ac, dignissim tellus. Nunc ut 
+enim ut ligula posuere eleifend. Vestibulum ac lorem in massa lacinia 
+condimentum sed eget ligula. Maecenas imperdiet felis sit amet arcu 
+viverra tristique. Maecenas suscipit mattis massa, ut malesuada erat 
+consequat tristique. Nulla tincidunt augue vel ante aliquam, in ultricies 
+purus laoreet.
+"""
+
+# %%
+#TODO: explicar por qué es el caso especifo
+#TODO: Traducir JavaScript a Python
