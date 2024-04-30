@@ -87,7 +87,6 @@ redundancia) cambiarán dependiendo de los datos que se quieran. La
 
 |**Variable**|**Tipo**|**Notas**|
 |:---|:---|:---|
-|`scale_img_coll`|Constante|Escala de la `ee.ImageCollection`. Para [CHIRPS Daily](https://developers.google.com/earth-engine/datasets/catalog/UCSB-CHG_CHIRPS_DAILY#bands) es de 5,566 m|
 |`geom_mex`|Constante|Geometría del perímetro de México, usada para delimitar espacialmente la información|
 |`fc`|Cambiante|`ee.FeatureCollection` de las geomtrías e información de los Estados o Municipios de México|
 |`chirps`|Constante|`ee.ImageCollection` de [CHIRPS Daily](https://developers.google.com/earth-engine/datasets/catalog/UCSB-CHG_CHIRPS_DAILY)|
@@ -97,38 +96,36 @@ redundancia) cambiarán dependiendo de los datos que se quieran. La
 """
 
 # %% 
-scale_img_coll = 5566 # <1>
-select_fc = "ent" # <2>
-dict_fc = dict( # <3>
-    ent = "projects/ee-unisaacarroyov/assets/GEOM-MX/MX_ENT_2022", # <3>
-    mun = "projects/ee-unisaacarroyov/assets/GEOM-MX/MX_MUN_2022") # <3>
+select_fc = "ent" # <1>
+dict_fc = dict( # <2>
+    ent = "projects/ee-unisaacarroyov/assets/GEOM-MX/MX_ENT_2022", # <2>
+    mun = "projects/ee-unisaacarroyov/assets/GEOM-MX/MX_MUN_2022") # <2>
 
-fc = ee.FeatureCollection(dict_fc[select_fc]) # <4>
+fc = ee.FeatureCollection(dict_fc[select_fc]) # <3>
 
-geom_mex = (ee.FeatureCollection("USDOS/LSIB/2017") # <5>
-            .filter(ee.Filter.eq("COUNTRY_NA", "Mexico")) # <6>
-            .first() # <7>
-            .geometry()) # <8>
+geom_mex = (ee.FeatureCollection("USDOS/LSIB/2017") # <4>
+            .filter(ee.Filter.eq("COUNTRY_NA", "Mexico")) # <5>
+            .first() # <6>
+            .geometry()) # <7>
 
 
-chirps = (ee.ImageCollection('UCSB-CHG/CHIRPS/DAILY') # <9>
-          .select("precipitation") # <9>
-          .filter(ee.Filter.bounds(geom_mex))) # <10>
+chirps = (ee.ImageCollection('UCSB-CHG/CHIRPS/DAILY') # <8>
+          .select("precipitation") # <8>
+          .filter(ee.Filter.bounds(geom_mex))) # <9>
 
 
 # %% [markdown]
 """
-1. Escala del raster CHIRPS Daily
-2. Seleccion de `ee.FeatureCollection`, sea de Entidades (`ent`), 
+1. Seleccion de `ee.FeatureCollection`, sea de Entidades (`ent`), 
 Municipios (`mun`) o Cuencas Hidrológicas (`ch`)
-3. Diccionario con los _paths_ hacia la `ee.FeatureCollection` de elección
-4. Carga de `ee.FeatureCollection` de interés
-5. `ee.FeatureCollection` de división politica de los países del mundo
-6. Filtro donde la propiedad `COUNTRY_NA` sea igual a **Mexico**
-7. Selección de la primera `ee.Feature`
-8. Extracción de únicamente la geometría
-9. `ee.ImageCollection` de CHIRPS Daily
-10. Limitar el raster a la geometría de México
+2. Diccionario con los _paths_ hacia la `ee.FeatureCollection` de elección
+3. Carga de `ee.FeatureCollection` de interés
+4. `ee.FeatureCollection` de división politica de los países del mundo
+5. Filtro donde la propiedad `COUNTRY_NA` sea igual a **Mexico**
+6. Selección de la primera `ee.Feature`
+7. Extracción de únicamente la geometría
+8. `ee.ImageCollection` de CHIRPS Daily
+9. Limitar el raster a la geometría de México
 """
 
 # %% [markdown]
@@ -345,7 +342,36 @@ condimentum sed eget ligula. Maecenas imperdiet felis sit amet arcu
 viverra tristique. Maecenas suscipit mattis massa, ut malesuada erat 
 consequat tristique. Nulla tincidunt augue vel ante aliquam, in ultricies 
 purus laoreet.
+"""
 
+# %% 
+#TODO: COMENTAR 06
+def func_create_list_of_fc(imgcoll, featurecoll, scale_img_coll = 5566):
+    list_fc = list()
+    
+    for n_year_interes in range(1981, 2024):
+        img_year_month = (imgcoll
+                         .filter(ee.Filter.eq("n_year", n_year_interes))
+                         .first())
+
+        fc_from_image = (img_year_month
+                        .reduceRegions(
+                            reducer = ee.Reducer.mean(),
+                            collection = featurecoll,
+                            scale = scale_img_coll)
+                        .map(lambda feature: (ee.Feature(feature)
+                                            .set({'n_year': n_year_interes})
+                                            .setGeometry(None))))
+
+        fc_final = ee.FeatureCollection((fc_from_image
+                                         .toList(3000)
+                                         .flatten()))
+        list_fc.append(fc_final)
+
+    return list_fc
+
+# %% [markdown]
+"""
 ## Acumulación de lluvias
 
 Vivamus at vestibulum elit. Maecenas in dui at diam aliquet feugiat. In 
@@ -363,27 +389,10 @@ at velit.
 """
 
 # %% 
-#TODO: COMENTAR 06
-
-list_fc_to_save = list()
-
-for n_year_interes in range(1981, 2024):
-    img_year_month = (img_coll_year_monthly_pr_bands
-                    .filter(ee.Filter.eq("n_year", n_year_interes))
-                    .first())
-
-    fc_from_image = (img_year_month
-                    .reduceRegions(
-                        reducer = ee.Reducer.mean(),
-                        collection = fc,
-                        scale = scale_img_coll)
-                    .map(lambda feature: (ee.Feature(feature)
-                                        .set({'n_year': n_year_interes})
-                                        .setGeometry(None))))
-
-    fc_final = ee.FeatureCollection(fc_from_image.toList(3000).flatten())
-
-    list_fc_to_save.append(fc_final)
+#TODO: COMENTAR 07
+list_fc_pr = func_create_list_of_fc(
+    imgcoll= img_coll_year_monthly_pr_bands,
+    featurecoll= fc)
 
 #TODO: Falta crear codigo para guardar 
 
@@ -412,6 +421,9 @@ at velit.
 # %% 
 #TODO: COMENTAR 07
 
+list_fc_anomaly_pr_mm = func_create_list_of_fc(
+    imgcoll= img_coll_year_monthly_anomaly_mm,
+    featurecoll= fc)
 
 #TODO: Falta crear codigo para guardar  
 
@@ -436,6 +448,10 @@ at velit.
 
 # %% 
 #TODO: COMENTAR 08
+
+list_fc_pr = func_create_list_of_fc(
+    imgcoll= img_coll_year_monthly_anomaly_prop,
+    featurecoll= fc)
 
 
 #TODO: Falta crear codigo para guardar  
