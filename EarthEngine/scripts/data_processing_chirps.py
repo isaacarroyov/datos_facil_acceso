@@ -87,8 +87,6 @@ redundancia) cambiarán dependiendo de los datos que se quieran. La
 
 |**Variable**|**Tipo**|**Notas**|
 |:---|:---|:---|
-|`date_base_start`|Constante|Inicio del periodo de 30 años de base: **`"1981-01-01"`**|
-|`date_base_end`|Constante|Fin del periodo de 30 años de base: **`"2010-12-31"`**|
 |`scale_img_coll`|Constante|Escala de la `ee.ImageCollection`. Para [CHIRPS Daily](https://developers.google.com/earth-engine/datasets/catalog/UCSB-CHG_CHIRPS_DAILY#bands) es de 5,566 m|
 |`geom_mex`|Constante|Geometría del perímetro de México, usada para delimitar espacialmente la información|
 |`fc`|Cambiante|`ee.FeatureCollection` de las geomtrías e información de los Estados o Municipios de México|
@@ -99,34 +97,36 @@ redundancia) cambiarán dependiendo de los datos que se quieran. La
 """
 
 # %% 
-date_base_start = "1981-01-01" # <1>
-date_base_end = "2010-12-31" # <2>
-scale_img_coll = 5566 # <3>
+scale_img_coll = 5566 # <1>
+select_fc = "ent" # <2>
+dict_fc = dict( # <3>
+    ent = "projects/ee-unisaacarroyov/assets/GEOM-MX/MX_ENT_2022", # <3>
+    mun = "projects/ee-unisaacarroyov/assets/GEOM-MX/MX_MUN_2022") # <3>
 
-geom_mex = (ee.FeatureCollection("USDOS/LSIB/2017") # <4>
-  .filter(ee.Filter.eq("COUNTRY_NA", "Mexico")) # <5>
-  .first() # <6>
-  .geometry()) # <7>
+fc = ee.FeatureCollection(dict_fc[select_fc]) # <4>
 
-path_fc = "'projects/ee-unisaacarroyov/assets/GEOM-MX/MX_ENT_2022'" # <8>
-fc = ee.FeatureCollection(path_fc) # <8>
+geom_mex = (ee.FeatureCollection("USDOS/LSIB/2017") # <5>
+            .filter(ee.Filter.eq("COUNTRY_NA", "Mexico")) # <6>
+            .first() # <7>
+            .geometry()) # <8>
+
 
 chirps = (ee.ImageCollection('UCSB-CHG/CHIRPS/DAILY') # <9>
-  .select("precipitation") # <9>
-  .filter(ee.Filter.bounds(geom_mex))) # <10>
+          .select("precipitation") # <9>
+          .filter(ee.Filter.bounds(geom_mex))) # <10>
 
 
 # %% [markdown]
 """
-1. Inicio de periodo _base/histórico/normal_
-2. Fin de periodo _base/histórico/normal_
-3. Escala del raster CHIRPS Daily
-4. `ee.FeatureCollection` de división politica de los países del mundo
-5. Filtro donde la propiedad `COUNTRY_NA` sea igual a **Mexico**
-6. Selección de la primera `ee.Feature`
-7. Extracción de únicamente la geometría
-8. `ee.FeatureCollection` de las divisiones de los estados o municipios 
-de México
+1. Escala del raster CHIRPS Daily
+2. Seleccion de `ee.FeatureCollection`, sea de Entidades (`ent`), 
+Municipios (`mun`) o Cuencas Hidrológicas (`ch`)
+3. Diccionario con los _paths_ hacia la `ee.FeatureCollection` de elección
+4. Carga de `ee.FeatureCollection` de interés
+5. `ee.FeatureCollection` de división politica de los países del mundo
+6. Filtro donde la propiedad `COUNTRY_NA` sea igual a **Mexico**
+7. Selección de la primera `ee.Feature`
+8. Extracción de únicamente la geometría
 9. `ee.ImageCollection` de CHIRPS Daily
 10. Limitar el raster a la geometría de México
 """
@@ -135,29 +135,27 @@ de México
 """
 # Modificiación de la `ee.ImageCollection`
 
-La manera en la que se organiza `chirps` es tener la colección de más de 
-15,700 imágenes de una sola banda de información (la precipitación del día).
+`chirps` es una `ee.ImageCollection` de más de 15 mil 
+imágenes (`ee.Image`). Lo que se busca hacer es tener una colección de 
+poco más de 40 imágenes con 12 bandas, estas bandas son los meses del año 
+y la información de cada banda será la misma: la precipitación mensual.
 
-Lo que se busca hacer es tener una colección de poco más de 40 imágenes con 
-52 bandas, estas bandas son las semanas del año y la información de cada 
-banda será la misma: la precipitación semanal.
+## Etiquetado de año y mes del año
 
-## Etiquetado de año y semana del año
-
-Para ir agrupando y sumando la precipitación semanal, hay que tener 
-etiquetadas con el año y semana del año para poder agruparlas y sumar 
+Para ir agrupando y sumando la precipitación mensual, hay que tener las 
+imágenes etiquetadas con el año y mes para poder agruparlas y sumar 
 la precipitación. Para ello se crea una función que haga ese etiquetado en 
 cada una de las imágenes
 """
 
 # %% 
-def func_tag_year_week(img): # <1>
-  full_date = ee.Date(ee.Number(img.get("system:time_start"))) # <2>
-  n_year = ee.Number(full_date.get("year")) # <3>
-  n_week = ee.Number(full_date.get("week")) # <4>
-  return img.set({"n_week": n_week, "n_year": n_year}) # <5>
+def func_tag_year_month(img): # <1>
+    full_date = ee.Date(ee.Number(img.get("system:time_start"))) # <2>
+    n_year = ee.Number(full_date.get("year")) # <3>
+    n_month = ee.Number(full_date.get("month")) # <4>
+    return img.set({"n_month": n_month, "n_year": n_year}) # <5>
 
-chirps_year_week = chirps.map(func_tag_year_week) # <6>
+chirps_tagged = chirps.map(func_tag_year_month) # <6>
 
 # %% [markdown]
 """
@@ -172,70 +170,173 @@ transformar a fecha con `ee.Date`
 
 # %% [markdown]
 """
-## Agrupar años y semanas
+## Precipitación mensual (1981-2023)
 
-Antes de crear la colección de $\approx$ 40 imágenes con 52 bandas cada 
-una, hay que reducir la colección de 365 imagenes por año a 52 imágenes 
-por año, donde cada imagen tenga la precipitación de la semana.
+Antes de crear la colección de $\approx$ 43 imágenes con 12 bandas cada 
+una, hay que reducir la colección de 365 imagenes por año a 12 imágenes 
+por año, donde cada imagen tenga la precipitación del mes.
 """
 
 # %%
+list_months = ee.List.sequence(1, 12)
+list_years = ee.List.sequence(1981, 2023)
 
-# TODO: Crear ee.ImageCollection de ~ 42 imagenes de a 52 bandas (semanas)
-# TODO: Comentar codigo
+# %% [markdown]
 
-def func_reduce_year_week(element_year):
-    img_coll_year = (chirps_year_week
-      .filter(ee.Filter.eq("n_year", element_year)))
+"""
+La transformación conlleva múltiples iteraciones, y mientras que en 
+JavaScript se puedan declarar funciones dentro de **`map`**, para el 
+caso se Python se tendran que crear las funciones a parte, y después serán 
+llamadas a su respectivo `map`.
+"""
 
-    img_coll_year_sum_weeks = ee.List.sequence(1, 52).map(
-        lambda element_week: (img_coll_year
-          .filter(ee.Filter.eq("n_week", element_week))
-          .sum()))
+# %%
+# TODO: COMENTAR 01
+def func_iter_years(n_year):
+    img_coll_year_interes = (chirps_tagged
+                             .filter(ee.Filter.eq("n_year", n_year)))
+    def func_iter_years_iter_months(n_month):
+        return (img_coll_year_interes
+                .filter(ee.Filter.eq("n_month", n_month))
+                .sum()
+                .set({"n_year": n_year, "n_month": n_month}))
     
-    week_bands = [str(i) if i > 9 else f"0{i}" for i in range(1,53)]
+    list_monthly_pr_per_year = list_months.map(func_iter_years_iter_months)
 
-    img_year_weekly_precipitation = (ee.ImageCollection
-      .fromImages(img_coll_year_sum_weeks)
-      .toBands()
-      .set({"n_year": element_year})
-      .rename(week_bands))
+    return list_monthly_pr_per_year
 
-    return img_year_weekly_precipitation
+list_year_monthly_pr = (list_years
+                        .map(func_iter_years)
+                        .flatten())
 
-
-list_of_years = ee.List.sequence(2020, 2024)
-print("Se crea lista de años")
-
-list_of_img_year_weekly_precipitation = list_of_years.map(func_reduce_year_week)
-print("Se aplica funcion de reduccion")
-
-img_coll_year_weekly_precipitation = ee.ImageCollection.fromImages(list_of_img_year_weekly_precipitation)
-print("Se crea image collection reducida")
-
+img_coll_year_monthly_pr = (ee.ImageCollection
+                            .fromImages(list_year_monthly_pr))
 
 # %% [markdown]
 """
 
-# Procesamiento 3
+## Meses como bandas de imágenes
 
-Aliquam fermentum est dapibus convallis aliquam. Praesent tincidunt 
-sagittis finibus. Proin bibendum at felis nec blandit. Sed sapien ipsum, 
-luctus et nisl et, eleifend tristique urna. Nam quis diam non orci 
-hendrerit cursus. Pellentesque venenatis nunc lectus, a sagittis magna 
-condimentum eu. Nullam semper elit at sollicitudin rhoncus. Donec cursus 
-mi sapien, id dapibus lorem convallis id. Nulla ut arcu eu mauris malesuada 
-aliquet et et purus. Nullam bibendum fringilla cursus. Nulla congue 
-ligula et consequat pellentesque. Donec id turpis lectus. Vestibulum quam 
-nunc, rhoncus non mi ac, placerat interdum eros.
+Ya que se logró pasar de más de 15 mil imágenes a poco más de 500, ya es 
+tiempo de reducir a $\approx$ 40 imágenes de a 12 bandas cada una.
+"""
+
+# %%
+# TODO: COMENTAR 02
+def imgcoll2bands(n_year):
+    img_12bands = (img_coll_year_monthly_pr
+        .filter(ee.Filter.eq("n_year", n_year))
+        .toBands()
+        .rename([f"0{i}" if i < 10 else str(i) for i in range(1,13)])
+        .set({"n_year": n_year}))
+    return img_12bands
+
+img_coll_year_monthly_pr_bands = (ee.ImageCollection
+    .fromImages(list_years.map(imgcoll2bands)))
+
+# %% [markdown]
+"""
+# Cálculo de anomalías de precipitación
+
+## Acumulación normal
+
+Vivamus at vestibulum elit. Maecenas in dui at diam aliquet feugiat. In 
+justo nisi, cursus vitae augue a, faucibus consectetur felis. Duis nisi 
+lorem, scelerisque a libero et, posuere vulputate nibh. Nulla dictum enim 
+ac nisi congue egestas. Curabitur volutpat mi nec tristique mattis. Nulla 
+sed dictum ante. Nunc vitae erat neque. Morbi rhoncus ex ac tellus 
+maximus, nec cursus lorem semper. Donec porta congue placerat. Ut finibus 
+est tellus, ut elementum nisl dictum nec. Nulla facilisi. Etiam auctor 
+quam ac nunc condimentum mollis. Pellentesque libero mi, finibus sit amet 
+fermentum non, condimentum eu dolor. Nam hendrerit ullamcorper nunc, 
+tristique facilisis erat sagittis non. Pellentesque fermentum, magna vel 
+feugiat pellentesque, odio diam facilisis erat, et ultricies dui erat 
+at velit.
+
 """
 
 # %% 
-# Espacio
+#TODO: COMENTAR 03
+base_period = (img_coll_year_monthly_pr
+               .filter(ee.Filter.lte("n_year", 2010)))
+base_pr_monthly_accumulation = (ee.ImageCollection
+    .fromImages(
+        (list_months
+         .map(lambda n_month: (base_period
+                               .filter(ee.Filter.eq("n_month", n_month))
+                               .mean()
+                               .set("n_month", n_month)))))
+    .toBands()
+    .rename([f"0{i}" if i < 10 else str(i) for i in range(1,13)]))
+# %% [markdown]
+"""
+
+## Anomalía en milimetros 
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc dictum 
+turpis ullamcorper pharetra pretium. Vivamus eu pellentesque nibh. Mauris 
+ac massa faucibus, condimentum eros at, vehicula justo. Cras ultrices 
+gravida risus, quis tempor tortor hendrerit quis. Aliquam erat volutpat. 
+Nullam tincidunt iaculis varius. Donec tristique leo non sapien sagittis, 
+in tincidunt lorem bibendum. Integer commodo sem vel risus hendrerit 
+efficitur. Pellentesque ut tincidunt ante, finibus sodales tellus.
+
+Aliquam ornare felis elit, ut euismod erat eleifend ac. Donec eget nisl 
+ligula. Vestibulum sit amet ultricies augue. Vivamus ac sem vitae libero 
+porttitor semper et quis lacus. Aenean ut arcu ipsum. Suspendisse 
+facilisis nisl ac sodales semper. Aliquam interdum convallis accumsan. 
+Vestibulum consequat tortor eget dapibus feugiat. Duis vitae mi est. Sed 
+laoreet eleifend sem. Integer dignissim, purus nec condimentum pharetra, 
+sapien nunc rhoncus nulla, eu porttitor lorem ipsum a massa. Etiam dapibus 
+sodales erat eu viverra.
+"""
+
+# %% 
+#TODO: COMENTAR 04
+#TODO: Escribir la formula
+img_coll_year_monthly_anomaly_mm = (img_coll_year_monthly_pr_bands
+    .map(lambda img: (img
+                      .subtract(base_pr_monthly_accumulation)
+                      .copyProperties(img, img.propertyNames()))))
 
 # %% [markdown]
 """
-# Procesamiento 4
+## Anomalía en porcentaje
+
+Mauris porta lorem nisi, et mollis ligula eleifend sed. Donec tristique 
+sed orci quis cursus. Pellentesque vulputate vel turpis eget maximus. 
+Cras et rutrum neque, et accumsan felis. Nam vel leo scelerisque, pharetra 
+quam feugiat, fermentum leo. Nullam consequat turpis non eros fermentum 
+suscipit. Suspendisse sed dui nec tellus vulputate volutpat at nec tortor. 
+Etiam tempus ut sapien non condimentum.
+
+Curabitur lacus dui, vehicula ut ex non, suscipit rutrum purus. Sed 
+dignissim mattis tortor, eget euismod risus egestas id. Nam vel orci a 
+nisl tincidunt commodo. Maecenas sagittis nibh et purus tincidunt 
+faucibus. In eu sagittis nisl. Duis nec feugiat dui, sit amet hendrerit 
+urna. Etiam in varius lorem. Etiam eu mauris non nunc imperdiet blandit 
+et feugiat dui. In consequat dui ut sapien molestie, sed venenatis libero 
+rutrum. Sed venenatis vulputate felis, ac tempor nunc luctus a. Ut ut 
+ipsum congue, fermentum mi non, tristique justo. Quisque id pretium quam. 
+Fusce eget eleifend metus. Aenean eget purus porta, dignissim nunc et, 
+feugiat mauris. Aliquam eget quam et odio scelerisque finibus vestibulum 
+non ligula. Maecenas sit amet velit pellentesque, cursus dolor at, 
+vulputate tellus.
+"""
+
+# %% 
+#TODO: COMENTAR 05
+#TODO: Escribir la formula
+
+img_coll_year_monthly_anomaly_prop = (img_coll_year_monthly_pr_bands
+    .map(lambda img: (img
+                      .subtract(base_pr_monthly_accumulation)
+                      .divide(base_pr_monthly_accumulation)
+                      .copyProperties(img, img.propertyNames()))))
+
+# %% [markdown]
+"""
+# Guardar en tablas por años
 
 Nullam accumsan dolor a justo dapibus, sit amet interdum metus rhoncus. 
 Praesent ac libero hendrerit, dapibus metus ac, dignissim tellus. Nunc ut 
@@ -244,7 +345,97 @@ condimentum sed eget ligula. Maecenas imperdiet felis sit amet arcu
 viverra tristique. Maecenas suscipit mattis massa, ut malesuada erat 
 consequat tristique. Nulla tincidunt augue vel ante aliquam, in ultricies 
 purus laoreet.
+
+## Acumulación de lluvias
+
+Vivamus at vestibulum elit. Maecenas in dui at diam aliquet feugiat. In 
+justo nisi, cursus vitae augue a, faucibus consectetur felis. Duis nisi 
+lorem, scelerisque a libero et, posuere vulputate nibh. Nulla dictum enim 
+ac nisi congue egestas. Curabitur volutpat mi nec tristique mattis. Nulla 
+sed dictum ante. Nunc vitae erat neque. Morbi rhoncus ex ac tellus 
+maximus, nec cursus lorem semper. Donec porta congue placerat. Ut finibus 
+est tellus, ut elementum nisl dictum nec. Nulla facilisi. Etiam auctor 
+quam ac nunc condimentum mollis. Pellentesque libero mi, finibus sit amet 
+fermentum non, condimentum eu dolor. Nam hendrerit ullamcorper nunc, 
+tristique facilisis erat sagittis non. Pellentesque fermentum, magna vel 
+feugiat pellentesque, odio diam facilisis erat, et ultricies dui erat 
+at velit.
 """
 
 # %% 
-# Espacio
+#TODO: COMENTAR 06
+
+list_fc_to_save = list()
+
+for n_year_interes in range(1981, 2024):
+    img_year_month = (img_coll_year_monthly_pr_bands
+                    .filter(ee.Filter.eq("n_year", n_year_interes))
+                    .first())
+
+    fc_from_image = (img_year_month
+                    .reduceRegions(
+                        reducer = ee.Reducer.mean(),
+                        collection = fc,
+                        scale = scale_img_coll)
+                    .map(lambda feature: (ee.Feature(feature)
+                                        .set({'n_year': n_year_interes})
+                                        .setGeometry(None))))
+
+    fc_final = ee.FeatureCollection(fc_from_image.toList(3000).flatten())
+
+    list_fc_to_save.append(fc_final)
+
+#TODO: Falta crear codigo para guardar 
+
+
+
+# %% [markdown]
+"""
+## Anomalía de lluvias
+
+### Anomalía en milimetros
+
+Vivamus at vestibulum elit. Maecenas in dui at diam aliquet feugiat. In 
+justo nisi, cursus vitae augue a, faucibus consectetur felis. Duis nisi 
+lorem, scelerisque a libero et, posuere vulputate nibh. Nulla dictum enim 
+ac nisi congue egestas. Curabitur volutpat mi nec tristique mattis. Nulla 
+sed dictum ante. Nunc vitae erat neque. Morbi rhoncus ex ac tellus 
+maximus, nec cursus lorem semper. Donec porta congue placerat. Ut finibus 
+est tellus, ut elementum nisl dictum nec. Nulla facilisi. Etiam auctor 
+quam ac nunc condimentum mollis. Pellentesque libero mi, finibus sit amet 
+fermentum non, condimentum eu dolor. Nam hendrerit ullamcorper nunc, 
+tristique facilisis erat sagittis non. Pellentesque fermentum, magna vel 
+feugiat pellentesque, odio diam facilisis erat, et ultricies dui erat 
+at velit.
+"""
+
+# %% 
+#TODO: COMENTAR 07
+
+
+#TODO: Falta crear codigo para guardar  
+
+
+# %% [markdown]
+"""
+### Anomalía en porcentaje
+
+Vivamus at vestibulum elit. Maecenas in dui at diam aliquet feugiat. In 
+justo nisi, cursus vitae augue a, faucibus consectetur felis. Duis nisi 
+lorem, scelerisque a libero et, posuere vulputate nibh. Nulla dictum enim 
+ac nisi congue egestas. Curabitur volutpat mi nec tristique mattis. Nulla 
+sed dictum ante. Nunc vitae erat neque. Morbi rhoncus ex ac tellus 
+maximus, nec cursus lorem semper. Donec porta congue placerat. Ut finibus 
+est tellus, ut elementum nisl dictum nec. Nulla facilisi. Etiam auctor 
+quam ac nunc condimentum mollis. Pellentesque libero mi, finibus sit amet 
+fermentum non, condimentum eu dolor. Nam hendrerit ullamcorper nunc, 
+tristique facilisis erat sagittis non. Pellentesque fermentum, magna vel 
+feugiat pellentesque, odio diam facilisis erat, et ultricies dui erat 
+at velit.
+"""
+
+# %% 
+#TODO: COMENTAR 08
+
+
+#TODO: Falta crear codigo para guardar  
