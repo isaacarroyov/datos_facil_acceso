@@ -73,11 +73,10 @@ vemos"](https://github.com/nmasfocusdatos/desplazamiento-climatico).
 
 # %%
 import ee # <1>
-import geemap # <2>
 import time
 
 try:
-    ee.Initialize() # <3>
+    ee.Initialize() # <2>
     print("Se ha inicializado correctamente")
 except:
     print("Error en la inicialización")
@@ -85,8 +84,7 @@ except:
 # %% [markdown]
 """
 1. Importar API de (Google) Earth Engine
-2. Importar `geemap` para la creación de mapas interactivos tipo folium 
-3. Inicializar API
+2. Inicializar API
 """
 
 # %% [markdown]
@@ -114,7 +112,7 @@ redundancia) cambiarán dependiendo de los datos que se quieran. La
 
 # %% 
 date_year_interes = 2023 # <1>
-select_fc = "ent" # <2>
+select_fc = "mun" # <2>
 dict_fc = dict( # <3>
     ent = "projects/ee-unisaacarroyov/assets/GEOM-MX/MX_ENT_2022", # <3>
     mun = "projects/ee-unisaacarroyov/assets/GEOM-MX/MX_MUN_2022") # <3>
@@ -291,7 +289,7 @@ Para el caso del CHIRPS, es de 1981 hasta el 2010 (incluyendo a diciembre).
 
 Esta tarea se tiene que hacer con ayuda de dos funciones. La primera 
 etiquetará por año y mes la colección _base_. La segunda función tendrá 
-que reducir a 12 imagenes cada año del periodo.
+que reducir a 12 imagenes cada año de esa base.
 """
 
 # %% 
@@ -318,37 +316,54 @@ def func_reduce2yearmonths_base_period(n_year): # <2>
 # %% [markdown]
 """
 1. Función para etiquetar año y mes
-2. Función para crear una lista de listas de precipitaciones mensuales
-
+2. Función para crear una lista de listas de precipitaciones mensuales para 
+cada año del periodo base
 
 Con estas dos funciones se creará una colección de imagenes 
 de $\approx$ 360 imágenes
 """
 
 # %% 
-# TODO: Commentar y explicar
-base_period = (chirps
-  .filter(ee.Filter.calendarRange(start = year_base_inicio,
-                                  end = year_base_fin, field = "year")))
+base_period = (chirps # <1>
+  .filter(ee.Filter.calendarRange(start = year_base_inicio, # <1>
+                                  end = year_base_fin, field = "year"))) # <1>
 
-base_period_tagged = base_period.map(func_tag_year_month_base_period)
+base_period_tagged = base_period.map(func_tag_year_month_base_period) # <2>
 
-base_period_tagged_reduced_year_month = (ee.ImageCollection
-  .fromImages((ee.List
-               .sequence(year_base_inicio, year_base_fin)
-               .map(func_reduce2yearmonths_base_period)
-               .flatten())))
+base_period_tagged_reduced_year_month = (ee.ImageCollection.fromImages( # <3>
+    (ee.List # <4>
+    .sequence(year_base_inicio, year_base_fin) # <4>
+    .map(func_reduce2yearmonths_base_period) # <5>
+    .flatten()))) # <6>
 
-base_pr_monthly_accumulation = (ee.ImageCollection
-  .fromImages(list_months.map(lambda n_month: (
-                                    base_period_tagged_reduced_year_month
-                                    .filter(ee.Filter.eq("n_month", n_month))
-                                    .mean()
-                                    .set({"n_month": n_month}))))
-  .toBands()
-  .rename([f"0{i}" if i < 10 else str(i) for i in range(1,13)]))
+base_pr_monthly_accumulation = (ee.ImageCollection.fromImages( # <7>
+    list_months.map(lambda n_month: ( # <8>
+                      base_period_tagged_reduced_year_month # <9>
+                      .filter(ee.Filter.eq("n_month", n_month)) # <9>
+                      .mean() # <10>
+                      .set({"n_month": n_month})))) # <11>
+  .toBands() # <12>
+  .rename([f"0{i}" if i < 10 else str(i) for i in range(1,13)])) # <13>
 # %% [markdown]
 """
+1. Limitar la colección los años del periodo de referencia
+2. Etiquetar el año y mes al que pertenece cada imagen
+3. Crear una `ee.ImageCollection` a partir de una lista
+4. La es una secuencia de números que representan los años del periodo base
+5. A cada elemento (número) se le aplica una función. Esta función regresa 
+una lista de 12 imágenes por año, es decir, el resultado es una lista de 
+30 elementos, donde cada elemento es una lista de 12 imágenes.
+6. Se cambia la lista de sublistas a una lista, es decir, se _desempacan_ 
+los elementos de las sublistas.
+7. A partir de una lista se crea una colección
+8. Esta lista es de 12 elementos, la lista del promedio historico de 
+precipitación por cada mes del periodo base.
+9. Se filtra por el mes indicado
+10. Obtener la media de los 30 años
+11. Marcar como propiedad el año del mes
+12. De una coleccción de 12 imágenes, se crea una imagen de 12 bandas
+13. Renombramiento de las bandas (número del mes) 
+
 ## Anomalía en milimetros 
 
 Es la diferencia en milimetros, de la precipitación de un determinado 
@@ -359,9 +374,9 @@ $$\text{anom}_{\text{mm}} = \overline{x}_{i} - \mu_{\text{normal}}$$
 """
 
 # %% 
-img_monthly_anomaly_mm = (img_monthly_pr
+img_monthly_anomaly_mm = ee.Image((img_monthly_pr
   .subtract(base_pr_monthly_accumulation) # <1>
-  .copyProperties(img_monthly_pr, img_monthly_pr.propertyNames())) # <2>
+  .copyProperties(img_monthly_pr, img_monthly_pr.propertyNames()))) # <2>
 
 # %% [markdown]
 """
@@ -379,10 +394,10 @@ $$\text{anom}_{\text{\%}} = \frac{\overline{x}_{i} - \mu_{\text{normal}}}{\mu_{\
 """
 
 # %% 
-img_monthly_anomaly_prop = (img_monthly_pr
+img_monthly_anomaly_prop = ee.Image((img_monthly_pr
   .subtract(base_pr_monthly_accumulation) # <1>
   .divide(base_pr_monthly_accumulation) # <2>
-  .copyProperties(img_monthly_pr, img_monthly_pr.propertyNames())) # <3>
+  .copyProperties(img_monthly_pr, img_monthly_pr.propertyNames()))) # <3>
 
 # %% [markdown]
 """
@@ -390,33 +405,102 @@ img_monthly_anomaly_prop = (img_monthly_pr
 2. Dividir entre el promedio histórico
 3. Copiar todas las propiedades en la nueva imagen
 
-# Función final
+# De raster a CSV
 
-Nullam accumsan dolor a justo dapibus, sit amet interdum metus rhoncus. 
-Praesent ac libero hendrerit, dapibus metus ac, dignissim tellus. Nunc ut 
-enim ut ligula posuere eleifend. Vestibulum ac lorem in massa lacinia 
-condimentum sed eget ligula. Maecenas imperdiet felis sit amet arcu 
-viverra tristique. Maecenas suscipit mattis massa, ut malesuada erat 
-consequat tristique. Nulla tincidunt augue vel ante aliquam, in ultricies 
-purus laoreet.
+## Información de `ee.Image` a `ee.FeatureCollection`
+
+> Este apartado se hará la demostración con **`img_monthly_pr`** pero 
+puede ser aplicado a cualquiera de las imágenes que se crearon
+
+Para poder exportar la información como una tabla de CSV, primero se tiene 
+que almacenar o reducir la información a las geometrias de las regiones 
+del país (sean entidades, municipios o cualquier otro tipo de división).
 """
 
-# %% 
-# TODO: ACOMODAR A IMAGENES
+# %%
+img2fc_monthly_pr = (img_monthly_pr
+  .reduceRegions( # <1>
+      collection = fc, # <2>
+      reducer = ee.Reducer.mean(), # <3>
+      scale = 5566) # <4>
+  .map(lambda feature: (ee.Feature(feature) # <5>
+                        .set({'n_year': date_year_interes}) # <5>
+                        .setGeometry(None)))) # <5>
+
+fc_monthly_pr = ee.FeatureCollection( # <6>
+  (img2fc_monthly_pr
+   .toList(3000) # <7>
+   .flatten())) # <8>
+
 # %% [markdown]
 """
-# Guardar información por años
-
-Vivamus at vestibulum elit. Maecenas in dui at diam aliquet feugiat. In 
-justo nisi, cursus vitae augue a, faucibus consectetur felis. Duis nisi 
-lorem, scelerisque a libero et, posuere vulputate nibh. Nulla dictum enim 
-ac nisi congue egestas. Curabitur volutpat mi nec tristique mattis. Nulla 
-sed dictum ante. Nunc vitae erat neque. Morbi rhoncus ex ac tellus 
-maximus, nec cursus lorem semper. Donec porta congue placerat. Ut finibus 
-est tellus, ut elementum nisl dictum nec. Nulla facilisi. Etiam auctor 
-quam ac nunc condimentum mollis. Pellentesque libero mi, finibus sit amet 
-fermentum non, condimentum eu dolor. Nam hendrerit ullamcorper nunc, 
-tristique facilisis erat sagittis non. Pellentesque fermentum, magna vel 
-feugiat pellentesque, odio diam facilisis erat, et ultricies dui erat 
-at velit.
+1. Se crea una `ee.FeatureCollection` a partir de la información de la 
+imagen de 12 bandas
+2. La información que se extraerá vendrá de las geometrías de México 
+(sean entidades, municipios o cualquier otro tipo de división de interés)
+3. Se extraerá el promedio de la región
+4. La escala a la que se hará la reducción, debe ser la misma a la que 
+se encuentra la imagen. Esta puede encontrarse en la página de información 
+de la imagen o colección
+5. Cuando se crea la nueva `ee.FeatureCollection`, se itera por cada 
+`ee.Feature` para poder asignar la propiedad (columna) del año de la 
+información. Las 12 bandas se transforman en tambien en columnas, 
+entonces se tiene la información mensual. Finalmente se elimina la 
+geometría asignada porque de esta manera la exporación es más fácil y 
+no demora mucho.
+6. Se crea una `ee.FeatureCollection` a partir de una lista de _features_
+6. Transformar la `ee.Feature` a una lista de máximo 3000 elementos
+7. Se eliminan sublistas (de existir).
 """
+
+# %% [markdown]
+"""
+## Exportar `ee.FeatureCollection` a CSV
+
+
+Dentro del editor de código de Earth Engine existe la función para exportar 
+una tabla, pero para el caso de la API de Python se usa la librería de 
+**`geemap`** a través de la función **`ee_export_vector_to_drive`**.
+"""
+
+# %%
+from geemap import ee_export_vector_to_drive
+
+description_task = f"{select_fc}_monthly_pr_{date_year_interes}"
+
+ee_export_vector_to_drive(
+  collection= fc_monthly_pr,
+  description= description_task,
+  fileFormat= "CSV",
+  folder= "pruebas_ee")
+
+# %% [markdown]
+"""
+# Función final
+
+## Creación
+
+Tras explicar cada aspecto del procesamiento y extracción de los datos 
+se concluye el documento con la función para pasar los datos raster de 
+CHIRPS a un archivo CSV.
+
+La función toma como argumentos:
+
+1. El año de interés
+2. La métrica de interes: 
+  * Precipitación $\rightarrow$ `pr`
+  * Anomalía de precipitación en mm $\rightarrow$ `anomaly_pr_mm`
+  * Anomalía de precipitación en porcentaje $\rightarrow$ `anomaly_pr_prop`
+3. Tipo de `ee.FeatureCollection`:
+  * Entidades $\rightarrow$ `ent`
+  * Municipios $\rightarrow$ `mun`
+  * Cuencas Hidrológicas $\rightarrow$ `ch`
+"""
+
+# %%
+# TODO: Terminar funcion
+def extract_from_chirps(
+        year = 2024,
+        metrica_interes = "pr",
+        tipo_fc = 'ent'):
+    return None
