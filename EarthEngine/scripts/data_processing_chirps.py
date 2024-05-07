@@ -370,7 +370,6 @@ purus laoreet.
 """
 
 # %% 
-#TODO: COMENTAR 06
 def func_create_list_of_fc(imgcoll, featurecoll, scale_img_coll = 5566):
     list_fc = list()
     
@@ -440,7 +439,6 @@ at velit.
 """
 
 # %% 
-#TODO: COMENTAR 07
 list_fc_pr = func_create_list_of_fc(
     imgcoll= img_coll_year_monthly_pr_bands,
     featurecoll= fc)
@@ -483,8 +481,6 @@ at velit.
 """
 
 # %% 
-#TODO: COMENTAR 07
-
 list_fc_anomaly_pr_mm = func_create_list_of_fc(
     imgcoll= img_coll_year_monthly_anomaly_mm,
     featurecoll= fc)
@@ -508,8 +504,6 @@ at velit.
 """
 
 # %% 
-#TODO: COMENTAR 08
-
 list_fc_anomaly_pr_prop = func_create_list_of_fc(
     imgcoll= img_coll_year_monthly_anomaly_prop,
     featurecoll= fc)
@@ -531,137 +525,3 @@ save_all_years_fc(
 )
 ```
 """
-
-# %% [markdown]
-"""
-# Caso específico: 2024
-
-Nullam accumsan dolor a justo dapibus, sit amet interdum metus rhoncus. 
-Praesent ac libero hendrerit, dapibus metus ac, dignissim tellus. Nunc ut 
-enim ut ligula posuere eleifend. Vestibulum ac lorem in massa lacinia 
-condimentum sed eget ligula. Maecenas imperdiet felis sit amet arcu 
-viverra tristique. Maecenas suscipit mattis massa, ut malesuada erat 
-consequat tristique. Nulla tincidunt augue vel ante aliquam, in ultricies 
-purus laoreet.
-"""
-
-# %%
-#TODO: explicar por qué es el caso especifo
-#TODO: Traducir JavaScript a Python
-
-# %% [markdown]
-"""
-```JavaScript
-/* *  Crear ee.Image de 12 bandas cada una * */
-/*
-list_year_month = list_months
-                .map(function(number){
-                return chirps_tagged
-                        .filter(ee.Filter.eq("n_year", n_year_interes))
-                        .filter(ee.Filter.eq("n_month", number))
-                        .sum()
-                        .set({"n_month": number});
-                });
-img_year_month = ee.ImageCollection
-                .fromImages(list_year_month)
-                .toBands()
-                //.rename(["01","02","03"])
-                ;
-*/
-
-/* * Crear ee.FeatureCollection de 12 columnas y n_estados/municipios * */
-
-// Limitar a un anño en especifico 
-n_year_interes = 2020;
-img_year_month = img_coll_year_monthly_pr_bands
-                .filter(ee.Filter.eq("n_year", n_year_interes))
-                .first();
-
-fc_from_image = img_year_month
-                .reduceRegions({
-                    'reducer': ee.Reducer.mean(),
-                    'collection': fc,
-                    'scale': scale_img_coll})
-                .map(function(feature){
-                    return ee.Feature(feature)
-                            .set({'n_year': n_year_interes})
-                            .setGeometry(null)});
-
-fc_final = ee.FeatureCollection(fc_from_image.toList(3000).flatten());
-```
-"""
-# %%
-#TODO: explicar por qué es el caso especifo
-#TODO: Traducir JavaScript a Python
-
-# %% [markdown]
-"""
-## Acumulación de la precipitación
-
-Nullam accumsan dolor a justo dapibus, sit amet interdum metus rhoncus. 
-Praesent ac libero hendrerit, dapibus metus ac, dignissim tellus. Nunc ut 
-enim ut ligula posuere eleifend. Vestibulum ac lorem in massa lacinia 
-condimentum sed eget ligula. Maecenas imperdiet felis sit amet arcu 
-viverra tristique. Maecenas suscipit mattis massa, ut malesuada erat 
-consequat tristique. Nulla tincidunt augue vel ante aliquam, in ultricies 
-purus laoreet.
-"""
-
-# %%
-#TODO: explicar por qué es el caso especifo
-#TODO: Traducir JavaScript a Python
-
-
-# %% [markdown]
-"""
-## Anomalía de la precipitación
-
-### Anomalía en milimetros
-
-Nullam accumsan dolor a justo dapibus, sit amet interdum metus rhoncus. 
-Praesent ac libero hendrerit, dapibus metus ac, dignissim tellus. Nunc ut 
-enim ut ligula posuere eleifend. Vestibulum ac lorem in massa lacinia 
-condimentum sed eget ligula. Maecenas imperdiet felis sit amet arcu 
-viverra tristique. Maecenas suscipit mattis massa, ut malesuada erat 
-consequat tristique. Nulla tincidunt augue vel ante aliquam, in ultricies 
-purus laoreet.
-"""
-
-# %%
-#TODO: explicar por qué es el caso especifo
-#TODO: Traducir JavaScript a Python
-
-# %% [markdown]
-"""
-### Anomalía en porcentaje
-
-Nullam accumsan dolor a justo dapibus, sit amet interdum metus rhoncus. 
-Praesent ac libero hendrerit, dapibus metus ac, dignissim tellus. Nunc ut 
-enim ut ligula posuere eleifend. Vestibulum ac lorem in massa lacinia 
-condimentum sed eget ligula. Maecenas imperdiet felis sit amet arcu 
-viverra tristique. Maecenas suscipit mattis massa, ut malesuada erat 
-consequat tristique. Nulla tincidunt augue vel ante aliquam, in ultricies 
-purus laoreet.
-"""
-
-# %%
-#TODO: explicar por qué es el caso especifo
-#TODO: Traducir JavaScript a Python
-
-
-# %% [markdown]
-"""
-## Guardar información actualizada
-
-Nullam accumsan dolor a justo dapibus, sit amet interdum metus rhoncus. 
-Praesent ac libero hendrerit, dapibus metus ac, dignissim tellus. Nunc ut 
-enim ut ligula posuere eleifend. Vestibulum ac lorem in massa lacinia 
-condimentum sed eget ligula. Maecenas imperdiet felis sit amet arcu 
-viverra tristique. Maecenas suscipit mattis massa, ut malesuada erat 
-consequat tristique. Nulla tincidunt augue vel ante aliquam, in ultricies 
-purus laoreet.
-"""
-
-# %%
-#TODO: explicar por qué es el caso especifo
-#TODO: Traducir JavaScript a Python
