@@ -11,7 +11,7 @@
 #   pdf:
 #     toc: true
 #     fontsize: 12pt
-#     mainfont: Charter
+#     mainfont: Georgia
 #     geometry:
 #       - top=1in
 #       - bottom=1in
@@ -34,6 +34,18 @@
 
 # %% [markdown]
 """
+# Introducción
+
+En este documento se encuentran documentados los pasos y el código para la 
+extracción mensual^[Con posibilidad de que adaptar el código para que el 
+periodo sea semanal] de variables derivadas de la precipitación, tales 
+como: precipitación mensual promedio, anomalía de la precipitación en 
+porcentaje con respecto de la normal y anomalía de la precipitación en 
+milímetros con respecto de la normal.
+
+
+Cada aspecto del código se documenta en diferentes capítulos.
+
 # Sobre los datos
 
 Los fuente de los datos se llama **CHIRPS (Climate Hazards Group InfraRed 
@@ -50,8 +62,8 @@ rainfall time series for trend analysis and seasonal drought monitoring._
 
 Estos datos cuentan con la **precipitación diaria** medida en milímetros 
 (mm) desde Enero 01, de 1981 hasta el mes inmediato anterior a la 
-fecha actual^[Esto quiere decir, que si la fecha _actual_ es Marzo 2024, 
-entonces los datos cubren hasta Abril 2024]
+fecha actual^[Esto quiere decir, que si la fecha _actual_ es Abril 2024, 
+entonces los datos cubren hasta Marzo 2024]
 
 El procesamiento de texto es similar al realizado en el proyecto 
 ["Desplazamiento climático: La migración que no 
@@ -190,29 +202,53 @@ llamadas a su respectivo `map`.
 """
 
 # %%
-# TODO: COMENTAR 01
-def func_iter_years(n_year):
+def func_iter_years(n_year): # <1>
     img_coll_year_interes = (chirps_tagged
-                             .filter(ee.Filter.eq("n_year", n_year)))
-    def func_iter_years_iter_months(n_month):
-        return (img_coll_year_interes
-                .filter(ee.Filter.eq("n_month", n_month))
-                .sum()
-                .set({"n_year": n_year, "n_month": n_month}))
+                             .filter(ee.Filter.eq("n_year", n_year))) # <2>
+    def func_iter_years_iter_months(n_month): # <3>
+        return (img_coll_year_interes # <4>
+                .filter(ee.Filter.eq("n_month", n_month)) # <4>
+                .sum() # <4>
+                .set({"n_year": n_year, "n_month": n_month})) # <5>
     
-    list_monthly_pr_per_year = list_months.map(func_iter_years_iter_months)
+    list_monthly_pr_per_year = (list_months # <6>
+                                .map(func_iter_years_iter_months)) # <6>
 
-    return list_monthly_pr_per_year
-
-list_year_monthly_pr = (list_years
-                        .map(func_iter_years)
-                        .flatten())
-
-img_coll_year_monthly_pr = (ee.ImageCollection
-                            .fromImages(list_year_monthly_pr))
+    return list_monthly_pr_per_year # <7>
 
 # %% [markdown]
 """
+1. Función que itera sobre elementos de una `ee.List`, estos elementos 
+son los los años que ocupa la `ee.ImageCollection`
+2. Se filtra el año de interes 
+3. Función para iterar sobre elementos de una `ee.List`, estos elementos 
+son los los meses que ocupa la `ee.ImageCollection`
+4. Por cada año y cada mes (de ese año), se va a retornar (de función 
+anidada) se va a regresar una `ee.Image`, que es resultado de reducir 
+la `ee.ImageCollection` que cumple con las condiciones del año-mes. El 
+reductor principal es la suma.
+5. La nueva imagen tiene como propiedades el año y el mes que representa.
+6. Se aplica la función que itera sobre meses, a la lista de meses del año.
+7. El resultado final de la función _general_, es que por cada elemento 
+(año) hay una lista de 12 imagenes, que representan 
+la precipitación mensual de ese elemento.
+"""
+
+# %%
+list_year_monthly_pr = (list_years # <1>
+                        .map(func_iter_years) # <1>
+                        .flatten()) # <2>
+
+img_coll_year_monthly_pr = (ee.ImageCollection # <3>
+                            .fromImages(list_year_monthly_pr)) # <3>
+
+# %% [markdown]
+"""
+1. Se aplica la función para reducir el número de imagenes en la colección
+2. Como el resultado es una lista de (poco más de 40) listas 
+(de 12 imágenes), entonces se tiene que _aplanar_ es decir, sacar los 
+elementos de cada sublista y que sean parte de la lista completa/general
+3. Se crea una colección de imágenes a partir de una lista de imágenes
 
 ## Meses como bandas de imágenes
 
@@ -221,54 +257,63 @@ tiempo de reducir a $\approx$ 40 imágenes de a 12 bandas cada una.
 """
 
 # %%
-# TODO: COMENTAR 02
-def imgcoll2bands(n_year):
-    img_12bands = (img_coll_year_monthly_pr
-        .filter(ee.Filter.eq("n_year", n_year))
-        .toBands()
-        .rename([f"0{i}" if i < 10 else str(i) for i in range(1,13)])
-        .set({"n_year": n_year}))
-    return img_12bands
+def imgcoll2bands(n_year): # <1>
+    img_12bands = (img_coll_year_monthly_pr # <2>
+        .filter(ee.Filter.eq("n_year", n_year)) # <2>
+        .toBands() # <3>
+        .rename([f"0{i}" if i < 10 else str(i) for i in range(1,13)]) # <4>
+        .set({"n_year": n_year})) # <5>
+    return img_12bands # <6>
 
-img_coll_year_monthly_pr_bands = (ee.ImageCollection
+img_coll_year_monthly_pr_bands = (ee.ImageCollection # <7>
     .fromImages(list_years.map(imgcoll2bands)))
 
 # %% [markdown]
 """
+1. Función para transformar una `ee.ImageCollection` de _**n**_ imágenes 
+a una `ee.Image` de _**n**_ bandas
+2. Filtrar por año de interés
+3. Transformar a una imagen con el número de bandas igual al número de 
+imagenes que tenía la colección.
+5. Agregar a la imagen, la propiedad del año al que pertenece.
+6. Se regresa una imagen de 12 bandas (si es el año esta completo)
+7. Aplicar la función a una lista de años.
+
 # Cálculo de anomalías de precipitación
 
 ## Acumulación normal
 
-Vivamus at vestibulum elit. Maecenas in dui at diam aliquet feugiat. In 
-justo nisi, cursus vitae augue a, faucibus consectetur felis. Duis nisi 
-lorem, scelerisque a libero et, posuere vulputate nibh. Nulla dictum enim 
-ac nisi congue egestas. Curabitur volutpat mi nec tristique mattis. Nulla 
-sed dictum ante. Nunc vitae erat neque. Morbi rhoncus ex ac tellus 
-maximus, nec cursus lorem semper. Donec porta congue placerat. Ut finibus 
-est tellus, ut elementum nisl dictum nec. Nulla facilisi. Etiam auctor 
-quam ac nunc condimentum mollis. Pellentesque libero mi, finibus sit amet 
-fermentum non, condimentum eu dolor. Nam hendrerit ullamcorper nunc, 
-tristique facilisis erat sagittis non. Pellentesque fermentum, magna vel 
-feugiat pellentesque, odio diam facilisis erat, et ultricies dui erat 
-at velit.
+De acuerdo a con el [glosario de la NOAA](https://forecast.weather.gov/glossary.php?word=ANOMALY#:~:text=NOAA's%20National%20Weather%20Service%20%2D%20Glossary,water%20level%20minus%20the%20prediction.) 
+una anomalía es la desviación de una unidad dentro de un periodo en una 
+región en específico con respecto a su promedio histórico o normal. Este 
+promedio es usualmente de 30 años.
 
+Para el caso del CHIRPS, es de 1981 hasta el 2010 (incluyendo a diciembre)
 """
 
 # %% 
-#TODO: COMENTAR 03
 base_period = (img_coll_year_monthly_pr
-               .filter(ee.Filter.lte("n_year", 2010)))
+               .filter(ee.Filter.lte("n_year", 2010))) # <1>
 base_pr_monthly_accumulation = (ee.ImageCollection
     .fromImages(
-        (list_months
-         .map(lambda n_month: (base_period
-                               .filter(ee.Filter.eq("n_month", n_month))
-                               .mean()
-                               .set("n_month", n_month)))))
-    .toBands()
-    .rename([f"0{i}" if i < 10 else str(i) for i in range(1,13)]))
+        (list_months # <2>
+         .map(lambda n_month: (base_period # <3>
+                               .filter(ee.Filter.eq("n_month", n_month)) # <3>
+                               .mean() # <4>
+                               .set("n_month", n_month))))) # <5>
+    .toBands() # <6>
+    .rename([f"0{i}" if i < 10 else str(i) for i in range(1,13)])) # <7>
 # %% [markdown]
 """
+1. De la colección cuyas imagenes son de 12 bandas, se filtran aquellas 
+que sean del 2010 _para abajo_
+2. Ir por meses 
+3. Filtrar al mes del interes
+4. Calcular el promedio de la precipitación de esos 30 años
+5. A esa imagen darle la propiedad del valor del mes
+6. Como el resultado es una colección de 12 imágenes, se cambia a una 
+imagen de 12 bandas
+7. Renombrar las bandas (meses) con el número del mes del año
 
 ## Anomalía en milimetros 
 
@@ -280,19 +325,11 @@ Nullam tincidunt iaculis varius. Donec tristique leo non sapien sagittis,
 in tincidunt lorem bibendum. Integer commodo sem vel risus hendrerit 
 efficitur. Pellentesque ut tincidunt ante, finibus sodales tellus.
 
-Aliquam ornare felis elit, ut euismod erat eleifend ac. Donec eget nisl 
-ligula. Vestibulum sit amet ultricies augue. Vivamus ac sem vitae libero 
-porttitor semper et quis lacus. Aenean ut arcu ipsum. Suspendisse 
-facilisis nisl ac sodales semper. Aliquam interdum convallis accumsan. 
-Vestibulum consequat tortor eget dapibus feugiat. Duis vitae mi est. Sed 
-laoreet eleifend sem. Integer dignissim, purus nec condimentum pharetra, 
-sapien nunc rhoncus nulla, eu porttitor lorem ipsum a massa. Etiam dapibus 
-sodales erat eu viverra.
+$$\text{anom}_{\text{mm}} = \overline{x}_{i} - \mu_{\text{normal}}$$
 """
 
 # %% 
 #TODO: COMENTAR 04
-#TODO: Escribir la formula
 img_coll_year_monthly_anomaly_mm = (img_coll_year_monthly_pr_bands
     .map(lambda img: (img
                       .subtract(base_pr_monthly_accumulation)
@@ -309,24 +346,12 @@ quam feugiat, fermentum leo. Nullam consequat turpis non eros fermentum
 suscipit. Suspendisse sed dui nec tellus vulputate volutpat at nec tortor. 
 Etiam tempus ut sapien non condimentum.
 
-Curabitur lacus dui, vehicula ut ex non, suscipit rutrum purus. Sed 
-dignissim mattis tortor, eget euismod risus egestas id. Nam vel orci a 
-nisl tincidunt commodo. Maecenas sagittis nibh et purus tincidunt 
-faucibus. In eu sagittis nisl. Duis nec feugiat dui, sit amet hendrerit 
-urna. Etiam in varius lorem. Etiam eu mauris non nunc imperdiet blandit 
-et feugiat dui. In consequat dui ut sapien molestie, sed venenatis libero 
-rutrum. Sed venenatis vulputate felis, ac tempor nunc luctus a. Ut ut 
-ipsum congue, fermentum mi non, tristique justo. Quisque id pretium quam. 
-Fusce eget eleifend metus. Aenean eget purus porta, dignissim nunc et, 
-feugiat mauris. Aliquam eget quam et odio scelerisque finibus vestibulum 
-non ligula. Maecenas sit amet velit pellentesque, cursus dolor at, 
-vulputate tellus.
+$$\text{anom}_{\text{\%}} = \frac{\overline{x}_{i} - \mu_{\text{normal}}}{\mu_{\text{normal}}}$$
+
 """
 
 # %% 
 #TODO: COMENTAR 05
-#TODO: Escribir la formula
-
 img_coll_year_monthly_anomaly_prop = (img_coll_year_monthly_pr_bands
     .map(lambda img: (img
                       .subtract(base_pr_monthly_accumulation)
