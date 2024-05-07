@@ -317,49 +317,47 @@ imagen de 12 bandas
 
 ## Anomalía en milimetros 
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc dictum 
-turpis ullamcorper pharetra pretium. Vivamus eu pellentesque nibh. Mauris 
-ac massa faucibus, condimentum eros at, vehicula justo. Cras ultrices 
-gravida risus, quis tempor tortor hendrerit quis. Aliquam erat volutpat. 
-Nullam tincidunt iaculis varius. Donec tristique leo non sapien sagittis, 
-in tincidunt lorem bibendum. Integer commodo sem vel risus hendrerit 
-efficitur. Pellentesque ut tincidunt ante, finibus sodales tellus.
+Es la diferencia en milimetros, de la precipitación de un determinado 
+mes $\left( \overline{x}_{i} \right)$ y el promedio histórico o la normal 
+$\left( \mu_{\text{normal}} \right)$ de ese mes
 
 $$\text{anom}_{\text{mm}} = \overline{x}_{i} - \mu_{\text{normal}}$$
 """
 
 # %% 
-#TODO: COMENTAR 04
 img_coll_year_monthly_anomaly_mm = (img_coll_year_monthly_pr_bands
     .map(lambda img: (img
-                      .subtract(base_pr_monthly_accumulation)
-                      .copyProperties(img, img.propertyNames()))))
+                      .subtract(base_pr_monthly_accumulation) # <1>
+                      .copyProperties(img, img.propertyNames())))) # <2>
 
 # %% [markdown]
 """
+1. Restar el promedio histórico
+2. Copiar todas las propiedades en la nueva imagen
+
 ## Anomalía en porcentaje
 
-Mauris porta lorem nisi, et mollis ligula eleifend sed. Donec tristique 
-sed orci quis cursus. Pellentesque vulputate vel turpis eget maximus. 
-Cras et rutrum neque, et accumsan felis. Nam vel leo scelerisque, pharetra 
-quam feugiat, fermentum leo. Nullam consequat turpis non eros fermentum 
-suscipit. Suspendisse sed dui nec tellus vulputate volutpat at nec tortor. 
-Etiam tempus ut sapien non condimentum.
+Es el resultado de dividir la diferencia de la precipitación de un 
+determinado mes $\left( \overline{x}_{i} \right)$ y el promedio 
+histórico o la normal $\left( \mu_{\text{normal}} \right)$ entre la normal 
+de ese mismo mes.
 
 $$\text{anom}_{\text{\%}} = \frac{\overline{x}_{i} - \mu_{\text{normal}}}{\mu_{\text{normal}}}$$
-
 """
 
 # %% 
-#TODO: COMENTAR 05
 img_coll_year_monthly_anomaly_prop = (img_coll_year_monthly_pr_bands
     .map(lambda img: (img
-                      .subtract(base_pr_monthly_accumulation)
-                      .divide(base_pr_monthly_accumulation)
-                      .copyProperties(img, img.propertyNames()))))
+                      .subtract(base_pr_monthly_accumulation) # <1>
+                      .divide(base_pr_monthly_accumulation) # <2>
+                      .copyProperties(img, img.propertyNames())))) # <3>
 
 # %% [markdown]
 """
+1. Restar el promedio histórico
+2. Dividir entre el promedio histórico
+3. Copiar todas las propiedades en la nueva imagen
+
 # Guardar en tablas por años
 
 Nullam accumsan dolor a justo dapibus, sit amet interdum metus rhoncus. 
