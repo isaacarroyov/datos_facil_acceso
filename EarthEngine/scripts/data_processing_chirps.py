@@ -496,30 +496,30 @@ La función toma como argumentos:
 """
 
 # %%
-# TODO: comentar codigo final
-import ee
-import time
-from geemap import ee_export_vector_to_drive
+import ee # <1>
+from geemap import ee_export_vector_to_drive # <1>
 
 try:
-    ee.Initialize()
+    ee.Initialize() # <2>
     print("Se ha inicializado correctamente")
 except:
     print("Error en la inicialización")
 
-
 # %% [markdown]
 """
-## Funciones
+1. Cargar librerías y funciones necesarias
+2. Inicializar sesion de Earth Engine
+
+## Funciones escenciales
 """
 
 # %%
-def func_tag_month(img):
+def func_tag_month(img): # <1>
     full_date = ee.Date(ee.Number(img.get("system:time_start")))
     n_month = ee.Number(full_date.get("month"))
     return img.set({"n_month": n_month})
 
-def func_tag_year_month_hist_pr(img): # <1>
+def func_tag_year_month_hist_pr(img): # <2>
     full_date = ee.Date(ee.Number(img.get("system:time_start"))) 
     n_year = ee.Number(full_date.get("year")) 
     n_month = ee.Number(full_date.get("month")) 
@@ -527,35 +527,37 @@ def func_tag_year_month_hist_pr(img): # <1>
 
 # %% [markdown]
 """
+1. Función para _taggear_ únicamente el mes
+2. Función para _taggear_ año y mes. Usada únicamente para la 
+`ee.ImageCollection` que cubre la normal de 30 años (1981-2010)
+
 ## Función de extracción, procesamiento y exportación de datos
 """
 # %%
-def extract_from_chirps_daily(
+def extract_from_chirps_daily( # <1>
         year = 2024,
         metrica_interes = "pr",
         tipo_fc = 'ent'):
     
-    # ~ Carga de datos ~ #
-    dict_fc = dict(
+    dict_fc = dict( # <2>
         ent = "projects/ee-unisaacarroyov/assets/GEOM-MX/MX_ENT_2022",
         mun = "projects/ee-unisaacarroyov/assets/GEOM-MX/MX_MUN_2022")
     fc = ee.FeatureCollection(dict_fc[tipo_fc])
 
-    geom_mex = (ee.FeatureCollection("USDOS/LSIB/2017")
+    geom_mex = (ee.FeatureCollection("USDOS/LSIB/2017") # <2>
                 .filter(ee.Filter.eq("COUNTRY_NA", "Mexico")) 
                 .first()
                 .geometry())
 
-    chirps = (ee.ImageCollection('UCSB-CHG/CHIRPS/DAILY')
+    chirps = (ee.ImageCollection('UCSB-CHG/CHIRPS/DAILY') # <3>
               .select("precipitation")
               .filter(ee.Filter.bounds(geom_mex)))
 
-    chirps_year = (chirps.filter(
-        ee.Filter.calendarRange(start = year, field = "year")))
+    chirps_year = (chirps.filter( # 4>
+        ee.Filter.calendarRange(start = year, field = "year"))) # <4>
 
-    chirps_year_tagged = chirps_year.map(func_tag_month)
+    chirps_year_tagged = chirps_year.map(func_tag_month) # <5>
 
-    # ~ Procesamiento ~ #
     list_months = ee.List.sequence(1, 12)
 
     def func_reduce2months(n_month): 
@@ -564,18 +566,18 @@ def extract_from_chirps_daily(
                 .sum()
                 .set({"n_month": n_month}))
 
-    list_month_pr = (list_months.map(func_reduce2months))
+    list_month_pr = (list_months.map(func_reduce2months)) # <6>
 
-    imgcoll_month_pr = ee.ImageCollection.fromImages(list_month_pr)
+    imgcoll_month_pr = ee.ImageCollection.fromImages(list_month_pr) # <6>
 
-    if year > 2023:
-        img_bands = ["01", "02", "03"]
-    else:
-        img_bands = [f"0{i}" if i < 10 else str(i) for i in range(1,13)]
+    if year > 2023: # <7>
+        img_bands = ["01", "02", "03"] # <7>
+    else: # <7>
+        img_bands = [f"0{i}" if i < 10 else str(i) for i in range(1,13)] # <7>
     
-    img_month_pr = imgcoll_month_pr.toBands().rename(img_bands)
+    img_month_pr = imgcoll_month_pr.toBands().rename(img_bands) # <8>
     
-    if metrica_interes != "pr":
+    if metrica_interes != "pr": # <9>
         hist_pr = (chirps
             .filter(ee.Filter.calendarRange(1981, 2010, field = "year")))
         
@@ -607,21 +609,21 @@ def extract_from_chirps_daily(
             .toBands()
             .rename([f"0{i}" if i < 10 else str(i) for i in range(1,13)]))
         
-        if metrica_interes == "anomaly_pr_mm":
+        if metrica_interes == "anomaly_pr_mm": # <10>
             img_metrica_interes = ee.Image(
                 (img_month_pr
                 .subtract(img_hist_pr.select(img_bands))
                 .copyProperties(img_hist_pr, img_hist_pr.propertyNames())))
         else:
-            img_metrica_interes = ee.Image(
+            img_metrica_interes = ee.Image( # <11>
                 (img_month_pr
                 .subtract(img_hist_pr.select(img_bands))
                 .divide(img_hist_pr.select(img_bands))
                 .copyProperties(img_hist_pr, img_hist_pr.propertyNames())))
     else:
-        img_metrica_interes = img_month_pr
+        img_metrica_interes = img_month_pr # <12>
 
-    img2fc_metrica_interes = (img_metrica_interes
+    img2fc_metrica_interes = (img_metrica_interes # <13>
         .reduceRegions(collection = fc,
                        reducer = ee.Reducer.mean(),
                        scale = 5566)
@@ -629,14 +631,14 @@ def extract_from_chirps_daily(
                               .set({'n_year': year})
                               .setGeometry(None))))
 
-    fc_metrica_interes = ee.FeatureCollection(
+    fc_metrica_interes = ee.FeatureCollection( # <13>
         img2fc_metrica_interes.toList(3000).flatten())
     
     # Guardar este pedo
-    descr_task = f"chirps_daily_{metrica_interes}_{tipo_fc}_{year}"
-    folder_name = f"gee_chirps_daily_{metrica_interes}"
+    descr_task = f"chirps_daily_{metrica_interes}_{tipo_fc}_{year}" # <14>
+    folder_name = f"gee_chirps_daily_{metrica_interes}" # <14>
 
-    print(f"Se manda al servidor: '{descr_task}' a la carpeta {folder_name}")
+    print(f"Va al servidor: '{descr_task}' y se gurda en {folder_name}") # <15>
     ee_export_vector_to_drive(
         collection = fc_metrica_interes,
         description= descr_task,
@@ -646,6 +648,31 @@ def extract_from_chirps_daily(
 
 # %% [markdown]
 """
+1. La **precipitación** del **2024** en las **entidades** de México es lo 
+que por _default_ se extraerá
+2. Carga de geometrías y `ee.FeatureCollection`s
+3. Carga de CHIRPS Daily
+4. Selección del año del cual se obtendrán las metricas
+5. Etiquetado de los meses a la `ee.ImageCollection` de interés
+6. Reducción de una `ee.ImageCollection` de $\approx$ 365 imágenes a una de 
+(máximo) 12 imágenes.
+7. Si el año de interés es menor o igual que el 2023, entonces se tiene 
+información de todos los meses (12 bandas), de lo contrario son menos
+8. Renombramiento de las bandas a el número de los meses del año
+9. Si la métrica **no es la precipitación (`'pr'`)**, es decir es anomalía 
+de la precipitación en porcentaje (`'anomaly_pr_prop'`) o en milimetros 
+(`'anomaly_pr_mm`'), entonces se hace el cálculo del promedio histórico 
+de la precipitación de cada uno de los meses (`img_hist_pr`)
+10. Identificar si es anomalía de la precipitación en milimetros (`'anomaly_pr_mm`')
+11. Si no es `'anomaly_pr_mm`' entonces se hace la división del promedio 
+histórico para el cálculo de la anomalía de la precipitación en porcentaje 
+(`'anomaly_pr_prop'`)
+12. Si la métrica de interés **es la precipitación (`'pr'`)**, entonces no 
+se hace el cálculo del promedio histórico.
+13. Se crea `ee.FeatureCollection` de la `ee.Image`
+14. Se crean las variables para exportar los datos
+15. Se exportan los resultados
+
 ## Extracción
 
 Con el codigo creado en esta Sección lo único que queda por hacer es 
