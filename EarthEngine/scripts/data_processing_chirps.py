@@ -476,9 +476,7 @@ ee_export_vector_to_drive(
 
 # %% [markdown]
 """
-# Función final
-
-## Creación
+# Código final
 
 Tras explicar cada aspecto del procesamiento y extracción de los datos 
 se concluye el documento con la función para pasar los datos raster de 
@@ -498,9 +496,185 @@ La función toma como argumentos:
 """
 
 # %%
-# TODO: Terminar funcion
-def extract_from_chirps(
+# TODO: comentar codigo final
+import ee
+import time
+from geemap import ee_export_vector_to_drive
+
+try:
+    ee.Initialize()
+    print("Se ha inicializado correctamente")
+except:
+    print("Error en la inicialización")
+
+
+# %% [markdown]
+"""
+## Funciones
+"""
+
+# %%
+def func_tag_month(img):
+    full_date = ee.Date(ee.Number(img.get("system:time_start")))
+    n_month = ee.Number(full_date.get("month"))
+    return img.set({"n_month": n_month})
+
+def func_tag_year_month_hist_pr(img): # <1>
+    full_date = ee.Date(ee.Number(img.get("system:time_start"))) 
+    n_year = ee.Number(full_date.get("year")) 
+    n_month = ee.Number(full_date.get("month")) 
+    return img.set({"n_month": n_month, "n_year": n_year})
+
+# %% [markdown]
+"""
+## Función de extracción, procesamiento y exportación de datos
+"""
+# %%
+def extract_from_chirps_daily(
         year = 2024,
         metrica_interes = "pr",
         tipo_fc = 'ent'):
+    
+    # ~ Carga de datos ~ #
+    dict_fc = dict(
+        ent = "projects/ee-unisaacarroyov/assets/GEOM-MX/MX_ENT_2022",
+        mun = "projects/ee-unisaacarroyov/assets/GEOM-MX/MX_MUN_2022")
+    fc = ee.FeatureCollection(dict_fc[tipo_fc])
+
+    geom_mex = (ee.FeatureCollection("USDOS/LSIB/2017")
+                .filter(ee.Filter.eq("COUNTRY_NA", "Mexico")) 
+                .first()
+                .geometry())
+
+    chirps = (ee.ImageCollection('UCSB-CHG/CHIRPS/DAILY')
+              .select("precipitation")
+              .filter(ee.Filter.bounds(geom_mex)))
+
+    chirps_year = (chirps.filter(
+        ee.Filter.calendarRange(start = year, field = "year")))
+
+    chirps_year_tagged = chirps_year.map(func_tag_month)
+
+    # ~ Procesamiento ~ #
+    list_months = ee.List.sequence(1, 12)
+
+    def func_reduce2months(n_month): 
+        return (chirps_year_tagged
+                .filter(ee.Filter.eq("n_month", n_month))
+                .sum()
+                .set({"n_month": n_month}))
+
+    list_month_pr = (list_months.map(func_reduce2months))
+
+    imgcoll_month_pr = ee.ImageCollection.fromImages(list_month_pr)
+
+    if year > 2023:
+        img_bands = ["01", "02", "03"]
+    else:
+        img_bands = [f"0{i}" if i < 10 else str(i) for i in range(1,13)]
+    
+    img_month_pr = imgcoll_month_pr.toBands().rename(img_bands)
+    
+    if metrica_interes != "pr":
+        hist_pr = (chirps
+            .filter(ee.Filter.calendarRange(1981, 2010, field = "year")))
+        
+        hist_pr_tagged = hist_pr.map(func_tag_year_month_hist_pr)
+
+        def func_reduce2yearmonths_hist_pr(n_year): 
+            imgcoll_interes = (hist_pr_tagged
+                                .filter(ee.Filter.eq("n_year", n_year)))
+            def func_reduce2months_hist_pr(n_month): 
+                return (imgcoll_interes
+                        .filter(ee.Filter.eq("n_month", n_month))
+                        .sum()
+                        .set({"n_year": n_year, "n_month": n_month}))
+            list_month_pr_per_year = (list_months
+                                        .map(func_reduce2months_hist_pr))
+            return list_month_pr_per_year
+
+        hist_pr_tagged_reduced_year_month = (ee.ImageCollection
+            .fromImages((ee.List.sequence(1981, 2010)
+                         .map(func_reduce2yearmonths_hist_pr)
+                         .flatten())))
+
+        img_hist_pr = (ee.ImageCollection.fromImages(
+            list_months.map(lambda n_month: (
+                            hist_pr_tagged_reduced_year_month
+                            .filter(ee.Filter.eq("n_month", n_month))
+                            .mean()
+                            .set({"n_month": n_month}))))
+            .toBands()
+            .rename([f"0{i}" if i < 10 else str(i) for i in range(1,13)]))
+        
+        if metrica_interes == "anomaly_pr_mm":
+            img_metrica_interes = ee.Image(
+                (img_month_pr
+                .subtract(img_hist_pr.select(img_bands))
+                .copyProperties(img_hist_pr, img_hist_pr.propertyNames())))
+        else:
+            img_metrica_interes = ee.Image(
+                (img_month_pr
+                .subtract(img_hist_pr.select(img_bands))
+                .divide(img_hist_pr.select(img_bands))
+                .copyProperties(img_hist_pr, img_hist_pr.propertyNames())))
+    else:
+        img_metrica_interes = img_month_pr
+
+    img2fc_metrica_interes = (img_metrica_interes
+        .reduceRegions(collection = fc,
+                       reducer = ee.Reducer.mean(),
+                       scale = 5566)
+        .map(lambda feature: (ee.Feature(feature)
+                              .set({'n_year': year})
+                              .setGeometry(None))))
+
+    fc_metrica_interes = ee.FeatureCollection(
+        img2fc_metrica_interes.toList(3000).flatten())
+    
+    # Guardar este pedo
+    descr_task = f"chirps_daily_{metrica_interes}_{tipo_fc}_{year}"
+    folder_name = f"gee_chirps_daily_{metrica_interes}"
+
+    print(f"Se manda al servidor: '{descr_task}' a la carpeta {folder_name}")
+    ee_export_vector_to_drive(
+        collection = fc_metrica_interes,
+        description= descr_task,
+        fileFormat= "CSV",
+        folder= folder_name)
     return None
+
+# %% [markdown]
+"""
+## Extracción
+
+Con el codigo creado en esta Sección lo único que queda por hacer es 
+iterar o seleccionar el año, división política y tipo de métrica a extraer
+
+```Python
+
+for anio in range(1981, 2025): # <1>
+    extract_from_chirps_daily(year = anio, # <2>
+                              metrica_interes= "pr",
+                              tipo_fc= "ent")
+
+    extract_from_chirps_daily(year = anio, # <3>
+                              metrica_interes= "pr",
+                              tipo_fc= "mun")
+
+    extract_from_chirps_daily(year = anio, # <4>
+                              metrica_interes= "anomaly_pr_prop",
+                              tipo_fc= "ent")
+
+    extract_from_chirps_daily(year = anio, # <5>
+                              metrica_interes= "anomaly_pr_prop",
+                              tipo_fc= "mun")
+```
+1. Extraer información de todos los años disponibles 
+2. Precipitación en los estados de México
+3. Precipitación en los municipios de México
+4. Anomalía de precipitación en porcentaje con respecto a la normal en 
+los estados de México
+5. Anomalía de precipitación en porcentaje con respecto a la normal en 
+los municipios de México
+"""
