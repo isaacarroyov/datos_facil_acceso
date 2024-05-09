@@ -36,10 +36,10 @@ print("Earth Engine inicializado")
 print("Empieza a correr el código...")
 
 # = = = = Valores variables = = = = = = 
-banda_interes = "tmmx"
-type_of_geometry = "mun"
+banda_interes = "pr"
+type_of_geometry = "ent"
 type_reducer_time = "month"
-temp_zscore = True
+temp_zscore = False
 str_folder = "gee_terraclimate"
 
 if temp_zscore == False:
@@ -85,19 +85,27 @@ elif type_of_geometry == "nac":
     # Nación
     fc = ee.FeatureCollection("USDOS/LSIB/2017").filter(ee.Filter.eq("COUNTRY_NA","Mexico"))
 
+# TODO: mejorar
+if ((banda_interes == "tmmx" or banda_interes == "tmmn") and temp_zscore):
+    name_prop_metric = f"{banda_interes}_zscore"
+elif (banda_interes == "pr"):
+    name_prop_metric = "anomaly_pr_prop"
+else:
+    name_prop_metric = banda_interes
+
 # type_reducer_time
 dict_reducers = {
     "month": lambda number: final_data_img_coll
                             .filter(ee.Filter.eq("date_year", number))\
                             .first()\
                             .reduceRegions(reducer = ee.Reducer.mean(), collection = fc, scale = scale_img_coll)\
-                            .map(lambda feature: ee.Feature(feature).set("date_year", number).setGeometry(None)),
+                            .map(lambda feature: ee.Feature(feature).set({"date_year": number, "metric": name_prop_metric}).setGeometry(None)),
     "year": lambda number: final_data_img_coll
                            .filter(ee.Filter.eq("date_year", number))\
                            .first()\
                            .reduce(ee.Reducer.mean())\
                            .reduceRegions(reducer = ee.Reducer.mean(), collection = fc, scale = scale_img_coll)\
-                           .map(lambda feature: ee.Feature(feature).set("date_year", number).setGeometry(None))
+                           .map(lambda feature: ee.Feature(feature).set({"date_year": number, "metric": name_prop_metric}).setGeometry(None))
 }
 
 
