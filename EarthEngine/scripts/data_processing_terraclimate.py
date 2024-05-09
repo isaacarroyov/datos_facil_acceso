@@ -36,10 +36,10 @@ print("Earth Engine inicializado")
 print("Empieza a correr el código...")
 
 # = = = = Valores variables = = = = = = 
-banda_interes = "pdsi"
-type_of_geometry = "ent"
-type_reducer_time = "year"
-temp_zscore = False
+banda_interes = "tmmx"
+type_of_geometry = "mun"
+type_reducer_time = "month"
+temp_zscore = True
 str_folder = "gee_terraclimate"
 
 if temp_zscore == False:
