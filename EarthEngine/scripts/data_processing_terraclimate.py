@@ -1,7 +1,4 @@
 """
-
-TODO: Crear documentacion en GFM a partir de este script
-
 EDIT: Este código fue esta tomado del repositorio de N+ Focus 
       donde se deja en claro que el autor es un servidor.
 
@@ -19,6 +16,17 @@ Para mayor información de Google Earth Engine, visitar -> https://earthengine.g
 Para mayor información del conjunto de datos TerraClimate, visitar -> https://developers.google.com/earth-engine/datasets/catalog/IDAHO_EPSCOR_TERRACLIMATE 
 
 Autor: Miguel Isaac Arroyo Velázquez
+
+Lista de prioridades TODO:
+
+- Encontrar el valor del año más actualizado
+- Agregar los valores de temperaturas
+- Agregar los valores de lluvias
+- Crear anomalía por mm
+- Crear documentacion en GFM a partir de este script:
+  - En la documentacion realizar para un tipo de dato en específico (temperaturas)
+- Juntar todo en una función para simplemente iterar para actualizar
+
 """
 
 import ee
@@ -32,6 +40,16 @@ banda_interes = "pdsi"
 type_of_geometry = "ent"
 type_reducer_time = "year"
 temp_zscore = False
+str_folder = "gee_terraclimate"
+
+if temp_zscore == False:
+    str_var_interes = lambda banda: f"anomaly_{banda}_" if banda in ["pr","tmmx","tmmn"] else f"{banda}_"
+elif temp_zscore == True:
+    str_var_interes = lambda banda: f"zscore_{banda}_" if banda in ["tmmx","tmmn"] else f"eliminar-error_"
+
+str_description = "export_" + str_var_interes(banda_interes) + "mean_" + f"{type_of_geometry}_" + f"{type_reducer_time}_" + "terraclimate"
+str_fileNamePrefix = "ts_" + str_var_interes(banda_interes) + "mean_" + f"{type_of_geometry}_" + f"{type_reducer_time}_" + "terraclimate"
+
 
 # - - - - - - - - - - - - - - - - - - - - -
 # banda_interes
@@ -90,12 +108,8 @@ scale_img_coll = 4638.3
 start_date_base = "1960-01-01"
 end_date_base = "1989-12-31"
 img_coll_start_year = 1960
-img_coll_end_year = 2022
+img_coll_end_year = 2023
 n_max_features = 3000
-
-# - - Valor "constante" - - - - - 
-str_folder = "name_of_folder"
-
 
 # = = = = Funciones escenciales = = = = = =
 
@@ -137,14 +151,6 @@ list_features_from_img_coll = list_fc_from_img_coll.map(lambda fc: ee.FeatureCol
 fc_final = ee.FeatureCollection(list_features_from_img_coll)
 
 # = = = =  Exportar como CSV (a una carpeta de Google Drive) = = = = =
-if temp_zscore == False:
-    str_var_interes = lambda banda: f"anomaly_{banda}_" if banda in ["pr","tmmx","tmmn"] else f"{banda}_"
-elif temp_zscore == True:
-    str_var_interes = lambda banda: f"zscore_{banda}_" if banda in ["tmmx","tmmn"] else f"eliminar-error_"
-
-str_description = "export_" + str_var_interes(banda_interes) + "mean_" + f"{type_of_geometry}_" + f"{type_reducer_time}_" + "terraclimate"
-str_fileNamePrefix = "ts_" + str_var_interes(banda_interes) + "mean_" + f"{type_of_geometry}_" + f"{type_reducer_time}_" + "terraclimate"
-
 geemap.ee_export_vector_to_drive(
     collection = fc_final,
     description= str_description,
