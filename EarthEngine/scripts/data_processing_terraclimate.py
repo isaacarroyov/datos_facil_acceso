@@ -1,4 +1,13 @@
 """
+
+TODO: Crear documentacion en GFM a partir de este script
+
+EDIT: Este código fue esta tomado del repositorio de N+ Focus 
+      donde se deja en claro que el autor es un servidor.
+
+      Se agrega a este repositorio para poder hacer cambios en el código, 
+      mejorar la extraccion de datos y/o agregar más variables a la base
+
 El objetivo de este código es extraer información de las badnas del conjunto de datos TerraClimate 
 que se encuentra en al plataforma Google Earth Engine.
 
