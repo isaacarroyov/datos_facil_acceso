@@ -87,8 +87,19 @@ De los cuales, para esta ocasión (y por ahora) se usarán 2:
 > de datos e información._
 """
 # %%
-df_inicio = pd.read_excel(path2conapoent + "/0_Pob_Inicio_1950_2070.xlsx") 
-df_mitad = pd.read_excel(path2conapoent + "/0_Pob_Mitad_1950_2070.xlsx")
+df_pob_ent_inicio_year = pd.read_excel(
+    path2conapoent + "/0_Pob_Inicio_1950_2070.xlsx") 
+df_pob_ent_mid_year = pd.read_excel(
+    path2conapoent + "/0_Pob_Mitad_1950_2070.xlsx")
+
+# %%
+#| echo: false
+
+# Código para obtener una muestra del `pandas.DataFrame` y convertirlo en 
+# formato Markdown
+from IPython.display import Markdown
+
+print(df_pob_ent_mid_year.sample(3).to_markdown(index=False))
 
 # %% [markdown]
 """
@@ -107,25 +118,24 @@ A continuación se enlistan las transformaciones y cambios que se le harán
 a ambos conjuntos de datos:
 
 1. Renombrar columnas
-2. Transformar la columna de códigos de las entidades
-3. Unir ambos `pandas.DataFrame`s en uno solo
+2. Unir ambos `pandas.DataFrame`s en uno solo
+3. Transformar la columna de códigos de las entidades
 4. Renombrar los estados
 """
+
 # %%
 #| echo: false
 
-# Código para obtener una muestra del `pandas.DataFrame` y convertirlo en 
-# formato Markdown
-from IPython.display import Markdown
-
-print(df_mitad.sample(3).to_markdown(index=False))
+# TODO: 
+# 1. Crear conjunto de datos donde se con tres categorias de géneros 
+#    (hombre, mujer, ambos ) sin distinción de edad
 
 # %% [markdown]
 """
 ### Renombrar columnas
 """
 # %%
-df_inicio = (df_inicio
+df_pob_ent_inicio_year = (df_pob_ent_inicio_year
   .rename(
       columns = {
           "AÑO": "n_year",
@@ -138,7 +148,7 @@ df_inicio = (df_inicio
   # Eliminar columna que no aporta en la base de datos
   .drop(columns = "RENGLON"))
 
-df_mitad = (df_mitad
+df_pob_ent_mid_year = (df_pob_ent_mid_year
   .rename(
       columns= {
           "AÑO": "n_year",
@@ -153,6 +163,22 @@ df_mitad = (df_mitad
 
 # %% [markdown]
 """
+### Unir ambos `pandas.DataFrame`s en uno solo
+"""
+# %%
+db_proj_ent = (pd.merge(
+    left = df_pob_ent_inicio_year,
+    right = df_pob_ent_mid_year.drop(columns = "entidad"),
+    how = "left",
+    on = ["n_year", "cve_ent", "edad","genero"])
+  .reset_index(drop = True))
+
+db_proj_ent["pob_mid_year"] = pd.to_numeric(
+    db_proj_ent['pob_mid_year'],
+    errors= 'coerce')
+
+# %% [markdown]
+"""
 ### Transformar columna de códigos de estados
 
 Los códigos de los estados (`cve_ent`) fueron leídos por Python como 
@@ -161,25 +187,11 @@ ese cambio.
 """
 
 # %%
-df_inicio["cve_ent"] = (df_inicio["cve_ent"]
-                        .apply(lambda x : f"0{x}" if x < 10 else str(x)))
-df_mitad["cve_ent"] = (df_mitad["cve_ent"]
-                       .apply(lambda x : f"0{x}" if x < 10 else str(x)))
+# Función lambda para modificar claves de estados
+func_trans_cve_ent = lambda x : f"0{int(x)}" if x < 10 else str(int(x))
 
-# %% [markdown]
-"""
-### Unir ambos `pandas.DataFrame`s en uno solo
-"""
-# %%
-db_proj_ent = (pd.merge(
-    left = df_inicio,
-    right = df_mitad.drop(columns = "entidad"),
-    how = "left",
-    on = ["n_year", "cve_ent", "edad","genero"])
-  .reset_index(drop = True))
-
-db_proj_ent["pob_mid_year"] = (db_proj_ent["pob_mid_year"]
-                               .astype("Int64"))
+db_proj_ent["cve_ent"] = (df_pob_ent_inicio_year["cve_ent"]
+                          .apply(func = func_trans_cve_ent))
 
 # %% [markdown]
 """
@@ -200,7 +212,7 @@ cve_nom_ent["cve_ent"] = (cve_nom_ent["cve_ent"]
   .fillna(0)
   .apply(lambda x : f"0{int(x)}" if x < 10 else str(int(x))))
 
-list_cols_interes = [
+list_orden_cols_ent = [
   "n_year",
   "nombre_estado",
   "cve_ent",
@@ -212,99 +224,250 @@ list_cols_interes = [
 db_proj_ent = (db_proj_ent
                .drop(columns="entidad")
                .merge(cve_nom_ent, on = "cve_ent")
-               [list_cols_interes])
+               [list_orden_cols_ent])
 
 # %% [markdown]
 """
-## Población a mitad de año de los municipios de México (1950-2070)
+## Población a mitad de año de los municipios de México (2015-2030)
+"""
 
+# %%
+path2conapomun = path2conapo + "/municipios"
+
+# %% [markdown]
+"""
 > [!NOTE]
 > 
 > * Actualización de los datos: Septiembre 02, 2019.
 > * Este código fue originalmente creado el 21 de agosto de 2023
+> * Estos datos ya no se encuentran en la página de la CONAPO, fueron 
+>   descargados a mediados de 2023
+
+Los datos publicados por la CONAPO incluyen dos archivos en CSV, y a 
+diferencia de la proyección de los estados, la de los municipios esta 
+dividida por la gran cantidad de datos (son más de 2 mil municipios) y no 
+porque una sea población al inicio del año.
+
+
+El nombre de los archivos son:
+
+* base_municipios_final_datos_01.csv
+* base_municipios_final_datos_02.csv
+"""
+
+# %%
+df_pob_mun_mid_year_01 = pd.read_csv(
+    filepath_or_buffer = (path2conapomun + 
+                          "/base_municipios_final_datos_01.csv"),
+    encoding = "latin1")
+
+df_pob_mun_mid_year_02 = pd.read_csv(
+    filepath_or_buffer = (path2conapomun + 
+                          "/base_municipios_final_datos_02.csv"),
+    encoding = "latin1")
+
+# %%
+#| echo: false
+
+# Código para obtener una muestra del `pandas.DataFrame` y convertirlo en 
+# formato Markdown
+from IPython.display import Markdown
+
+print(df_pob_mun_mid_year_01.sample(3).to_markdown(index=False))
+
+# %% [markdown]
+"""
+### Cambios a los `pandas.DataFrame`s
+
+Ambos conjuntos de datos tienen las mismas columnas con el mismo 
+nombre, a continuación se muestra un ejemplo: 
+
+|   RENGLON |   CLAVE |   CLAVE_ENT | NOM_ENT    | MUN      | SEXO    |   AÑO | EDAD_QUIN   |   POB |
+|----------:|--------:|------------:|:-----------|:---------|:--------|------:|:------------|------:|
+|    801679 |   19018 |          19 | Nuevo León | García   | Mujeres |  2029 | pobm_50_54  |  4768 |
+|    751482 |   10004 |          10 | Durango    | Cuencamé | Hombres |  2024 | pobm_45_49  |  1097 |
+|    241710 |   11045 |          11 | Guanajuato | Xichú    | Mujeres |  2028 | pobm_15_19  |   609 |
+
+A continuación se enlistan las transformaciones y cambios que se le hará a 
+la base de datos de manera general.
+
+1. Concatenar ambos `pandas.DataFrame`s en uno solo
+2. Renombrar columnas
+3. Transformar la columna de códigos de las entidades y de los municipios
+4. Transformar la columna de códigos de edades
+5. Renombrar los estados
+
+A partir de este procesamiento, se crean dos bases de datos:
+
+1. Base de datos completa, con la división de género y edades
+2. Base de datos con la división de los géneros y uniendo las 
+categorías de edades
+"""
+
+# %% [markdown]
+"""
+### Concatenar ambos `pandas.DataFrame`s en uno solo
+"""
+
+# %%
+df_union_pob_mun = (pd.concat([df_pob_mun_mid_year_01,
+                               df_pob_mun_mid_year_02])
+            .reset_index(drop=True)
+            # Eliminar columnas que no aportan o no son necesarias en la 
+            # base de datos
+            .drop(columns = ["RENGLON", "NOM_ENT"]))
+
+# %% [markdown]
+"""
+### Renombrar columnas
+"""
+
+# %%
+db_proj_mun = (df_union_pob_mun
+    .rename(columns = {
+        "CLAVE": "cve_mun",
+        "CLAVE_ENT": "cve_ent",
+        "MUN": "nombre_municipio",
+        "SEXO": "genero",
+        "AÑO": "n_year",
+        "EDAD_QUIN": "rango_edad",
+        "POB": "pob_mid_year"}))
+
+# %% [markdown]
+"""
+### Transformar la columna de códigos de las entidades y de los municipios
+
+Tanto los códigos de los estados (`cve_ent`) como el de los municipios 
+(`cve_mun`) fueron leídos por Python como números en lugar de caracteres, 
+por lo que tiene que se tiene que hacer ese cambio.
+"""
+
+# %%
+# Función lambda para modificar claves de municipio
+func_trans_cve_mun = lambda x : f"0{int(x)}" if x < 10_000 else str(int(x))
+
+db_proj_mun["cve_ent"] = (db_proj_mun["cve_ent"]
+                         .apply(func = func_trans_cve_ent))
+db_proj_mun["cve_mun"] = (db_proj_mun["cve_mun"]
+                         .apply(func = func_trans_cve_mun))
+
+# %% [markdown]
+"""
+### Transformar la columna de códigos de edades
+
+Los códigos de las edades estan organizados por rangos de 5 años,
+
+"""
+
+# %%
+# Función para modificar códigos de edades
+def func_trans_rango_edad(cat_age):
+    cat_age_clean = (cat_age
+                     .replace("pobm_","Age")
+                     .replace("mm", "more"))
+    return cat_age_clean
+
+db_proj_mun["rango_edad"] = (db_proj_mun["rango_edad"]
+                            .apply(func = func_trans_rango_edad))
+
+# %% [markdown]
+"""
+### Adjuntar el nombre de los estados
+
+La manera en la que están escritos los nombres de algunos estados no son 
+como comúnmente se nombran, por ejemplo, en la base de datos de la CONAPO, 
+**Coahuila** esta bajo el nombre de _Coahuila de Zaragoza_.
+
+Es por eso que se usarán los nombres _comunes_ de los estados, que se 
+encuentran en el archivo `cve_nom_estados.csv`, previamente cargados en 
+el script.
+"""
+
+# %%
+list_orden_cols_mun = [
+  "n_year",
+  "nombre_estado",
+  "cve_ent",
+  "nombre_municipio",
+  "cve_mun",
+  "rango_edad",
+  "genero",
+  "pob_mid_year"]
+
+db_proj_mun = (pd.merge(left = db_proj_mun,
+                        right = cve_nom_ent,
+                        how = "left",
+                        on = "cve_ent")
+              .reset_index(drop = True)
+              [list_orden_cols_mun])
+
+# %%
+#| echo: false
+# TODO: terminar de explicar la base de datos de todas las edades y categorias de generos
+
+# %% [markdown]
+"""
+### Base de datos con la división de los géneros y uniendo las categorías de edades
+
+> agregar la categoria de la suma de pob de ambos generos
+
+"""
+# %%
+db_proj_mun_all_ages = (db_proj_mun.groupby([
+    "n_year",
+    "nombre_estado",
+    "cve_ent",
+    "nombre_municipio",
+    "cve_mun",
+    "genero"])
+    .sum()["pob_mid_year"]
+    .reset_index()
+    .pivot(
+        index = [
+            "n_year", 
+            "nombre_estado",
+            "cve_ent",
+            "nombre_municipio",
+            "cve_mun"],
+        columns = ["genero"],
+        values = "pob_mid_year")
+    .reset_index())
+
+db_proj_mun_all_ages['Total'] = (db_proj_mun_all_ages['Hombres'] + 
+                                 db_proj_mun_all_ages['Mujeres'])
+
+
+# %% [markdown]
+"""
+> explicar que se pondra en formato long
+"""
+
+# %%
+db_proj_mun_all_ages = pd.melt(
+    db_proj_mun_all_ages,
+    id_vars = ['n_year', 'nombre_estado', 'cve_ent', 'nombre_municipio', 'cve_mun'],
+    value_vars = ['Hombres', 'Mujeres', 'Total'],
+    var_name= "genero",
+    value_name = "pob_mid_year")
+
+
+# %% [markdown]
+
+"""
+
+## Guardar bases de datos
+
 """
 
 # %%
 #| echo: false
-# TODO:  juntar con el procesamiento de municipios
+# TODO: Repensar nombres de los archivos finales
+(db_proj_ent
+  .to_csv(path2conapo + "conapo_proj_ent-nac_inicio-mitad_1950-2070",
+          index = False))
 
-path2main = os.getcwd()
-path2ogdata_01 = path2main + ("/Gobierno-Mexicano/"
-                              "CONAPO_PROYECCIONES_1950-2070/municipios/"
-                              "base_original/"
-                              "base_municipios_final_datos_01.csv")
-path2ogdata_02 = path2main + ("/Gobierno-Mexicano/"
-                              "CONAPO_PROYECCIONES_1950-2070/municipios/"
-                              "base_original/"
-                              "base_municipios_final_datos_02.csv")
-path2base_ent = path2main + ("/Gobierno-Mexicano/nombres_claves_entidades.csv")
 
-list_order_df_columns = ["date_year",
-                         "nombre_estado",
-                         "cve_ent",
-                         "nombre_municipio",
-                         "cve_mun",
-                         "rango_edad",
-                         "genero",
-                         "poblacion_proyectada"]
 
-path2save = path2main + ("/Gobierno-Mexicano/"
-                         "CONAPO_PROYECCIONES_1950-2070/municipios/")
-
-# = = CARGAR AMBOS ARCHIVOS CSV = = #
-df1 = pd.read_csv(filepath_or_buffer = path2ogdata_01, encoding = "latin1")
-df2 = pd.read_csv(filepath_or_buffer = path2ogdata_02, encoding = "latin1")
-
-# = = CONCATENAR = = #
-# - - Tambien se elimina la columna RENGLON y NOM_ENT - - #
-df_union = (pd.concat([df1,df2])
-            .reset_index(drop=True)
-            .drop(columns = ["RENGLON", "NOM_ENT"]))
-
-# = = CAMBIO DE NOMBRE DE COLUMNAS = = #
-df_union_renamed = df_union.rename(columns = {
-    "CLAVE": "cve_mun",
-    "CLAVE_ENT": "cve_ent",
-    "MUN": "nombre_municipio",
-    "SEXO": "genero",
-    "AÑO": "date_year",
-    "EDAD_QUIN": "rango_edad",
-    "POB": "poblacion_proyectada"})
-
-# = = CAMBIAR VALORES EN CELDAS DE ALGUNAS COLUMNAS = = #
-df_union_renamed["cve_ent"] = (df_union_renamed["cve_ent"]
-                               .apply(lambda x : f"0{int(x)}" if x < 10 else str(int(x))))
-df_union_renamed["cve_mun"] = (df_union_renamed["cve_mun"]
-                               .apply(lambda x : f"0{int(x)}" if x < 10_000 else str(int(x))))
-df_union_renamed["rango_edad"] = (df_union_renamed["rango_edad"]
-                                  .apply(lambda x: x.replace("pobm_","").replace("_","-")))
-df_union_renamed["poblacion_proyectada"] = pd.to_numeric(df_union_renamed["poblacion_proyectada"])
-
-# = = ACTUALIZAR NOMBRE DE ESTADOS = = #
-nombres_entidades = pd.read_csv(path2base_ent, dtype = str)
-
-# = = Base de datos "completa" y tidy = = #
-db = (pd.merge(left = df_union_renamed,
-               right = nombres_entidades,
-               how = "left",
-               on = "cve_ent")
-        .reset_index(drop = True)
-        [list_order_df_columns])
-
-# = = Base de datos de poblacion total de municipios (sin rango de de edades) = = #
-db_no_age = (db
-    .groupby(["date_year", "nombre_estado", "cve_ent", "nombre_municipio", "cve_mun", "genero"])
-    .sum()["poblacion_proyectada"]
-    .reset_index()
-    .pivot(index= ["date_year", "nombre_estado", "cve_ent", "nombre_municipio", "cve_mun"],
-           columns= ["genero"],
-           values = "poblacion_proyectada")
-    .reset_index()
-    .rename(columns = {"Hombres": "hombres", "Mujeres": "mujeres"}))
-
-db_no_age['total'] = db_no_age['hombres'] + db_no_age['mujeres']
-
-# = = GUARDAR BASES DE DATOS = = #
 db.to_csv(
     path_or_buf = path2save + "conapo_proyecciones_mun_2015-2030_all.csv",
     index = False)
@@ -312,19 +475,3 @@ db.to_csv(
 db_no_age.to_csv(
     path_or_buf = path2save + "conapo_proyecciones_mun_2015-2030.csv",
     index = False)
-
-
-
-# %%
-#| echo: false
-(db_proj_ent
-  .to_csv(path2conapo + "conapo_proj_ent-nac_inicio-mitad_1950-2070",
-          index = False))
-
-
-
-# %%
-#| echo: false
-
-# TODO: Crear conjuntos de datos donde se junten ambos géneros 
-#       de todas las edades (para db_proj_ent)
