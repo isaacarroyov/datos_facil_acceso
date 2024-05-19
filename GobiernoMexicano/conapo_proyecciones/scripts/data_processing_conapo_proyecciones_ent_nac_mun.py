@@ -272,7 +272,7 @@ Despues de aplicar `pivot` al `pandas.DataFrame`, se tiene un
 
 # %%
 #| echo: false
-db_proj_ent_all_ages.sample(n = 3, random_state= 11)
+Markdown(db_proj_ent_all_ages.sample(n = 3, random_state= 11).to_markdown())
 
 # %% [markdown]
 """
@@ -296,7 +296,9 @@ El resultado es el siguiente:
 
 # %%
 #| echo: false
-db_proj_ent_all_ages.sample(n = 3, random_state= 11)
+Markdown(db_proj_ent_all_ages
+         .sample(n = 3, random_state= 11)
+         .to_markdown(index = False))
 
 # %% [markdown]
 """

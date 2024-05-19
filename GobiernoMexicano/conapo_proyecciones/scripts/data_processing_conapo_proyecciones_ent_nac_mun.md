@@ -213,35 +213,11 @@ db_proj_ent_all_ages = db_proj_ent_all_ages.pivot(
 Despues de aplicar `pivot` al `pandas.DataFrame`, se tiene un
 `pandas.DataFrame` con multi-índice en filas y columnas.
 
-<div>
-
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-&#10;    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-&#10;    .dataframe thead tr th {
-        text-align: left;
-    }
-&#10;    .dataframe thead tr:last-of-type th {
-        text-align: right;
-    }
-</style>
-
-|        |                  |         | pob_start_year |         | pob_mid_year |         |
-|--------|------------------|---------|----------------|---------|--------------|---------|
-|        |                  | genero  | Hombres        | Mujeres | Hombres      | Mujeres |
-| n_year | nombre_estado    | cve_ent |                |         |              |         |
-| 2070   | Ciudad de México | 09      | 3221170        | 3366552 | 3203379      | 3345111 |
-| 2032   | Nayarit          | 18      | 692797         | 712547  | 695071       | 715531  |
-| 1986   | Aguascalientes   | 01      | 317950         | 327881  | 323441       | 333790  |
-
-</div>
-
-</div>
+|                                  | (‘pob_start_year’, ‘Hombres’) | (‘pob_start_year’, ‘Mujeres’) | (‘pob_mid_year’, ‘Hombres’) | (‘pob_mid_year’, ‘Mujeres’) |
+|:---------------------------------|------------------------------:|------------------------------:|----------------------------:|----------------------------:|
+| (2070, ‘Ciudad de México’, ‘09’) |                   3.22117e+06 |                   3.36655e+06 |                 3.20338e+06 |                 3.34511e+06 |
+| (2032, ‘Nayarit’, ‘18’)          |                        692797 |                        712547 |                      695071 |                      715531 |
+| (1986, ‘Aguascalientes’, ‘01’)   |                        317950 |                        327881 |                      323441 |                      333790 |
 
 Específicamente, se renombran las columnas con la combinación de
 `{poblacion a inicio o mitad de año}_{genero}`
@@ -257,30 +233,11 @@ db_proj_ent_all_ages = db_proj_ent_all_ages.reset_index()
 
 El resultado es el siguiente:
 
-<div>
-
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-&#10;    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-&#10;    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-
-|      | n_year | nombre_estado    | cve_ent | pob_start_year_Hombres | pob_start_year_Mujeres | pob_mid_year_Hombres | pob_mid_year_Mujeres |
-|------|--------|------------------|---------|------------------------|------------------------|----------------------|----------------------|
-| 3326 | 2070   | Ciudad de México | 09      | 3221170                | 3366552                | 3203379              | 3345111              |
-| 2084 | 2032   | Nayarit          | 18      | 692797                 | 712547                 | 695071               | 715531               |
-| 548  | 1986   | Aguascalientes   | 01      | 317950                 | 327881                 | 323441               | 333790               |
-
-</div>
-
-</div>
+| n_year | nombre_estado    | cve_ent | pob_start_year_Hombres | pob_start_year_Mujeres | pob_mid_year_Hombres | pob_mid_year_Mujeres |
+|-------:|:-----------------|--------:|-----------------------:|-----------------------:|---------------------:|---------------------:|
+|   2070 | Ciudad de México |      09 |                3221170 |                3366552 |              3203379 |              3345111 |
+|   2032 | Nayarit          |      18 |                 692797 |                 712547 |               695071 |               715531 |
+|   1986 | Aguascalientes   |      01 |                 317950 |                 327881 |               323441 |               333790 |
 
 Ahora solo falta crear la columna de la suma de las poblaciones de los
 géneros
