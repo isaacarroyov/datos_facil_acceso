@@ -1,6 +1,6 @@
 # Proyecciones de población de México
 Isaac Arroyo
-18 de mayo de 2024
+19 de mayo de 2024
 
 ## Introducción
 
@@ -76,11 +76,11 @@ df_pob_ent_mid_year = pd.read_excel(
 Ambos conjuntos de datos tienen las mismas columnas con el mismo nombre,
 a continuación se muestra un ejemplo:
 
-| RENGLON |  AÑO | ENTIDAD  | CVE_GEO | EDAD | SEXO    | POBLACION |
-|--------:|-----:|:---------|--------:|-----:|:--------|----------:|
-|  397482 | 2024 | Campeche |       4 |   80 | Mujeres |      1007 |
-|  687945 | 2064 | Coahuila |       5 |    2 | Hombres |     20189 |
-|  156305 | 1990 | Veracruz |      30 |   52 | Hombres |     20082 |
+| RENGLON |  AÑO | ENTIDAD        | CVE_GEO | EDAD | SEXO    | POBLACION |
+|--------:|-----:|:---------------|--------:|-----:|:--------|----------:|
+|  475967 | 2034 | Yucatán        |      31 |   53 | Hombres |     15064 |
+|  274974 | 2007 | Chihuahua      |       8 |   96 | Mujeres |       113 |
+|   77227 | 1980 | Aguascalientes |       1 |    3 | Hombres |      9049 |
 
 A continuación se enlistan las transformaciones y cambios que se le
 harán a ambos conjuntos de datos:
@@ -89,6 +89,12 @@ harán a ambos conjuntos de datos:
 2.  Unir ambos `pandas.DataFrame`s en uno solo
 3.  Transformar la columna de códigos de las entidades
 4.  Renombrar los estados
+
+A partir de este procesamiento, se crean dos bases de datos:
+
+1.  Base de datos completa, con la división de género y edades
+2.  Base de datos con la división de los géneros y uniendo las
+    categorías de edades
 
 ### Renombrar columnas
 
@@ -128,11 +134,10 @@ db_proj_ent = (pd.merge(
     right = df_pob_ent_mid_year.drop(columns = "entidad"),
     how = "left",
     on = ["n_year", "cve_ent", "edad","genero"])
+  .query("n_year <= 2070")
   .reset_index(drop = True))
 
-db_proj_ent["pob_mid_year"] = pd.to_numeric(
-    db_proj_ent['pob_mid_year'],
-    errors= 'coerce')
+db_proj_ent['pob_mid_year'] = db_proj_ent['pob_mid_year'].astype(int)
 ```
 
 ### Transformar columna de códigos de estados
@@ -180,6 +185,133 @@ db_proj_ent = (db_proj_ent
                [list_orden_cols_ent])
 ```
 
+### Crear un conjunto de datos de la población de ambos géneros sin distinción de la edad
+
+Cuando se dice **sin distinción de edad** se habla de que se suma la
+población de todas las edades
+
+``` python
+db_proj_ent_all_ages = (db_proj_ent.groupby([
+    "n_year",
+    "nombre_estado",
+    "cve_ent",
+    "genero"])
+    .sum()[["pob_start_year", "pob_mid_year"]]
+    .reset_index())
+```
+
+Ahora se va a transformar los datos de *wide format* a *long format*
+para crear una columna donde se sumen las poblaciones de ambos géneros
+
+``` python
+db_proj_ent_all_ages = db_proj_ent_all_ages.pivot(
+    index = ['n_year', 'nombre_estado', 'cve_ent'],
+    columns= ['genero'],
+    values = ['pob_start_year', 'pob_mid_year'])
+```
+
+Despues de aplicar `pivot` al `pandas.DataFrame`, se tiene un
+`pandas.DataFrame` con multi-índice en filas y columnas.
+
+<div>
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+&#10;    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+&#10;    .dataframe thead tr th {
+        text-align: left;
+    }
+&#10;    .dataframe thead tr:last-of-type th {
+        text-align: right;
+    }
+</style>
+
+|        |                  |         | pob_start_year |         | pob_mid_year |         |
+|--------|------------------|---------|----------------|---------|--------------|---------|
+|        |                  | genero  | Hombres        | Mujeres | Hombres      | Mujeres |
+| n_year | nombre_estado    | cve_ent |                |         |              |         |
+| 2070   | Ciudad de México | 09      | 3221170        | 3366552 | 3203379      | 3345111 |
+| 2032   | Nayarit          | 18      | 692797         | 712547  | 695071       | 715531  |
+| 1986   | Aguascalientes   | 01      | 317950         | 327881  | 323441       | 333790  |
+
+</div>
+
+</div>
+
+Específicamente, se renombran las columnas con la combinación de
+`{poblacion a inicio o mitad de año}_{genero}`
+
+``` python
+# Renombrar columnas de población para que tengan como suffix el genero
+db_proj_ent_all_ages.columns = ['_'.join(col) for col in 
+                                db_proj_ent_all_ages.columns]
+
+# Eliminar el multi-index (sin eliminar las columnas indice)
+db_proj_ent_all_ages = db_proj_ent_all_ages.reset_index()
+```
+
+El resultado es el siguiente:
+
+<div>
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+&#10;    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+&#10;    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+
+|      | n_year | nombre_estado    | cve_ent | pob_start_year_Hombres | pob_start_year_Mujeres | pob_mid_year_Hombres | pob_mid_year_Mujeres |
+|------|--------|------------------|---------|------------------------|------------------------|----------------------|----------------------|
+| 3326 | 2070   | Ciudad de México | 09      | 3221170                | 3366552                | 3203379              | 3345111              |
+| 2084 | 2032   | Nayarit          | 18      | 692797                 | 712547                 | 695071               | 715531               |
+| 548  | 1986   | Aguascalientes   | 01      | 317950                 | 327881                 | 323441               | 333790               |
+
+</div>
+
+</div>
+
+Ahora solo falta crear la columna de la suma de las poblaciones de los
+géneros
+
+``` python
+# Poblacion total a inicio de año
+db_proj_ent_all_ages['pob_start_year_Total'] = (
+    db_proj_ent_all_ages['pob_start_year_Hombres'] + 
+    db_proj_ent_all_ages['pob_start_year_Mujeres'])
+
+# Poblacion total a mitad de año
+db_proj_ent_all_ages['pob_mid_year_Total'] = (
+    db_proj_ent_all_ages['pob_mid_year_Hombres'] + 
+    db_proj_ent_all_ages['pob_mid_year_Mujeres'])
+```
+
+El objetivo sigue siendo el mismo, mantener los datos *tidy*, por lo que
+se volverá a hacer la transformación de datos *wide format* a *long
+format*.
+
+``` python
+db_proj_ent_all_ages = (pd.wide_to_long(
+    df = db_proj_ent_all_ages,
+    stubnames = ['pob_start_year', 'pob_mid_year'],
+    i = ['n_year','nombre_estado', 'cve_ent'],
+    j = 'genero',
+    sep = "_",
+    suffix=r'\w+')
+  .reset_index())
+```
+
 ## Población a mitad de año de los municipios de México (2015-2030)
 
 ``` python
@@ -220,11 +352,11 @@ df_pob_mun_mid_year_02 = pd.read_csv(
 Ambos conjuntos de datos tienen las mismas columnas con el mismo nombre,
 a continuación se muestra un ejemplo:
 
-| RENGLON | CLAVE | CLAVE_ENT | NOM_ENT    | MUN      | SEXO    |  AÑO | EDAD_QUIN  |  POB |
-|--------:|------:|----------:|:-----------|:---------|:--------|-----:|:-----------|-----:|
-|  801679 | 19018 |        19 | Nuevo León | García   | Mujeres | 2029 | pobm_50_54 | 4768 |
-|  751482 | 10004 |        10 | Durango    | Cuencamé | Hombres | 2024 | pobm_45_49 | 1097 |
-|  241710 | 11045 |        11 | Guanajuato | Xichú    | Mujeres | 2028 | pobm_15_19 |  609 |
+| RENGLON | CLAVE | CLAVE_ENT | NOM_ENT          | MUN                | SEXO    |  AÑO | EDAD_QUIN  |   POB |
+|--------:|------:|----------:|:-----------------|:-------------------|:--------|-----:|:-----------|------:|
+|  908503 |  9007 |         9 | Ciudad de México | Iztapalapa         | Hombres | 2021 | pobm_55_59 | 46302 |
+|   51866 | 16004 |        16 | Michoacán        | Angamacutiro       | Hombres | 2024 | pobm_00_04 |   683 |
+|   88143 | 14064 |        14 | Jalisco          | Ojuelos de Jalisco | Mujeres | 2029 | pobm_05_09 |  1645 |
 
 A continuación se enlistan las transformaciones y cambios que se le hará
 a la base de datos de manera general.
@@ -328,9 +460,15 @@ db_proj_mun = (pd.merge(left = db_proj_mun,
               [list_orden_cols_mun])
 ```
 
-### Base de datos con la división de los géneros y uniendo las categorías de edades
+### Crear un conjunto de datos de la población de ambos géneros sin distinción de la edad
 
-> agregar la categoria de la suma de pob de ambos generos
+Cuando se dice **sin distinción de edad** se habla de que se suma la
+población de todas las edades
+
+> \[!NOTE\]
+>
+> El procesamiento es más sencillo que el de los estados ya que
+> solamente hay una columna de información
 
 ``` python
 db_proj_mun_all_ages = (db_proj_mun.groupby([
@@ -342,6 +480,7 @@ db_proj_mun_all_ages = (db_proj_mun.groupby([
     "genero"])
     .sum()["pob_mid_year"]
     .reset_index()
+    # Long2Wide
     .pivot(
         index = [
             "n_year", 
@@ -353,11 +492,14 @@ db_proj_mun_all_ages = (db_proj_mun.groupby([
         values = "pob_mid_year")
     .reset_index())
 
+# Poblacion total a mitad de año
 db_proj_mun_all_ages['Total'] = (db_proj_mun_all_ages['Hombres'] + 
                                  db_proj_mun_all_ages['Mujeres'])
 ```
 
-> explicar que se pondra en formato long
+El objetivo sigue siendo el mismo, mantener los datos *tidy*, por lo que
+se volverá a hacer la transformación de datos *wide format* a *long
+format*.
 
 ``` python
 db_proj_mun_all_ages = pd.melt(
@@ -369,3 +511,81 @@ db_proj_mun_all_ages = pd.melt(
 ```
 
 ## Guardar bases de datos
+
+### Proyección de la población a inicio y mitad del año de los Estados de México
+
+Base de datos con división de género y división de edad
+
+Nombre del archivo: **/conapo_pob_ent_gender_age_1950_2070.csv.bz2**
+
+| n_year | nombre_estado       | cve_ent | edad | genero  | pob_start_year | pob_mid_year |
+|-------:|:--------------------|--------:|-----:|:--------|---------------:|-------------:|
+|   1992 | Chihuahua           |      08 |   37 | Mujeres |          14532 |        14905 |
+|   2062 | Guanajuato          |      11 |   28 | Hombres |          41364 |        41154 |
+|   1990 | Baja California Sur |      03 |   32 | Mujeres |           2346 |         2407 |
+|   1986 | Coahuila            |      05 |   61 | Hombres |           3718 |         3792 |
+|   1985 | Aguascalientes      |      01 |   24 | Mujeres |           5327 |         5473 |
+
+``` python
+db_proj_ent.to_csv(
+  path_or_buf= path2conapo + filename_db_proj_ent,
+  compression= "bz2",
+  index = False)
+```
+
+Base de datos con división de género y unión de edades
+
+Nombre del archivo: **/conapo_pob_ent_gender_1950_2070.csv**
+
+| n_year | nombre_estado   | cve_ent | genero  | pob_start_year | pob_mid_year |
+|-------:|:----------------|--------:|:--------|---------------:|-------------:|
+|   1990 | Nacional        |      00 | Mujeres |       42231778 |     42648349 |
+|   2049 | Querétaro       |      22 | Hombres |        1686191 |      1690779 |
+|   2023 | Oaxaca          |      20 | Total   |        4260710 |      4276769 |
+|   2007 | San Luis Potosí |      24 | Hombres |        1235204 |      1241918 |
+|   2014 | Yucatán         |      31 | Mujeres |        1066091 |      1073334 |
+
+``` python
+db_proj_ent_all_ages.to_csv(
+  path_or_buf= path2conapo + filename_db_proj_ent_all_ages,
+  index = False)
+```
+
+### Proyección de la población a mitad del año de los Municipios de México
+
+Base de datos con división de género y división de edad
+
+Nombre del archivo: **/conapo_pob_mun_gender_age_2015_2030.csv.bz2**
+
+| n_year | nombre_estado    | cve_ent | nombre_municipio          | cve_mun | rango_edad | genero  | pob_mid_year |
+|-------:|:-----------------|--------:|:--------------------------|--------:|:-----------|:--------|-------------:|
+|   2020 | Oaxaca           |      20 | Villa Hidalgo             |   20038 | Age65_more | Hombres |          109 |
+|   2020 | Veracruz         |      30 | Isla                      |   30077 | Age60_64   | Mujeres |          851 |
+|   2023 | Sonora           |      26 | Pitiquito                 |   26047 | Age40_44   | Hombres |          367 |
+|   2023 | Oaxaca           |      20 | Villa Tejúpam de la Unión |   20486 | Age10_14   | Mujeres |           99 |
+|   2020 | Estado de México |      15 | Temoaya                   |   15087 | Age20_24   | Hombres |         4935 |
+
+``` python
+db_proj_mun.to_csv(
+  path_or_buf= path2conapo + filename_db_proj_mun,
+  compression= "bz2",
+  index = False)
+```
+
+Base de datos con división de género y unión de edades
+
+Nombre del archivo: **/conapo_pob_mun_gender_2015_2030.csv**
+
+| n_year | nombre_estado   | cve_ent | nombre_municipio       | cve_mun | genero  | pob_mid_year |
+|-------:|:----------------|--------:|:-----------------------|--------:|:--------|-------------:|
+|   2025 | Morelos         |      17 | Cuautla                |   17006 | Total   |       219233 |
+|   2023 | Oaxaca          |      20 | Santa María Chilchotla |   20406 | Hombres |        10339 |
+|   2027 | San Luis Potosí |      24 | Santo Domingo          |   24033 | Total   |        13233 |
+|   2018 | Campeche        |      04 | Campeche               |   04002 | Mujeres |       158667 |
+|   2017 | Chihuahua       |      08 | Batopilas              |   08008 | Hombres |         6548 |
+
+``` python
+db_proj_mun_all_ages.to_csv(
+  path_or_buf= path2conapo + filename_db_proj_mun_all_ages,
+  index = False)
+```

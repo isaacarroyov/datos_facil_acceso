@@ -570,7 +570,104 @@ db_proj_mun_all_ages = pd.melt(
 ## Guardar bases de datos
 """
 
+# %% [markdown]
+"""
+### Proyección de la población a inicio y mitad del año de los Estados de México
+"""
+
 # %%
 #| echo: false
+filename_db_proj_ent = "/conapo_pob_ent_gender_age_1950_2070.csv.bz2"
+filename_db_proj_ent_all_ages = "/conapo_pob_ent_gender_1950_2070.csv"
+
+filename_db_proj_mun = "/conapo_pob_mun_gender_age_2015_2030.csv.bz2"
+filename_db_proj_mun_all_ages = "/conapo_pob_mun_gender_2015_2030.csv"
+
+# %% [markdown]
+"""
+Base de datos con división de género y división de edad
+
+Nombre del archivo: **`{python} filename_db_proj_ent`**
+"""
+
+# %%
+#| echo: false
+#| label: sample_final-db_proj_ent
+Markdown(db_proj_ent
+         .sample(n = 5, random_state= 13)
+         .to_markdown(index = False))
+
+# %%
 #| eval: false
-# TODO: Repensar nombres de los archivos finales
+db_proj_ent.to_csv(
+  path_or_buf= path2conapo + filename_db_proj_ent,
+  compression= "bz2",
+  index = False)
+
+
+# %% [markdown]
+"""
+Base de datos con división de género y unión de edades
+
+Nombre del archivo: **`{python} filename_db_proj_ent_all_ages`**
+"""
+
+# %%
+#| echo: false
+#| label: sample_final-db_proj_ent_all_ages
+Markdown(db_proj_ent_all_ages
+         .sample(n = 5, random_state= 13)
+         .to_markdown(index = False))
+
+# %%
+#| eval: false
+db_proj_ent_all_ages.to_csv(
+  path_or_buf= path2conapo + filename_db_proj_ent_all_ages,
+  index = False)
+
+# %% [markdown]
+"""
+### Proyección de la población a mitad del año de los Municipios de México
+"""
+
+# %% [markdown]
+"""
+Base de datos con división de género y división de edad
+
+Nombre del archivo: **`{python} filename_db_proj_mun`**
+"""
+
+# %%
+#| echo: false
+#| label: sample_final-db_proj_mun
+Markdown(db_proj_mun
+         .sample(n = 5, random_state= 13)
+         .to_markdown(index = False))
+
+# %%
+#| eval: false
+db_proj_mun.to_csv(
+  path_or_buf= path2conapo + filename_db_proj_mun,
+  compression= "bz2",
+  index = False)
+
+
+# %% [markdown]
+"""
+Base de datos con división de género y unión de edades
+
+Nombre del archivo: **`{python} filename_db_proj_mun_all_ages`**
+"""
+
+# %%
+#| echo: false
+#| label: sample_final-db_proj_mun_all_ages
+Markdown(db_proj_mun_all_ages
+         .sample(n = 5, random_state= 13)
+         .to_markdown(index = False))
+
+# %%
+#| eval: false
+db_proj_mun_all_ages.to_csv(
+  path_or_buf= path2conapo + filename_db_proj_mun_all_ages,
+  index = False)
