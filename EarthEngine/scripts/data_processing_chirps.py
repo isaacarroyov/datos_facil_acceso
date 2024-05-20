@@ -11,7 +11,7 @@
 #   pdf:
 #     toc: true
 #     fontsize: 12pt
-#     mainfont: Georgia
+#     mainfont: Charter
 #     geometry:
 #       - top=1in
 #       - bottom=1in
@@ -73,7 +73,6 @@ vemos"](https://github.com/nmasfocusdatos/desplazamiento-climatico).
 
 # %%
 import ee # <1>
-import time
 
 try:
     ee.Initialize() # <2>
@@ -571,7 +570,7 @@ def extract_from_chirps_daily( # <1>
     imgcoll_month_pr = ee.ImageCollection.fromImages(list_month_pr) # <6>
 
     if year > 2023: # <7>
-        img_bands = ["01", "02", "03"] # <7>
+        img_bands = ["01", "02", "03", "04"] # <7>
     else: # <7>
         img_bands = [f"0{i}" if i < 10 else str(i) for i in range(1,13)] # <7>
     
