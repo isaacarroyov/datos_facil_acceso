@@ -1,63 +1,197 @@
-# TODO: Documentar como GFM
-# TODO: NO EJECUTAR HASTA ORGANIZAR LA DOCUMENTACION
+# %% [markdown]
+# ---
+# title: 'Sequía en México'
+# author: Isaac Arroyo
+# date-format: long
+# date: last-modified
+# lang: es
+# jupyter: python3
+# format:
+#   gfm:
+#     html-math-method: katex
+#     fig-width: 5
+#     fig-asp: 0.75
+#     fig-dpi: 300
+#     code-annotations: below
+# execute:
+#   echo: true
+#   eval: true
+#   warning: false
+# ---
+
+# %% [markdown]
 """
-Script hecho para crear dos archivos CSV:
-    - rachas_sequia_municipios -> archivo que tiene en orden cronológico el inicio y final de 
-      la categoría de sequía de un determinado municipio
-    - rachas_maximas_sequia_municipios -> archivo que contiene únicamente las rachas máximas (mayor duración)
-      de cada categoría de sequía del MSM
+## Introducción y objetivos
+
+En este documento GitHub Flavored Markdown se encuentra documentado el 
+código usado para la extracción, transformación, estandarización y la 
+creación de nuevos conjuntos de datos a partir del registro de sequía en 
+los municipios del país del 
+[**Monitor de Sequía de México (MSM)**](https://smn.conagua.gob.mx/es/climatologia/monitor-de-sequia/monitor-de-sequia-en-mexico).
+
+A través del registro de sequía en los municipios se espera tener 3 bases 
+de datos:
+
+1. El registro de sequía en formato _tidy_
+2. El registro del tiempo de duración del tipo de sequía (racha)
+3. El registro del tiempo de duración máximo del tipo de sequía 
+(racha máxima)
 """
 
-
+# %% [markdown]
 """
-db = (pd.read_excel(
-      io = "".join(["https://smn.conagua.gob.mx/tools/",
-                    "RESOURCES/Monitor%20de%20Sequia%20en%",
-                    "20Mexico/MunicipiosSequia.xlsx"]),
-      dtype= 'object')
-      .clean_names(remove_special=True)
-      .melt(
-      id_vars = ["cve_concatenada", "cve_ent", "cve_mun", "nombre_mun",
-                 "entidad", "org_cuenca", "clv_oc", "con_cuenca", "cve_conc"],
-      var_name = "full_date",
-      value_name= "sequia"))
+## Descarga y transformación del registro de sequía en los municipios
 
-db['full_date'] = (db['full_date']
-                   .str.replace("_00_00_00", "")
-                   .str.replace("_", "-"))
+Como primer paso es modificar la base de datos del MSM para que este en 
+formato _tidy_, ya que originalmente las columnas son la fecha del registro.
+"""
 
-db['full_date'] = pd.to_datetime(db['full_date'], errors= 'coerce')
+#%% 
+#| label: load-msm
+import pandas as pd
 
+msm_og = pd.read_excel(io = "".join(["https://smn.conagua.gob.mx/tools/",
+                            "RESOURCES/Monitor%20de%20Sequia%20en%",
+                            "20Mexico/MunicipiosSequia.xlsx"]),
+                       dtype= 'object')
 
-mask_2003 = db['full_date'].dt.year == 2003
-mask_2004 = db['full_date'].dt.year == 2004
-mask_agosto = db['full_date'].dt.month == 8
-mask_febrero = db['full_date'].dt.month == 2
+# %% [markdown]
+"""
+> [!NOTE]  
+> La tabla muestra únicamente una muestra de las columnas de fecha 
+> del registro
+"""
+
+# %% 
+#| echo: false
+#| label: show-msm_og-sample
+from numpy.random import randint, seed
+from IPython.display import Markdown
+
+seed(11)
+random_date_cols = randint(10, 300, size = 4).tolist()
+
+Markdown(
+  msm_og
+  .sample(n = 5)
+  .iloc[:, list(range(9)) + random_date_cols]
+  .to_markdown(index= False))
+
+# %% [markdown]
+"""
+A partir de esta tabla, enlistan los cambios necesarios:
+
+1. Limpiar los nombres de las columnas
+2. Hacer el cambio de _wide format_ a _long format_
+3. Eliminar los registros Agosto 2003 y Febrero 2004
+"""
+
+# %% [markdown]
+"""
+### Limpiar los nombres de las columnas
+"""
+
+# %%
+#| label: trans-cols_clean_names
+
+from janitor import clean_names
+msm_og = msm_og.clean_names(remove_special = True)
+
+# %%
+#| echo: false
+#| label: show-msm_og_clean_names-sample
+
+seed(11)
+random_date_cols = randint(10, 300, size = 4).tolist()
+
+Markdown(
+  msm_og
+  .sample(n = 5)
+  .iloc[:, list(range(9)) + random_date_cols]
+  .to_markdown(index= False))
+
+# %% [markdown]
+"""
+### Hacer el cambio de _wide format_ a _long format_
+"""
+
+# %%
+#| label: trans_df-wide2long
+
+# Wide to Long
+msm_long = pd.melt(
+    frame = msm_og,
+    id_vars = msm_og.columns.tolist()[:9],
+    var_name = 'full_date',
+    value_name = 'sequia')
+
+# Los espacios vacíos o NaN son en realidad registros Sin sequia
+msm_long['sequia'] = msm_long['sequia'].fillna("Sin sequia")
+
+# %%
+#| echo: false
+#| label: show-msm_long-sample
+Markdown(
+  msm_long
+  .sample(n = 5, random_state= 11)
+  .to_markdown(index= False))
+
+# %% [markdown]
+"""
+### Eliminar los registros Agosto 2003 y Febrero 2004
+
+En el documento XLSX, en el apartado de Notas, se comunica que por 
+factores externos, el MSM no se elaboró en esas fechas.
+
+Por lo que se crean _máscaras_ para filtrar esas fechas
+"""
+# %%
+#| label: trans_cols-msm_long_full_date-filter_dates
+
+# 1. Limpiar las columnas de caracteres innecesarios
+msm_long['full_date'] = (msm_long['full_date']
+                         .str.replace("_00_00_00", "")
+                         .str.replace("_", "-"))
+
+# 2. Transformar a np.datetime
+msm_long['full_date'] = pd.to_datetime(arg = msm_long['full_date'],
+                                       errors= 'coerce')
+
+# 3. Crear las máscaras de fechas
+mask_2003 = msm_long['full_date'].dt.year == 2003
+mask_2004 = msm_long['full_date'].dt.year == 2004
+mask_agosto = msm_long['full_date'].dt.month == 8
+mask_febrero = msm_long['full_date'].dt.month == 2
 
 mask_agosto_2003 = mask_2003 & mask_agosto
 mask_febrero_2004 = mask_2004 & mask_febrero
+
 mask_total = mask_agosto_2003 | mask_febrero_2004
 
-datos_sequia_municipios = db[~mask_total]
-datos_sequia_municipios['sequia'] = datos_sequia_municipios['sequia'].fillna("Sin sequia")
+# 4. Filtrar aquellas fechas en las que no hubo MSM
+datos_sequia_municipios = msm_long[~mask_total]
 
-datos_sequia_municipios
+# %%
+#| echo: false
+#| label: show-datos_sequia_municipios-sample
+Markdown(
+  datos_sequia_municipios
+  .sample(n = 5, random_state= 11)
+  .to_markdown(index= False))
 
+# %% [markdown]
+"""
+## Cálculo de rachas y rachas máximas
 """
 
+# %%
+#| echo: false
 
+# TODO: Documentar la funciónes de conteo de rachas y rachas máximas
 
-
-
-import pandas as pd
-import os
-
-path2main = os.getcwd()
-path2gobmexicano = path2main + "/Gobierno-Mexicano"
-path2msmdata = path2gobmexicano + "/MSM/datos"
-file_rachas = "/rachas_sequia_municipios.csv"
-file_rachas_maximas = "/max_rachas_sequia_municipios.csv"
-
+# %% [markdown]
+"""
+```Python
 
 def contar_rachas_municipio(dataframe, cve_concatenada_mun):
 	dataframe_mun = dataframe.query(f"cve_concatenada == {int(cve_concatenada_mun)}")
@@ -107,15 +241,8 @@ for i in range(len(lista_cve_concatenada)):
 
 
 df_rachas_mun = pd.concat(lista_dfs_rachas).reset_index(drop=True)
-print("Guardando archivo de rachas...")
-df_rachas_mun.to_csv(
-	path_or_buf = path2msmdata + file_rachas,
-	index=False)
-print("Guardado!")
-print("Guardando archivo de rachas máximas...")
 
 df_rachas_max_mun = pd.concat(lista_dfs_rachas_max).reset_index(drop=True)
-df_rachas_max_mun.to_csv(
-	path_or_buf = path2msmdata + file_rachas_maximas,
-	index=False)
-print("Guardado!")
+```
+
+"""
