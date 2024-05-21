@@ -63,8 +63,8 @@ msm_og = pd.read_excel(io = "".join(["https://smn.conagua.gob.mx/tools/",
 """
 
 # %% 
-#| echo: false
 #| label: show-msm_og-sample
+#| echo: false
 from numpy.random import randint, seed
 from IPython.display import Markdown
 
@@ -98,8 +98,8 @@ from janitor import clean_names
 msm_og = msm_og.clean_names(remove_special = True)
 
 # %%
-#| echo: false
 #| label: show-msm_og_clean_names-sample
+#| echo: false
 
 seed(11)
 random_date_cols = randint(10, 300, size = 4).tolist()
@@ -129,8 +129,9 @@ msm_long = pd.melt(
 msm_long['sequia'] = msm_long['sequia'].fillna("Sin sequia")
 
 # %%
-#| echo: false
 #| label: show-msm_long-sample
+#| echo: false
+
 Markdown(
   msm_long
   .sample(n = 5, random_state= 11)
@@ -169,80 +170,239 @@ mask_febrero_2004 = mask_2004 & mask_febrero
 mask_total = mask_agosto_2003 | mask_febrero_2004
 
 # 4. Filtrar aquellas fechas en las que no hubo MSM
-datos_sequia_municipios = msm_long[~mask_total]
+db_msm = msm_long[~mask_total]
 
 # %%
+#| label: show-db_msm-sample
 #| echo: false
-#| label: show-datos_sequia_municipios-sample
+
 Markdown(
-  datos_sequia_municipios
+  db_msm
   .sample(n = 5, random_state= 11)
   .to_markdown(index= False))
 
 # %% [markdown]
 """
 ## Cálculo de rachas y rachas máximas
+
+A partir de los datos procesados (**`db_msm`**) se irá iterando por cada 
+uno de los municipios para obtener sus rachas de sequía y a partir de estas 
+las de mayor duración.
 """
-
-# %%
-#| echo: false
-
-# TODO: Documentar la funciónes de conteo de rachas y rachas máximas
 
 # %% [markdown]
 """
-```Python
+### Función para conteo de rachas
 
-def contar_rachas_municipio(dataframe, cve_concatenada_mun):
-	dataframe_mun = dataframe.query(f"cve_concatenada == {int(cve_concatenada_mun)}")
-	lista_sequias = dataframe_mun['sequia'].values.tolist()
-	lista_fechas = dataframe_mun['full_date'].values.tolist()
-	count = 1
-	lista_count = list()
+El resultado de esta función será necesaria para la función de 
+rachas máximas
+"""
 
-	for i in range(1, len(lista_sequias)):
-		if lista_sequias[i] == lista_sequias[i-1]:
-			count += 1
-		else:
-			lista_count.append((int(cve_concatenada_mun), lista_sequias[i-1], count, lista_fechas[i-count], lista_fechas[i-1]))
-			count = 1
-	lista_count.append((int(cve_concatenada_mun), lista_sequias[-1], count, lista_fechas[-count], lista_fechas[-1]))
+# %%
+#| label: create-func_count_sequia_mun
 
-	dataframe_rachas = pd.DataFrame(lista_count, columns = ['cve_concatenada','sequia','racha','full_date_start_racha','full_date_end_racha'])
-	dataframe_rachas['full_date_start_racha'] = pd.to_datetime(dataframe_rachas['full_date_start_racha'])
-	dataframe_rachas['full_date_end_racha'] = pd.to_datetime(dataframe_rachas['full_date_end_racha'])
-	dataframe_rachas['racha_dias'] = (dataframe_rachas['full_date_end_racha']-dataframe_rachas['full_date_start_racha'])
+def func_count_sequia_mun(datframe, clave_mun):
+    # Aislar el pandas.DataFrame a los datos de un solo municipio
+    datframe_mun = datframe.query(f"cve_concatenada == '{clave_mun}'")
 
-	return dataframe_rachas
+    # Obtener los valores de sequia y las fechas en la que fueron tomadas
+    lista_sequias = datframe_mun['sequia'].values.tolist()
+    lista_fechas = datframe_mun['full_date'].values.tolist()
 
-def obtener_rachas_maximas(dataframe, group_by = "sequia", rachas_name = "racha_dias"):
-	idx_max = dataframe.groupby(group_by)[rachas_name].idxmax().values.tolist()
-	return dataframe.loc[idx_max]
+    # Iniciar contador de rachas: Se inicia con uno porque se asume que ya va 
+    # un tiempo con un tipo de categoria hasta que haya un cambio
+    count = 1
+    lista_count = list()
 
+    # Iterar a partir del segundo elemento hasta el final
+    for i in range(1, len(lista_sequias)):
+        # Comparar si el elemento anterior es igual al que se tiene 
+        # en la iteracion
+        if lista_sequias[i] == lista_sequias[i-1]:
+          # De ser idéntico, se aumenta la racha
+          count += 1
+        else:
+          # De no ser idéntico, se guarda la fecha de inicio y fin, y el 
+          # conteo de la racha
+          lista_count.append(
+            (clave_mun,
+              lista_sequias[i-1],
+              count,
+              lista_fechas[i-count],
+              lista_fechas[i-1]))
+          
+          # Se reinicia el conteo de las rachas
+          count = 1
 
+    # Toda la información se guarda en una lista donde cada elemento es 
+    # una tupla
+    lista_count.append(
+      (clave_mun,
+        lista_sequias[-1],
+        count,
+        lista_fechas[-count],
+        lista_fechas[-1]))
 
-datos_sequia_municipios = pd.read_csv(
-	filepath_or_buffer= path2msmdata + "/sequia_municipios.csv.bz2")
+    # Se transforma la lista de tuplas en un pandas.DataFrame
+    datframe_rachas = pd.DataFrame(
+      data= lista_count,
+      columns = ['cve_concatenada',
+                  'sequia',
+                  'racha',
+                  'full_date_start_racha',
+                  'full_date_end_racha'])
+    # Los datos de las fechas estan en formato UNIX, por lo que se tienen 
+    # que transformar a np.datetime64
+    datframe_rachas['full_date_start_racha'] = pd.to_datetime(
+      arg = datframe_rachas['full_date_start_racha'])
+    datframe_rachas['full_date_end_racha'] = pd.to_datetime(
+      arg = datframe_rachas['full_date_end_racha'])
 
+    # Calcular la diferencia de dias entre las fechas (el resultado es 
+    # un string con el numero de días + la palabra 'days')
+    datframe_rachas['racha_dias'] = (
+       datframe_rachas['full_date_end_racha'] - 
+       datframe_rachas['full_date_start_racha'])
+    
+    # Eliminar la palabra 'days' y transformar a número
+    datframe_rachas['racha_dias'] = (datframe_rachas['racha_dias']
+                                     .astype(str)
+                                     .str.replace(" days", "")
+                                     .astype(int))
+    
+    return datframe_rachas
 
-lista_cve_concatenada = datos_sequia_municipios['cve_concatenada'].unique().tolist()
+# %% [markdown]
+"""
+### Función para aislar las rachas máximas
+"""
+
+# %% 
+#| label: create-func_get_max_rachas
+def func_get_max_rachas(datframe):
+    idx_max = (datframe
+               # Agrupar por tipo de sequia
+               .groupby("sequia")
+               # De la columna de racha_dias
+               ["racha_dias"]
+               # ... obtener el índice del valor máximo
+               .idxmax()
+               # Se obtienen los valores de los índices
+               .values
+               # Se transformar en lista (de índices)
+               .tolist())
+    # Con la lista de índices se crea un nuevo pandas.DataFrame
+    datframe_max_rachas = datframe.loc[idx_max]
+    return datframe_max_rachas
+
+# %% [markdown]
+"""
+## Aplicar las funciones en la base de datos
+
+Con las funciones listas, se obtienen las bases de datos de rachas de 
+sequía junto con las rachas máximas de sequía
+"""
+
+# %%
+#| label: create-db_rachas_mun-db_rachas_max_mun
+lista_cve_concatenada = db_msm['cve_concatenada'].unique().tolist()
 lista_dfs_rachas = list()
 lista_dfs_rachas_max = list()
 
 for i in range(len(lista_cve_concatenada)):
-    print(f"Iteración: {i}")
-    df_rachas = contar_rachas_municipio(dataframe = datos_sequia_municipios,
-                                        cve_concatenada_mun = lista_cve_concatenada[i])
-    print("Lista las rachas")
-    df_rachas_max = obtener_rachas_maximas(dataframe = df_rachas)
-    print("Lista las rachas máximas")
+    # Obtener rachas
+    df_rachas = func_count_sequia_mun(
+       datframe = db_msm,
+       clave_mun = lista_cve_concatenada[i])
+    # Aislar rachas máximas
+    df_rachas_max = func_get_max_rachas(datframe = df_rachas)
+
+    # Guardar todos los `pandas.DataFrame`s en listas
     lista_dfs_rachas.append(df_rachas)
     lista_dfs_rachas_max.append(df_rachas_max)
 
+# Concatenar la lista de pandas.DataFrame
+db_rachas_mun = pd.concat(lista_dfs_rachas).reset_index(drop=True)
+db_rachas_max_mun = pd.concat(lista_dfs_rachas_max).reset_index(drop=True)
 
-df_rachas_mun = pd.concat(lista_dfs_rachas).reset_index(drop=True)
-
-df_rachas_max_mun = pd.concat(lista_dfs_rachas_max).reset_index(drop=True)
-```
-
+# %% [markdown]
 """
+## Guardar bases de datos
+"""
+
+# %% 
+#| label: define_paths2save
+
+import os
+
+# Cambiar al folder principal del repositorio
+os.chdir("../../../")
+
+# Rutas a las carpetas necesarias
+path2main = os.getcwd()
+path2gobmex = path2main + "/GobiernoMexicano"
+path2msm = path2gobmex + "/msm"
+
+# %% [markdown]
+"""
+### Base de datos de Sequía en Municipios
+
+Muestra del archivo **`sequia_municipios.csv.bz2`**
+"""
+
+# %%
+#| label: save-db_ms
+db_msm.to_csv(
+   path_or_buf = path2msm + "/sequia_municipios.csv.bz2",
+   compression = "bz2",
+   index = False)
+
+# %%
+#| label: show-db_msm
+#| echo: false
+Markdown(
+   db_msm
+   .sample(n = 5, random_state= 13)
+   .to_markdown(index = False))
+
+# %% [markdown]
+"""
+### Base de datos de Rachas de Sequía en Municipios
+
+Muestra del archivo **`rachas_sequia_municipios.csv`**
+"""
+
+# %%
+#| label: save-db_rachas_mun
+db_rachas_mun.to_csv(
+   path_or_buf = path2msm + "/rachas_sequia_municipios.csv",
+   index = False)
+
+# %%
+#| label: show-db_rachas_mun
+#| echo: false
+Markdown(
+   db_rachas_mun
+   .sample(n = 5, random_state= 13)
+   .to_markdown(index = False))
+
+# %% [markdown]
+"""
+### Base de datos de Máximas Rachas de Sequía en Municipios
+
+Muestra del archivo **`max_rachas_sequia_municipios.csv`**
+"""
+
+# %%
+#| label: save-db_rachas_max_mun
+db_rachas_max_mun.to_csv(
+   path_or_buf = path2msm + "/max_rachas_sequia_municipios.csv",
+   index = False)
+
+# %%
+#| label: show-db_rachas_max_mun
+#| echo: false
+Markdown(
+   db_rachas_max_mun
+   .sample(n = 5, random_state= 13)
+   .to_markdown(index = False))
