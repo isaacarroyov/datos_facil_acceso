@@ -1,5 +1,5 @@
 # TODO: Documentar como GFM
-# TODO: Tomar en cuenta los cambios de nombre de columnas del script de R
+# TODO: NO EJECUTAR HASTA ORGANIZAR LA DOCUMENTACION
 """
 Script hecho para crear dos archivos CSV:
     - rachas_sequia_municipios -> archivo que tiene en orden cronológico el inicio y final de 
@@ -7,6 +7,46 @@ Script hecho para crear dos archivos CSV:
     - rachas_maximas_sequia_municipios -> archivo que contiene únicamente las rachas máximas (mayor duración)
       de cada categoría de sequía del MSM
 """
+
+
+"""
+db = (pd.read_excel(
+      io = "".join(["https://smn.conagua.gob.mx/tools/",
+                    "RESOURCES/Monitor%20de%20Sequia%20en%",
+                    "20Mexico/MunicipiosSequia.xlsx"]),
+      dtype= 'object')
+      .clean_names(remove_special=True)
+      .melt(
+      id_vars = ["cve_concatenada", "cve_ent", "cve_mun", "nombre_mun",
+                 "entidad", "org_cuenca", "clv_oc", "con_cuenca", "cve_conc"],
+      var_name = "full_date",
+      value_name= "sequia"))
+
+db['full_date'] = (db['full_date']
+                   .str.replace("_00_00_00", "")
+                   .str.replace("_", "-"))
+
+db['full_date'] = pd.to_datetime(db['full_date'], errors= 'coerce')
+
+
+mask_2003 = db['full_date'].dt.year == 2003
+mask_2004 = db['full_date'].dt.year == 2004
+mask_agosto = db['full_date'].dt.month == 8
+mask_febrero = db['full_date'].dt.month == 2
+
+mask_agosto_2003 = mask_2003 & mask_agosto
+mask_febrero_2004 = mask_2004 & mask_febrero
+mask_total = mask_agosto_2003 | mask_febrero_2004
+
+datos_sequia_municipios = db[~mask_total]
+datos_sequia_municipios['sequia'] = datos_sequia_municipios['sequia'].fillna("Sin sequia")
+
+datos_sequia_municipios
+
+"""
+
+
+
 
 
 import pandas as pd
