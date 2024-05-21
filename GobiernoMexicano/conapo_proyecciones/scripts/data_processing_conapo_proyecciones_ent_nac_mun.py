@@ -15,6 +15,7 @@
 #     code-annotations: below
 # execute:
 #   echo: true
+#   eval: true
 #   warning: false
 # ---
 
@@ -26,14 +27,6 @@ En este documento GitHub Flavored Markdown se encuentra documentado el
 código usado para la transformación y estandarización de los datos de la 
 Proyección de población de México que emite el **Consejo Nacional de 
 Población (CONAPO)**, tanto para nivel Nacional, Estatal y Municipal.
-
-> [!NOTE]
-> 
-> Cuando se habla de una _estandarización_ es completamente subjetivo, 
-> ya que la manera en la que están estructuradas las bases de datos pueden 
-> ser las ideales para otro tipo de usuarios. En el caso personal una 
-> estrucura [_tidy_](https://tidyr.tidyverse.org/articles/tidy-data.html#tidy-data) 
-> es la que mejor se ajusta a mis requerimientos y proyectos.
 """
 
 # %%
