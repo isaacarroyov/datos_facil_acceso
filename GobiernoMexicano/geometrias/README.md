@@ -1,6 +1,6 @@
 # Procesamiento y transformación de datos: Geometrías de México
 Isaac Arroyo
-21 de mayo de 2024
+22 de mayo de 2024
 
 ## Introducción y objetivos
 
@@ -22,7 +22,6 @@ Municipal
 import pandas as pd
 from janitor import clean_names
 import geopandas
-from shapely.geometry import Polygon
 import os
 
 # Cambiar al folder principal del repositorio
@@ -69,6 +68,62 @@ Para todos los casos se cortarán las siguientes islas:
 
 ## Cambio de nombres de nombres de municipios y asignación del estado
 
+Existen municipios cuyos nombres son **demasiado largos**, por lo que se
+les acortarán los nombres, tanto para mostrarlo en algún gráfico
+(estático o interactivo), así como para facilidad de lectura.
+
+``` python
+df_cve_mun = (og_mun[['cvegeo', 'nomgeo']]
+              .rename(columns = {'nomgeo': 'nombre_municipio'}))
+
+df_cve_mun['len_nombre'] = (df_cve_mun['nombre_municipio']
+                            .apply(lambda x: len(x.split(" "))))
+```
+
+| Número de palabras en el nombre | Número de municipios |
+|--------------------------------:|---------------------:|
+|                              13 |                    1 |
+|                               7 |                    2 |
+|                               6 |                    8 |
+|                               5 |                   40 |
+|                               4 |                  156 |
+|                               2 |                  362 |
+|                               3 |                  673 |
+|                               1 |                 1233 |
+
+Existen 11 municipios con 6 palabras o más en el nombre, por lo que se
+revisarán para identificar si cuentan con un nombre *más corto*
+
+| cvegeo | nombre_municipio                                                             | len_nombre |
+|-------:|:-----------------------------------------------------------------------------|-----------:|
+|  11014 | Dolores Hidalgo Cuna de la Independencia Nacional                            |          7 |
+|  12068 | La Unión de Isidoro Montes de Oca                                            |          7 |
+|  20549 | Heroica Villa Tezoatlán de Segura y Luna, Cuna de la Independencia de Oaxaca |         13 |
+|  20124 | Heroica Villa de San Blas Atempa                                             |          6 |
+|  20180 | San Juan Bautista Lo de Soto                                                 |          6 |
+|  20339 | San Pedro y San Pablo Teposcolula                                            |          6 |
+|  20340 | San Pedro y San Pablo Tequixtepec                                            |          6 |
+|  20337 | San Pedro y San Pablo Ayutla                                                 |          6 |
+|  20028 | Heroica Ciudad de Ejutla de Crespo                                           |          6 |
+|  20039 | Heroica Ciudad de Huajuapan de León                                          |          6 |
+|  30206 | Nanchital de Lázaro Cárdenas del Río                                         |          6 |
+
+Los nombres que tendrán un cambio con los siguientes:
+
+- Dolores Hidalgo Cuna de la Independencia Nacional → Dolores Hidalgo
+
+- Heroica Villa Tezoatlán de Segura y Luna, Cuna de la Independencia de
+  Oaxaca →
+
+- Heroica Villa Tezoatlán de Segura y Luna, Cuna de la Independencia de
+  Oaxaca → Tezoatlan de Segura y Luna
+
+- Heroica Ciudad de Ejutla de Crespo → Ejutla de Crespo
+
+- Heroica Ciudad de Huajuapan de León → Huajuapan de León
+
+- Heroica Villa de San Blas Atempa → San Blas Atempa
+
 ## Cortar islas
 
 ### Función para cortar islas
@@ -81,6 +136,7 @@ Para todos los casos se cortarán las siguientes islas:
 > La función que comparte esta hecha en R y fue adaptada a Python.
 
 ``` python
+from shapely.geometry import Polygon
 def recorte_cuadro(shp, minX, maxX, minY, maxY):
     bbox = Polygon([(minX, minY), (maxX, minY), (maxX, maxY), (minX, maxY)])
     

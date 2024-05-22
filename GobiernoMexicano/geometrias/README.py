@@ -43,7 +43,6 @@ Municipal
 import pandas as pd
 from janitor import clean_names
 import geopandas
-from shapely.geometry import Polygon
 import os
 
 # Cambiar al folder principal del repositorio
@@ -75,7 +74,6 @@ Markdown(
 """
 > La tabla omite la columna **`geometry`** por cuestiones de espacio
 
-
 A partir de este se crearán los siguientes archivos:
 
 * Geometría del perímetro de México
@@ -99,8 +97,73 @@ Para todos los casos se cortarán las siguientes islas:
 # %% [markdown]
 """
 ## Cambio de nombres de nombres de municipios y asignación del estado
+
+Existen municipios cuyos nombres son **demasiado largos**, por lo que se 
+les acortarán los nombres, tanto para mostrarlo en algún 
+gráfico (estático o interactivo), así como para facilidad de lectura.
 """
 
+# %% 
+#| label: create-df_cve_mun
+df_cve_mun = (og_mun[['cvegeo', 'nomgeo']]
+              .rename(columns = {'nomgeo': 'nombre_municipio'}))
+
+df_cve_mun['len_nombre'] = (df_cve_mun['nombre_municipio']
+                            .apply(lambda x: len(x.split(" "))))
+
+
+# %%
+#| label: show-num-mun-num-palabras-nombre
+#| echo: false
+Markdown(
+    pd.DataFrame(
+        df_cve_mun['len_nombre']
+        .value_counts()
+        .sort_values(ascending = True))
+    .reset_index()
+    .rename(
+        columns= {'count': 'Número de municipios',
+                  'len_nombre': 'Número de palabras en el nombre'})
+    .to_markdown(index = False))
+
+
+# %% [markdown]
+"""
+Existen 11 municipios con 6 palabras o más en el nombre, por lo que se 
+revisarán para identificar si cuentan con un nombre _más corto_
+"""
+
+# %%
+#| label: show-mun-nombre-mas-6-palabras
+#| echo: false
+Markdown(
+  df_cve_mun
+  .query("len_nombre >= 6")
+  .to_markdown(index = False))
+
+# %% [markdown]
+"""
+Los nombres que tendrán un cambio con los siguientes:
+
+* Dolores Hidalgo Cuna de la Independencia Nacional → Dolores Hidalgo
+
+* Heroica Villa Tezoatlán de Segura y Luna, 
+Cuna de la Independencia de Oaxaca →
+
+* Heroica Villa Tezoatlán de Segura y Luna, Cuna de la Independencia 
+de Oaxaca → Tezoatlan de Segura y Luna
+
+* Heroica Ciudad de Ejutla de Crespo → Ejutla de Crespo
+
+* Heroica Ciudad de Huajuapan de León → Huajuapan de León
+
+* Heroica Villa de San Blas Atempa → San Blas Atempa
+"""
+
+# %%
+
+# TODO: Revisar si todo los Heorica... se deben de cambiar de nombre
+# TODO: Pendiente de cambiar nombres
 
 
 # %% [markdown]
@@ -123,6 +186,8 @@ Para todos los casos se cortarán las siguientes islas:
 
 # %%
 #| eval: false
+
+from shapely.geometry import Polygon
 def recorte_cuadro(shp, minX, maxX, minY, maxY):
     bbox = Polygon([(minX, minY), (maxX, minY), (maxX, maxY), (minX, maxY)])
     
