@@ -1,6 +1,6 @@
 # %% [markdown]
 # ---
-# title: 'Sequía en México'
+# title: 'Procesamiento y transformación de datos: Sequía en México'
 # author: Isaac Arroyo
 # date-format: long
 # date: last-modified
@@ -23,7 +23,7 @@
 """
 ## Introducción y objetivos
 
-En este documento GitHub Flavored Markdown se encuentra documentado el 
+En este documento se encuentra documentado el 
 código usado para la extracción, transformación, estandarización y la 
 creación de nuevos conjuntos de datos a partir del registro de sequía en 
 los municipios del país del 
@@ -336,7 +336,7 @@ db_rachas_max_mun = pd.concat(lista_dfs_rachas_max).reset_index(drop=True)
 import os
 
 # Cambiar al folder principal del repositorio
-os.chdir("../../../")
+os.chdir("../../")
 
 # Rutas a las carpetas necesarias
 path2main = os.getcwd()

@@ -1,13 +1,13 @@
-# Sequía en México
+# Procesamiento y transformación de datos: Sequía en México
 Isaac Arroyo
 21 de mayo de 2024
 
 ## Introducción y objetivos
 
-En este documento GitHub Flavored Markdown se encuentra documentado el
-código usado para la extracción, transformación, estandarización y la
-creación de nuevos conjuntos de datos a partir del registro de sequía en
-los municipios del país del [**Monitor de Sequía de México
+En este documento se encuentra documentado el código usado para la
+extracción, transformación, estandarización y la creación de nuevos
+conjuntos de datos a partir del registro de sequía en los municipios del
+país del [**Monitor de Sequía de México
 (MSM)**](https://smn.conagua.gob.mx/es/climatologia/monitor-de-sequia/monitor-de-sequia-en-mexico).
 
 A través del registro de sequía en los municipios se espera tener 3
@@ -265,7 +265,7 @@ db_rachas_max_mun = pd.concat(lista_dfs_rachas_max).reset_index(drop=True)
 import os
 
 # Cambiar al folder principal del repositorio
-os.chdir("../../../")
+os.chdir("../../")
 
 # Rutas a las carpetas necesarias
 path2main = os.getcwd()
