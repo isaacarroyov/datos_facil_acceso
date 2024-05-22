@@ -91,31 +91,31 @@ A partir de este procesamiento, se crean dos bases de datos:
 ### Renombrar columnas
 
 ``` python
+from janitor import clean_names
+
 df_pob_ent_inicio_year = (df_pob_ent_inicio_year
+  .clean_names()
   .rename(
       columns = {
-          "AÑO": "n_year",
-          "ENTIDAD": "entidad",
-          "CVE_GEO": "cve_ent",
-          "EDAD": "edad",
-          "SEXO": "genero",
+          "ano": "n_year",
+          "cve_geo": "cve_ent",
+          "sexo": "genero",
           # Dejar en claro que es la población al inicio del año
-          "POBLACION": "pob_start_year"})
+          "poblacion": "pob_start_year"})
   # Eliminar columna que no aporta en la base de datos
-  .drop(columns = "RENGLON"))
+  .drop(columns = "renglon"))
 
 df_pob_ent_mid_year = (df_pob_ent_mid_year
+  .clean_names()
   .rename(
-      columns= {
-          "AÑO": "n_year",
-          "ENTIDAD": "entidad",
-          "CVE_GEO": "cve_ent",
-          "EDAD": "edad",
-          "SEXO": "genero",
-          # Dejar en claro que es la población a mitad del año
-          "POBLACION": "pob_mid_year"})
+      columns = {
+          "ano": "n_year",
+          "cve_geo": "cve_ent",
+          "sexo": "genero",
+          # Dejar en claro que es la población al inicio del año
+          "poblacion": "pob_mid_year"})
   # Eliminar columna que no aporta en la base de datos
-  .drop(columns = "RENGLON"))
+  .drop(columns = "renglon"))
 ```
 
 ### Unir ambos `pandas.DataFrame`s en uno solo
@@ -338,14 +338,15 @@ df_union_pob_mun = (pd.concat([df_pob_mun_mid_year_01,
 
 ``` python
 db_proj_mun = (df_union_pob_mun
+    .clean_names()
     .rename(columns = {
-        "CLAVE": "cve_mun",
-        "CLAVE_ENT": "cve_ent",
-        "MUN": "nombre_municipio",
-        "SEXO": "genero",
-        "AÑO": "n_year",
-        "EDAD_QUIN": "rango_edad",
-        "POB": "pob_mid_year"}))
+        "clave": "cve_mun",
+        "clave_ent": "cve_ent",
+        "mun": "nombre_municipio",
+        "sexo": "genero",
+        "ano": "n_year",
+        "edad_quin": "rango_edad",
+        "pob": "pob_mid_year"}))
 ```
 
 ### Transformar la columna de códigos de las entidades y de los municipios
