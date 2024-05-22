@@ -1,6 +1,6 @@
 # %% [markdown]
 # ---
-# title: 'Proyecciones de población de México'
+# title: 'Procesamiento y transformación de datos: Proyecciones de población de México'
 # author: Isaac Arroyo
 # date-format: long
 # date: last-modified
@@ -23,7 +23,7 @@
 """
 ## Introducción
 
-En este documento GitHub Flavored Markdown se encuentra documentado el 
+En este documento se encuentra documentado el 
 código usado para la transformación y estandarización de los datos de la 
 Proyección de población de México que emite el **Consejo Nacional de 
 Población (CONAPO)**, tanto para nivel Nacional, Estatal y Municipal.
@@ -35,7 +35,7 @@ import pandas as pd
 import os
 
 # Cambiar al folder principal del repositorio
-os.chdir("../../../")
+os.chdir("../../")
 
 # Rutas a las carpetas necesarias
 path2main = os.getcwd()
