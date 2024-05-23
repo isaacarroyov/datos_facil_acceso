@@ -540,8 +540,10 @@ db_msm_mod.to_csv(
 
 ### Base de datos de Rachas de Sequía en Municipios
 
-> \[!WARNING\] Tomar en cuenta las fechas (Agosto 2003 y Febrero 2004)
-> que no se publicó el registro del Monitor de Sequía de México
+> \[!WARNING\]
+>
+> Tomar en cuenta las fechas (Agosto 2003 y Febrero 2004) que no se
+> publicó el registro del Monitor de Sequía de México
 
 Muestra del archivo **`rachas_sequia_municipios.csv`**
 
@@ -561,8 +563,10 @@ db_rachas_mun.to_csv(
 
 ### Base de datos de Máximas Rachas de Sequía en Municipios
 
-> \[!WARNING\] Tomar en cuenta las fechas (Agosto 2003 y Febrero 2004)
-> que no se publicó el registro del Monitor de Sequía de México
+> \[!WARNING\]
+>
+> Tomar en cuenta las fechas (Agosto 2003 y Febrero 2004) que no se
+> publicó el registro del Monitor de Sequía de México
 
 Muestra del archivo **`max_rachas_sequia_municipios.csv`**
 
