@@ -29,12 +29,13 @@ creación de nuevos conjuntos de datos a partir del registro de sequía en
 los municipios del país del 
 [**Monitor de Sequía de México (MSM)**](https://smn.conagua.gob.mx/es/climatologia/monitor-de-sequia/monitor-de-sequia-en-mexico).
 
-A través del registro de sequía en los municipios se espera tener 3 bases 
+A través del registro de sequía en los municipios se espera tener 4 bases 
 de datos:
 
-1. El registro de sequía en formato _tidy_
-2. El registro del tiempo de duración del tipo de sequía (racha)
-3. El registro del tiempo de duración máximo del tipo de sequía 
+1. El registro mensual o quincenal (depende de la fecha) de sequía en formato _tidy_
+2. El registro diario de sequía en formato _tidy_
+3. El registro del tiempo de duración del tipo de sequía (racha)
+4. El registro del tiempo de duración máximo del tipo de sequía 
 (racha máxima)
 """
 
@@ -162,7 +163,7 @@ msm_long['full_date'] = pd.to_datetime(arg = msm_long['full_date'],
 
 # %% [markdown]
 """
-## El registro de sequía en formato _tidy_
+## El registro de sequía en formato _tidy_ (registro mensual, quincenal y diario)
 
 Para esta ocasión, el registro de sequía se completará con el tipo de 
 sequía diaria, esto asumiendo que cuando la publicación era mensual 
@@ -664,7 +665,7 @@ db_rachas_mun.to_csv(
    index = False)
 
 # %%
-#| label: show-db_rachas_mun
+#| label: show-db_rachas_mun_final
 #| echo: false
 
 Markdown(
@@ -687,7 +688,7 @@ db_rachas_max_mun.to_csv(
    index = False)
 
 # %%
-#| label: show-db_rachas_max_mun
+#| label: show-db_rachas_max_mun_final
 #| echo: false
 
 Markdown(
