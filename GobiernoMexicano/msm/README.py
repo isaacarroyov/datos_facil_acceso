@@ -362,6 +362,7 @@ sequía junto con las rachas máximas de sequía
 
 # %%
 #| label: create-db_rachas_mun-db_rachas_max_mun
+
 lista_cve_concatenada = msm_long_filled['cve_concatenada'].unique().tolist()
 lista_dfs_rachas = list()
 lista_dfs_rachas_max = list()
@@ -484,6 +485,18 @@ Unir con las bases de datos de interés y reordenar las columnas
 # %%
 #| label: trans_dfs-unir_cve_nom_ent_mun_cuenca_a_dbs
 
+msm_long = (pd.merge(
+    left = msm_long[['cve_concatenada', 'full_date', 'sequia']],
+    right = cve_nom_ent_mun_cuenca,
+    how = 'left',
+    left_on = 'cve_concatenada',
+    right_on = 'cve_mun')
+  .drop(columns = ['cve_concatenada'])
+  # Reordenamiento de las columnas
+  [['nombre_estado', 'cve_ent', 'nombre_municipio', 'cve_mun',
+    'org_cuenca', 'clv_oc', 'con_cuenca', 'cve_conc',
+    'full_date', 'sequia']])
+
 msm_long_filled = (pd.merge(
     left = msm_long_filled,
     right = cve_nom_ent_mun_cuenca,
@@ -533,8 +546,8 @@ db_rachas_max_mun = (pd.merge(
 
 Se crearán dos bases de datos a partir de este procesamiento de datos: 
 
-* **`msm_long_filled`** : Datos de sequía diarios en _long format_ (Modificado)
 * **`msm_long`** : Datos de sequía de la CONAGUA en _long format_
+* **`msm_long_filled`** : Datos de sequía diarios en _long format_ (Modificado)
 
 Para ambos casos se eliminarán las los registros de Agosto 2003 y 
 Febrero 2004. En el documento XLSX, en el apartado de Notas, se comunica que por 
@@ -545,52 +558,96 @@ Por lo que se crean _máscaras_ para filtrar esas fechas
 # %%
 #| label: remove-agosto_2003-febrero_2004
 
-# TODO: FILTRAR FECHAS AGOSTO 2003 Y FEBRERO 2004
+# 1. Se crean las máscaras para los filtros
+#   1.1 Para los datos de sequía de la CONAGUA en long format
+mask_dates_nowork_msm_long = (
+    # Agosto 2003
+    ((msm_long['full_date'].dt.year == 2003) & 
+     (msm_long['full_date'].dt.month == 8))
+    |
+    # Febrero 2004
+    ((msm_long['full_date'].dt.year == 2004) & 
+     (msm_long['full_date'].dt.month == 2))
+)
+#   1.2 Para los datos de sequía diarios en long format (Modificado)
+mask_dates_nowork_msm_long_filled = (
+    # Agosto 2003
+    ((msm_long_filled['full_date'].dt.year == 2003) & 
+     (msm_long_filled['full_date'].dt.month == 8))
+    |
+    # Febrero 2004
+    ((msm_long_filled['full_date'].dt.year == 2004) & 
+     (msm_long_filled['full_date'].dt.month == 2))
+)
 
+# %% [markdown]
+"""
+Las máscaras identifican las fechas donde no hubo MSM, sin embargo lo que 
+busca es **omitirlas**, no aislarlas, es por eso que para crear la 
+base de datos se _niegan_ las condiciones, para que se incluya todo lo que 
+no cumpla la máscara.
 
-
+Para negar las máscaras, se usa **`~`**
+"""
 
 # %%
-mask_2003 = msm_long['full_date'].dt.year == 2003
-mask_2004 = msm_long['full_date'].dt.year == 2004
-mask_agosto = msm_long['full_date'].dt.month == 8
-mask_febrero = msm_long['full_date'].dt.month == 2
+#| label: create-db_msm_og-db_msm_mod
 
-mask_agosto_2003 = mask_2003 & mask_agosto
-mask_febrero_2004 = mask_2004 & mask_febrero
+# Datos de sequía de la CONAGUA en long format
+db_msm_og = msm_long[~mask_dates_nowork_msm_long]
 
-mask_total = mask_agosto_2003 | mask_febrero_2004
+# Datos de sequía diarios en long format (Modificado)
+db_msm_mod = msm_long_filled[~mask_dates_nowork_msm_long_filled]
 
-# 4. Filtrar aquellas fechas en las que no hubo MSM
-db_msm = msm_long[~mask_total]
+# %% [markdown]
+"""
+Como último paso se guardan ambas bases de datos
+"""
 
-# %%
-#| label: show-db_msm-sample
-#| echo: false
-
-Markdown(
-  db_msm
-  .sample(n = 5, random_state= 11)
-  .to_markdown(index= False))
-
-
-
+# %% [markdown]
+"""
+Muestra del archivo **`sequia_municipios.csv.bz2`**
+"""
 
 # %%
-#| label: save-db_ms
-#| eval: false
-db_msm.to_csv(
+#| label: save-db_msm_og
+
+db_msm_og.to_csv(
    path_or_buf = path2msm + "/sequia_municipios.csv.bz2",
    compression = "bz2",
    index = False)
 
 # %%
-#| label: show-db_msm
+#| label: show-db_msm_og-sample
 #| echo: false
+
 Markdown(
-   db_msm
-   .sample(n = 5, random_state= 13)
-   .to_markdown(index = False))
+  db_msm_og
+  .sample(n = 5, random_state= 11)
+  .to_markdown(index= False))
+
+# %% [markdown]
+"""
+Muestra del archivo **`sequia_municipios_days.csv.bz2`**
+"""
+
+# %%
+#| label: save-db_msm_mod
+
+db_msm_mod.to_csv(
+   path_or_buf = path2msm + "/sequia_municipios_days.csv.bz2",
+   compression = "bz2",
+   index = False)
+
+# %%
+#| label: show-db_msm_mod-sample
+#| echo: false
+
+Markdown(
+  db_msm_mod
+  .sample(n = 5, random_state= 11)
+  .to_markdown(index= False))
+
 
 # %% [markdown]
 """
@@ -601,7 +658,7 @@ Muestra del archivo **`rachas_sequia_municipios.csv`**
 
 # %%
 #| label: save-db_rachas_mun
-#| eval: false
+
 db_rachas_mun.to_csv(
    path_or_buf = path2msm + "/rachas_sequia_municipios.csv",
    index = False)
@@ -609,7 +666,7 @@ db_rachas_mun.to_csv(
 # %%
 #| label: show-db_rachas_mun
 #| echo: false
-#| eval: false
+
 Markdown(
    db_rachas_mun
    .sample(n = 5, random_state= 13)
@@ -624,7 +681,7 @@ Muestra del archivo **`max_rachas_sequia_municipios.csv`**
 
 # %%
 #| label: save-db_rachas_max_mun
-#| eval: false
+
 db_rachas_max_mun.to_csv(
    path_or_buf = path2msm + "/max_rachas_sequia_municipios.csv",
    index = False)
@@ -632,7 +689,7 @@ db_rachas_max_mun.to_csv(
 # %%
 #| label: show-db_rachas_max_mun
 #| echo: false
-#| eval: false
+
 Markdown(
    db_rachas_max_mun
    .sample(n = 5, random_state= 13)
