@@ -540,6 +540,9 @@ db_msm_mod.to_csv(
 
 ### Base de datos de Rachas de Sequía en Municipios
 
+> \[!WARNING\] Tomar en cuenta las fechas (Agosto 2003 y Febrero 2004)
+> que no se publicó el registro del Monitor de Sequía de México
+
 Muestra del archivo **`rachas_sequia_municipios.csv`**
 
 ``` python
@@ -557,6 +560,9 @@ db_rachas_mun.to_csv(
 | Yucatán       |      31 | Motul               |   31052 | Península De Yucatán | XII    | Peninsula de Yucatan |       25 | D0         | 2022-12-01 00:00:00   | 2022-12-31 00:00:00 |         30 |
 
 ### Base de datos de Máximas Rachas de Sequía en Municipios
+
+> \[!WARNING\] Tomar en cuenta las fechas (Agosto 2003 y Febrero 2004)
+> que no se publicó el registro del Monitor de Sequía de México
 
 Muestra del archivo **`max_rachas_sequia_municipios.csv`**
 
