@@ -158,6 +158,31 @@ msm_long['full_date'] = (msm_long['full_date']
 msm_long['full_date'] = pd.to_datetime(arg = msm_long['full_date'],
                                        errors= 'coerce')
 
+# %%
+#| eval: false
+
+# TODO: Crear pandas.DataFrame con llenado por días y aplicar el cálculo de 
+#       rachas y rachas máximas.
+#       H: los dias se ajustaran mejor.
+# TODO: Guardar como nuevo dataframe el registro por dia y no como el 
+#       OG de MSM
+
+# Define a function to complete missing dates and fill missing values
+def fill_missing_dates(group):
+    min_date = group['full_date'].min()
+    max_date = group['full_date'].max()
+    date_range = pd.date_range(start=min_date, end=max_date, freq='D')
+    complete_group = group.set_index('full_date').reindex(date_range)
+    complete_group['sequia'] = complete_group['sequia'].fillna(method='ffill')
+    return complete_group.reset_index()
+
+# Apply the function to each group
+filled_data = grouped_data.apply(fill_missing_dates)
+
+# Concatenate the filled groups back into a single DataFrame
+filled_data = filled_data.reset_index(drop=True)
+
+# %%
 # 3. Crear las máscaras de fechas
 mask_2003 = msm_long['full_date'].dt.year == 2003
 mask_2004 = msm_long['full_date'].dt.year == 2004
