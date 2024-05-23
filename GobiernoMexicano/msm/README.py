@@ -46,7 +46,7 @@ Como primer paso es modificar la base de datos del MSM para que este en
 formato _tidy_, ya que originalmente las columnas son la fecha del registro.
 """
 
-#%% 
+# %% 
 #| label: load-msm
 import pandas as pd
 
@@ -139,80 +139,112 @@ Markdown(
 
 # %% [markdown]
 """
-### Eliminar los registros Agosto 2003 y Febrero 2004
+### Asignar unidad de fecha a la columna `full_date`
 
-En el documento XLSX, en el apartado de Notas, se comunica que por 
-factores externos, el MSM no se elaboró en esas fechas.
+Tras la transformación _wide2long_, hace falta transformar la columna 
+`full_date` a lo que es, una fecha. 
 
-Por lo que se crean _máscaras_ para filtrar esas fechas
+Previo transformar los valores a `np.datetime`, se tiene que eliminar los 
+caracteres `'_00_00_00'` y sustiuir los guiones bajos (`_`) por guiones 
+medios (`-`)
 """
-# %%
-#| label: trans_cols-msm_long_full_date-filter_dates
 
-# 1. Limpiar las columnas de caracteres innecesarios
+# %%
+#| label: trans_cols-msm_long_full_date
+
 msm_long['full_date'] = (msm_long['full_date']
                          .str.replace("_00_00_00", "")
                          .str.replace("_", "-"))
 
-# 2. Transformar a np.datetime
 msm_long['full_date'] = pd.to_datetime(arg = msm_long['full_date'],
                                        errors= 'coerce')
 
+
+# %% [markdown]
+"""
+## El registro de sequía en formato _tidy_
+
+Para esta ocasión, el registro de sequía se completará con el tipo de 
+sequía diaria, esto asumiendo que cuando la publicación era mensual 
+representa la sequía del mes del registro, mientras que para las 
+publicaciones quincenales es de los últimos 15 días.
+
+> _Ejemplo:_
+> 
+> • _Fecha publicación y tipo de sequia : Mayo 31 del 2005, D3_
+> 
+> Se traduce a que del Mayo 01 - Mayo 31 de 2005, todos los días serán 
+> etiquetados con sequía D3
+>
+> • _Fecha publicación y tipo de sequia : Mayo 31 del 2024, D3_
+> 
+> Se traduce a que del Mayo 01 - Mayo 14 de 2024, todos los días serán 
+> etiquetados con sequía D3
+"""
+
+# %% [markdown]
+"""
+### Función para completar días
+
+Esta función toma un grupo (un municipios) y completará la serie de tiempo 
+por día. Con los valores `NaN` de sequía, se llenarán con el registro 
+siguiente al que se tiene (que no sea `NaN`)
+"""
 # %%
-#| eval: false
+#| label: create-func_llenado_dias_sequia
+def func_llenado_dias_sequia(group):
+    
+    # La fecha inicia el el inicio del 2003
+    min_date = "2003-01-01"
+    
+    # La fecha final es la última actualización disponible
+    max_date = group['full_date'].max().strftime("%Y-%m-%d")
 
-# TODO: Crear pandas.DataFrame con llenado por días y aplicar el cálculo de 
-#       rachas y rachas máximas.
-#       H: los dias se ajustaran mejor.
-# TODO: Guardar como nuevo dataframe el registro por dia y no como el 
-#       OG de MSM
-
-# Define a function to complete missing dates and fill missing values
-def fill_missing_dates(group):
-    min_date = group['full_date'].min()
-    max_date = group['full_date'].max()
+    # Rango con frecuencia de 1 día
     date_range = pd.date_range(start=min_date, end=max_date, freq='D')
+
+    # Completar las fechas del grupo
     complete_group = group.set_index('full_date').reindex(date_range)
-    complete_group['sequia'] = complete_group['sequia'].fillna(method='ffill')
-    return complete_group.reset_index()
 
-# Apply the function to each group
-filled_data = grouped_data.apply(fill_missing_dates)
+    # Llenado de NaNs
+    complete_group = complete_group.bfill()
 
-# Concatenate the filled groups back into a single DataFrame
-filled_data = filled_data.reset_index(drop=True)
+    # Reset index y renombralo como 'full_date'
+    complete_group = (complete_group
+                      .reset_index(drop = False)
+                      .rename(columns = {'index': 'full_date'}))
+
+    return complete_group
+
+# %% [markdown]
+"""
+Se usarán únicamente las columnas de las claves de los municipios
+"""
+# %%
+#| label: create-msm_long_filled
+
+msm_long_filled = (msm_long[['full_date','cve_concatenada', 'sequia']]
+  .groupby('cve_concatenada')
+  .apply(func_llenado_dias_sequia, include_groups = False)
+  .reset_index(drop = False)
+  .drop(columns = ["level_1"]))
 
 # %%
-# 3. Crear las máscaras de fechas
-mask_2003 = msm_long['full_date'].dt.year == 2003
-mask_2004 = msm_long['full_date'].dt.year == 2004
-mask_agosto = msm_long['full_date'].dt.month == 8
-mask_febrero = msm_long['full_date'].dt.month == 2
-
-mask_agosto_2003 = mask_2003 & mask_agosto
-mask_febrero_2004 = mask_2004 & mask_febrero
-
-mask_total = mask_agosto_2003 | mask_febrero_2004
-
-# 4. Filtrar aquellas fechas en las que no hubo MSM
-db_msm = msm_long[~mask_total]
-
-# %%
-#| label: show-db_msm-sample
+#| label: show-msm_long_filled
 #| echo: false
 
 Markdown(
-  db_msm
-  .sample(n = 5, random_state= 11)
-  .to_markdown(index= False))
+   msm_long_filled
+   .sample(n = 5, random_state= 11)
+   .to_markdown(index = False))
 
 # %% [markdown]
 """
 ## Cálculo de rachas y rachas máximas
 
-A partir de los datos procesados (**`db_msm`**) se irá iterando por cada 
-uno de los municipios para obtener sus rachas de sequía y a partir de estas 
-las de mayor duración.
+A partir de los datos procesados (**`msm_long_filled`**) se irá iterando 
+por cada uno de los municipios para obtener sus rachas de sequía y a partir 
+de estas las de mayor duración.
 """
 
 # %% [markdown]
@@ -330,14 +362,14 @@ sequía junto con las rachas máximas de sequía
 
 # %%
 #| label: create-db_rachas_mun-db_rachas_max_mun
-lista_cve_concatenada = db_msm['cve_concatenada'].unique().tolist()
+lista_cve_concatenada = msm_long_filled['cve_concatenada'].unique().tolist()
 lista_dfs_rachas = list()
 lista_dfs_rachas_max = list()
 
 for i in range(len(lista_cve_concatenada)):
     # Obtener rachas
     df_rachas = func_count_sequia_mun(
-       datframe = db_msm,
+       datframe = msm_long_filled,
        clave_mun = lista_cve_concatenada[i])
     # Aislar rachas máximas
     df_rachas_max = func_get_max_rachas(datframe = df_rachas)
@@ -352,11 +384,46 @@ db_rachas_max_mun = pd.concat(lista_dfs_rachas_max).reset_index(drop=True)
 
 # %% [markdown]
 """
-## Guardar bases de datos
+Muestra de `db_rachas_mun`
 """
 
 # %% 
-#| label: define_paths2save
+#| label: show-db_rachas_mun
+#| echo: false
+
+Markdown(
+   db_rachas_mun
+   .sample(n = 5, random_state = 11)
+   .to_markdown(index = False))
+
+# %% [markdown]
+"""
+Muestra de `db_rachas_max_mun`
+"""
+
+# %% 
+#| label: show-db_rachas_max_mun
+#| echo: false
+
+Markdown(
+   db_rachas_max_mun
+   .sample(n = 5, random_state = 11)
+   .to_markdown(index = False))
+
+# %% [markdown]
+"""
+## Reasignar nombre de Estados, Municipios y Cuencas
+
+A partir de la creación de `msm_long_filled`, todos los conjuntos de datos 
+excluyen las claves y nombres de los Estados, Municipios (este únicamente 
+el nombre) y Cuencas. 
+
+Por lo que se completaran a las bases de datos de interés, previo a ser 
+guardadas.
+"""
+
+# %%
+#| label: load-paths
 
 import os
 
@@ -370,13 +437,148 @@ path2msm = path2gobmex + "/msm"
 
 # %% [markdown]
 """
-### Base de datos de Sequía en Municipios
-
-Muestra del archivo **`sequia_municipios.csv.bz2`**
+Claves y nombres de municipios y entidades
 """
 
 # %%
+#| label: create-cve_nom_ent_mun_cuenca
+
+cve_nom_mun = pd.read_csv(
+   filepath_or_buffer = path2gobmex + "/cve_nom_municipios.csv",
+   dtype= "object")
+
+cve_nom_mun_cuenca = (msm_long
+                      .groupby(['cve_concatenada',
+                                'org_cuenca',
+                                'clv_oc',
+                                'con_cuenca',
+                                'cve_conc'])
+                      .nunique()
+                      .reset_index()
+                      [['cve_concatenada',
+                        'org_cuenca',
+                        'clv_oc',
+                        'con_cuenca',
+                        'cve_conc']])
+
+cve_nom_ent_mun_cuenca = (pd.merge(left = cve_nom_mun_cuenca,
+                                   right= cve_nom_mun,
+                                   how = 'left',
+                                   left_on = 'cve_concatenada',
+                                   right_on = 'cve_mun')
+                          .drop(columns = ['cve_concatenada']))
+
+# %%
+#| label: show-cve_nom_ent_mun_cuenca
+
+Markdown(
+   cve_nom_ent_mun_cuenca
+   .sample(n = 5, random_state = 11)
+   .to_markdown(index = False))
+
+# %% [markdown]
+"""
+Unir con las bases de datos de interés y reordenar las columnas
+"""
+
+# %%
+#| label: trans_dfs-unir_cve_nom_ent_mun_cuenca_a_dbs
+
+msm_long_filled = (pd.merge(
+    left = msm_long_filled,
+    right = cve_nom_ent_mun_cuenca,
+    how = 'left',
+    left_on = 'cve_concatenada',
+    right_on = 'cve_mun')
+  .drop(columns = ['cve_concatenada'])
+  # Reordenamiento de las columnas
+  [['nombre_estado', 'cve_ent', 'nombre_municipio', 'cve_mun',
+    'org_cuenca', 'clv_oc', 'con_cuenca', 'cve_conc',
+    'full_date', 'sequia']])
+
+db_rachas_mun = (pd.merge(
+    left = db_rachas_mun,                      
+    right = cve_nom_ent_mun_cuenca,
+    how = 'left',
+    left_on = 'cve_concatenada',
+    right_on = 'cve_mun')
+  .drop(columns = ['cve_concatenada'])
+  # Reordenamiento y selección de las columnas
+  [['nombre_estado', 'cve_ent', 'nombre_municipio', 'cve_mun',
+    'org_cuenca', 'clv_oc', 'con_cuenca', 'cve_conc',
+    'sequia', 'full_date_start_racha', 'full_date_end_racha',
+    'racha_dias']])
+
+db_rachas_max_mun = (pd.merge(
+    left = db_rachas_max_mun,
+    right = cve_nom_ent_mun_cuenca,
+    how = 'left',
+    left_on = 'cve_concatenada',
+    right_on = 'cve_mun')
+  .drop(columns = ['cve_concatenada'])
+  # Reordenamiento y selección de las columnas
+  [['nombre_estado', 'cve_ent', 'nombre_municipio', 'cve_mun',
+    'org_cuenca', 'clv_oc', 'con_cuenca', 'cve_conc',
+    'sequia', 'full_date_start_racha', 'full_date_end_racha',
+    'racha_dias']])
+
+# %% [markdown]
+"""
+## Guardar bases de datos
+"""
+
+# %% [markdown]
+"""
+### Bases de datos de Sequía en Municipios
+
+Se crearán dos bases de datos a partir de este procesamiento de datos: 
+
+* **`msm_long_filled`** : Datos de sequía diarios en _long format_ (Modificado)
+* **`msm_long`** : Datos de sequía de la CONAGUA en _long format_
+
+Para ambos casos se eliminarán las los registros de Agosto 2003 y 
+Febrero 2004. En el documento XLSX, en el apartado de Notas, se comunica que por 
+factores externos, el MSM no se elaboró en esas fechas.
+
+Por lo que se crean _máscaras_ para filtrar esas fechas
+"""
+# %%
+#| label: remove-agosto_2003-febrero_2004
+
+# TODO: FILTRAR FECHAS AGOSTO 2003 Y FEBRERO 2004
+
+
+
+
+# %%
+mask_2003 = msm_long['full_date'].dt.year == 2003
+mask_2004 = msm_long['full_date'].dt.year == 2004
+mask_agosto = msm_long['full_date'].dt.month == 8
+mask_febrero = msm_long['full_date'].dt.month == 2
+
+mask_agosto_2003 = mask_2003 & mask_agosto
+mask_febrero_2004 = mask_2004 & mask_febrero
+
+mask_total = mask_agosto_2003 | mask_febrero_2004
+
+# 4. Filtrar aquellas fechas en las que no hubo MSM
+db_msm = msm_long[~mask_total]
+
+# %%
+#| label: show-db_msm-sample
+#| echo: false
+
+Markdown(
+  db_msm
+  .sample(n = 5, random_state= 11)
+  .to_markdown(index= False))
+
+
+
+
+# %%
 #| label: save-db_ms
+#| eval: false
 db_msm.to_csv(
    path_or_buf = path2msm + "/sequia_municipios.csv.bz2",
    compression = "bz2",
@@ -399,6 +601,7 @@ Muestra del archivo **`rachas_sequia_municipios.csv`**
 
 # %%
 #| label: save-db_rachas_mun
+#| eval: false
 db_rachas_mun.to_csv(
    path_or_buf = path2msm + "/rachas_sequia_municipios.csv",
    index = False)
@@ -406,6 +609,7 @@ db_rachas_mun.to_csv(
 # %%
 #| label: show-db_rachas_mun
 #| echo: false
+#| eval: false
 Markdown(
    db_rachas_mun
    .sample(n = 5, random_state= 13)
@@ -420,6 +624,7 @@ Muestra del archivo **`max_rachas_sequia_municipios.csv`**
 
 # %%
 #| label: save-db_rachas_max_mun
+#| eval: false
 db_rachas_max_mun.to_csv(
    path_or_buf = path2msm + "/max_rachas_sequia_municipios.csv",
    index = False)
@@ -427,6 +632,7 @@ db_rachas_max_mun.to_csv(
 # %%
 #| label: show-db_rachas_max_mun
 #| echo: false
+#| eval: false
 Markdown(
    db_rachas_max_mun
    .sample(n = 5, random_state= 13)
