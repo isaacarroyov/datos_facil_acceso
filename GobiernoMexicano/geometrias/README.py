@@ -147,9 +147,6 @@ Los nombres que tendrán un cambio con los siguientes:
 
 * Dolores Hidalgo Cuna de la Independencia Nacional → Dolores Hidalgo
 
-* Heroica Villa Tezoatlán de Segura y Luna, 
-Cuna de la Independencia de Oaxaca →
-
 * Heroica Villa Tezoatlán de Segura y Luna, Cuna de la Independencia 
 de Oaxaca → Tezoatlan de Segura y Luna
 
@@ -158,12 +155,52 @@ de Oaxaca → Tezoatlan de Segura y Luna
 * Heroica Ciudad de Huajuapan de León → Huajuapan de León
 
 * Heroica Villa de San Blas Atempa → San Blas Atempa
+
+* Heroica Ciudad de Tlaxiac → Tlaxiac
+"""
+
+# %%
+#| label: create-func_rename_mun
+
+def func_renamte_mun(nombre):
+    if nombre == "Heroica Ciudad de Tlaxiac":
+        return "Tlaxiac"
+    elif nombre == "Heroica Villa de San Blas Atempa":
+        return "San Blas Atempa"
+    elif nombre == "Heroica Ciudad de Huajuapan de León":
+        return "Huajuapan de León"
+    elif nombre == "Heroica Ciudad de Ejutla de Crespo":
+        return "Ejutla de Crespo"
+    elif nombre == ' '.join(["Heroica Villa Tezoatlán de Segura y",
+                             "Luna, Cuna de la Independencia de Oaxaca"]):
+        return "Tezoatlan de Segura y Luna"
+    elif nombre == "Dolores Hidalgo Cuna de la Independencia Nacional":
+        return "Dolores Hidalgo"
+    else: 
+        return nombre
+
+# %% [markdown]
+"""
+Se renombran los municipios y se elimina la columna de longitud del nombre
+"""
+
+# %%
+#| label: trans_cols-rename_municipios
+df_cve_mun['nombre_municipio'] = (df_cve_mun['nombre_municipio']
+                                  .apply(func_renamte_mun))
+
+df_cve_mun = df_cve_mun.drop(columns = ['len_nombre'])
+
+
+# %% [markdown]
+"""
+Finalmente ...
 """
 
 # %%
 
-# TODO: Revisar si todo los Heorica... se deben de cambiar de nombre
-# TODO: Pendiente de cambiar nombres
+# TODO: unir con base de datos de nombre de estados para actualizar 
+#       los datos del repositorio
 
 
 # %% [markdown]
