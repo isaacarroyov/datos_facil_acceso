@@ -189,19 +189,58 @@ Se renombran los municipios y se elimina la columna de longitud del nombre
 df_cve_mun['nombre_municipio'] = (df_cve_mun['nombre_municipio']
                                   .apply(func_renamte_mun))
 
-df_cve_mun = df_cve_mun.drop(columns = ['len_nombre'])
+df_cve_mun = (df_cve_mun
+              .drop(columns = ['len_nombre'])
+              .rename(columns = {'cvegeo': 'cve_mun'}))
 
 
 # %% [markdown]
 """
-Finalmente ...
+Finalmente se unen los datos de `df_cve_mun` con el archivo 
+**`cve_nom_estados.csv`** para tener una base de datos que tenga no solo 
+la clave de los municipios con sus nombres, también el estado al que 
+pertenecen.
 """
 
 # %%
+#| label: update-df_cve_mun-con_cve_nom_ent
 
-# TODO: unir con base de datos de nombre de estados para actualizar 
-#       los datos del repositorio
+df_cve_ent = pd.read_csv(
+    filepath_or_buffer= path2gobmex + "/cve_nom_estados.csv",
+    dtype = 'object')
 
+df_cve_mun['cve_ent'] = df_cve_mun['cve_mun'].apply(lambda x: x[:2])
+
+db_cve_nom_mun = (pd.merge(
+    left = df_cve_mun,
+    right = df_cve_ent,
+    how = 'left',
+    on = "cve_ent")
+  [['nombre_estado', 'cve_ent', 'nombre_municipio', 'cve_mun']])
+
+
+# %%
+#| label: show-db_cve_nom_mun
+#| echo: false
+Markdown(
+  db_cve_nom_mun
+  .sample(n = 5, random_state= 11)
+  .to_markdown(index = False))
+
+
+# %% [markdown]
+"""
+Esta nueva base de datos se va a guardar bajo el nombre 
+**`cve_nom_municipios.csv`**
+"""
+
+# %%
+#| label: save-db_cve_nom_mun
+
+(db_cve_nom_mun
+  .to_csv(
+      path_or_buf= path2gobmex + "/cve_nom_municipios.csv",
+      index = False))
 
 # %% [markdown]
 """
