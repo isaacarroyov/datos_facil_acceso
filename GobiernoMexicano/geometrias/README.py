@@ -245,7 +245,23 @@ Esta nueva base de datos se va a guardar bajo el nombre
 # %% [markdown]
 """
 ## Cortar islas
+
+La decisión de cortar o _ignorar_ las islas es con fines estéticos, ya que 
+existen islas lejanas al territorio del estado. El tipo de mapa en el que 
+se usarían estas geometrías son resúmenes de la demarcación (geometría del 
+estado o del municipio), por lo que no es necesario entrar a detalle ya 
+que las islas forman parte del municipio, caso contrario a Cozumel, donde 
+**la isla es el municipio**.
 """
+
+# %%
+#| label: create-mun_no_ent_islas-mun_ent_islas
+
+list_mun_no_ent_islas = ["02", "06", "18", "31"]
+mask_list_mun_no_ent_islas = og_mun['cve_ent'].isin(list_mun_no_ent_islas)
+
+mun_no_ent_islas = (og_mun[~(mask_list_mun_no_ent_islas)]
+                    .reset_index(drop = True))
 
 # %% [markdown]
 """
@@ -265,6 +281,7 @@ Esta nueva base de datos se va a guardar bajo el nombre
 
 from shapely.geometry import Polygon
 def recorte_cuadro(shp, minX, maxX, minY, maxY):
+
     bbox = Polygon([(minX, minY), (maxX, minY), (maxX, maxY), (minX, maxY)])
     
     bbox_gdf = geopandas.GeoDataFrame(geometry = [bbox], crs = 4326)
@@ -278,15 +295,63 @@ def recorte_cuadro(shp, minX, maxX, minY, maxY):
 ### Cortando islas: Islas Revillagigedo, Colima
 """
 
+# %%
+#| label: create-mun_colima_no_islas
+
+mun_colima = og_mun.query('cve_ent == "06"')
+bbox_colima_maxX = -103.47499
+bbox_colima_minX = -104.76983
+bbox_colima_maxY = 19.563769
+bbox_colima_minY = 18.65329
+
+mun_colima_no_islas = recorte_cuadro(
+    shp= mun_colima,
+    maxX= bbox_colima_maxX,
+    minX= bbox_colima_minX,
+    maxY= bbox_colima_maxY,
+    minY= bbox_colima_minY)
+
 # %% [markdown]
 """
 ### Cortando islas: Islas Marias, Nayarit
 """
 
+# %%
+#| label: create-mun_nayarit_no_islas
+
+mun_nayarit = og_mun.query('cve_ent == "18"')
+bbox_nayarit_minX = -105.7765
+bbox_nayarit_maxX = -103.7209 
+bbox_nayarit_minY = 20.60322 
+bbox_nayarit_maxY = 23.0845
+
+mun_nayarit_no_islas = recorte_cuadro(
+    shp= mun_nayarit,
+    maxX= bbox_nayarit_maxX,
+    minX= bbox_nayarit_minX,
+    maxY= bbox_nayarit_maxY,
+    minY= bbox_nayarit_minY)
+
 # %% [markdown]
 """
 ### Cortando islas: Arrecife Alacranes, Yucatán
 """
+
+# %%
+#| label: create-mun_yucatan_no_islas
+
+mun_yucatan = og_mun.query('cve_ent == "31"')
+bbox_yucatan_minX = -90.620039
+bbox_yucatan_maxX = -87.414154
+bbox_yucatan_minY = 19.584267 
+bbox_yucatan_maxY = 21.731110
+
+mun_yucatan_no_islas = recorte_cuadro(
+    shp= mun_yucatan,
+    maxX= bbox_yucatan_maxX,
+    minX= bbox_yucatan_minX,
+    maxY= bbox_yucatan_maxY,
+    minY= bbox_yucatan_minY)
 
 # %% [markdown]
 """
