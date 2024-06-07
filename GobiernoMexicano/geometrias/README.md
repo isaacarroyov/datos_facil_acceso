@@ -68,9 +68,11 @@ Para todos los casos se cortarán las siguientes islas:
 - Arrecife Alacranes, Yucatán
 - Isla Guadalupe, Baja California
 
-> \[!NOTE\] La decisión de eliminar esas islas se debe a la lejanía a
-> que se tiene con la parte territorial del estado o municipio, su baja
-> población y por la naturalidad de los proyectos a los que me dedico.
+> \[!NOTE\]
+>
+> La decisión de eliminar esas islas se debe a la lejanía a que se tiene
+> con la parte territorial del estado o municipio, su baja población y
+> por la naturalidad de los proyectos a los que me dedico.
 
 ## Cambio de nombres de nombres de municipios y asignación del estado
 
@@ -219,7 +221,9 @@ mun_no_ent_islas = (og_mun[~(mask_list_mun_no_ent_islas)]
 
 ### Función para cortar islas
 
-> \[!NOTE\] Función adaptada del código hecho por [Juvenal
+> \[!NOTE\]
+>
+> Función adaptada del código hecho por [Juvenal
 > Campos](https://x.com/JuvenalCamposF) de su blog [Cortando
 > Islas](https://juvenalcampos.com/2020/07/26/cortando-islas/),
 > publicado el 26 de Julio del 2020.
@@ -491,9 +495,10 @@ for codigo in list_cve_ent:
 
 #### Municipios unidos (no simplificado)
 
-> \[!NOTE\] Este archivo fue guardado como GeoJSON pero para que pueda
-> ser cargado al repositorio de GitHub, fue comprimido como un archivo
-> ZIP.
+> \[!NOTE\]
+>
+> Este archivo fue guardado como GeoJSON pero para que pueda ser cargado
+> al repositorio de GitHub, fue comprimido como un archivo ZIP.
 
 ``` python
 sf_mun.to_file(

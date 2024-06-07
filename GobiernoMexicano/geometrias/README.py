@@ -94,6 +94,7 @@ Para todos los casos se cortarán las siguientes islas:
 * Isla Guadalupe, Baja California
 
 > [!NOTE]
+> 
 > La decisión de eliminar esas islas se debe a la lejanía a que se tiene 
 > con la parte territorial del estado o municipio, su baja población y 
 > por la naturalidad de los proyectos a los que me dedico.
@@ -274,6 +275,7 @@ mun_no_ent_islas = (og_mun[~(mask_list_mun_no_ent_islas)]
 ### Función para cortar islas
 
 > [!NOTE]
+> 
 > Función adaptada del código hecho por 
 > [Juvenal Campos](https://x.com/JuvenalCamposF) de su blog 
 > [Cortando Islas](https://juvenalcampos.com/2020/07/26/cortando-islas/), 
@@ -615,6 +617,7 @@ for codigo in list_cve_ent:
 #### Municipios unidos (no simplificado)
 
 > [!NOTE]
+> 
 > Este archivo fue guardado como GeoJSON pero para que pueda ser 
 > cargado al repositorio de GitHub, fue comprimido como un archivo ZIP.
 """
@@ -633,6 +636,7 @@ sf_mun.to_file(
 
 # %%
 #| label: save_mun_unidos_simplified
+#| eval: false
 
 sf_mun_simplified.to_file(
     filename = path2modgeoms + f"/geom_mexico_mun_simplified.geojson",
