@@ -1,15 +1,3 @@
-# Datos del Gobierno de México
+# Nota importante
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum elit orci, aliquet et ipsum non, pellentesque sollicitudin enim. Nunc varius molestie sem. Nulla molestie diam eu tortor sollicitudin faucibus. Vivamus augue tortor, auctor a venenatis non, rhoncus eu elit. Phasellus at finibus libero. Etiam pulvinar quam eget nisi vestibulum semper. Nam venenatis nec urna in sollicitudin. Donec a ultrices purus, at interdum ipsum. Suspendisse condimentum malesuada malesuada. Pellentesque a mi nisi. Pellentesque feugiat augue vel erat eleifend semper.
-
-## Códigos de Entidades 
-
-Cras eget commodo lorem. Aliquam eu elit eu lorem porta tempus. Proin fermentum justo eu leo pretium, eget volutpat ipsum vehicula. Integer dapibus libero est, vel tincidunt urna bibendum vel. Duis at purus finibus, malesuada mauris sed, rhoncus lacus. Maecenas pretium sapien vel lorem volutpat condimentum. Donec scelerisque porta semper. Curabitur quis nisi ac elit feugiat laoreet. Curabitur pharetra blandit porta. Nullam varius nunc ut malesuada semper. Vivamus scelerisque ante id metus posuere pretium.
-
-Morbi id orci eget odio aliquet tristique. Aliquam felis felis, interdum vitae semper et, facilisis semper justo. Etiam sodales malesuada ante vel euismod. Duis at tincidunt nibh, sit amet molestie arcu. Vestibulum sit amet tellus vitae ipsum sollicitudin pellentesque et aliquam ligula. Nunc vel tincidunt odio. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Ut vel dictum velit, in dapibus nisl.
-
-## Proyecciones de Población: País, Estados y Municipios
-
-Pellentesque placerat lacus id lacus hendrerit, et finibus eros ultrices. Maecenas feugiat tortor sed malesuada sagittis. Duis at cursus risus, id rutrum ipsum. Morbi vel pharetra elit. Aliquam molestie velit diam, in venenatis turpis auctor egestas. Fusce at feugiat justo, vel interdum felis. Curabitur bibendum tempus elementum. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum gravida dapibus nisl, eu tincidunt leo cursus ac. Aenean aliquam mollis metus, eu varius tortor tempor at. Praesent sit amet justo pulvinar sem auctor dictum lobortis sit amet quam. Vestibulum luctus feugiat nisi, id laoreet dolor consequat sed.
-
-Interdum et malesuada fames ac ante ipsum primis in faucibus. Interdum et malesuada fames ac ante ipsum primis in faucibus. Donec vel viverra nunc, ac lacinia velit. Etiam ultricies iaculis eros at posuere. Aenean non lacinia enim, quis congue ligula. Nam commodo, augue et cursus elementum, quam diam interdum velit, nec lobortis elit felis ac felis. Morbi facilisis sollicitudin nunc, et interdum turpis. Donec eu magna ut turpis dapibus pellentesque in et nisi. Vestibulum ultricies lorem vitae magna pulvinar euismod. Aliquam a ipsum sem. Vestibulum ullamcorper, sapien ut congue pretium, orci ligula vehicula est, ac suscipit tortor elit vitae turpis. Morbi ultricies metus porttitor, bibendum ante quis, semper odio. Nunc a ante efficitur orci laoreet cursus id vitae justo. In hendrerit laoreet lectus eget commodo. Sed porta posuere libero ac viverra.
+La existencia de esta carpeta se debe a que el archivo de la geometría de los municipios de México esta siendo usado (a través del URL del archivo _raw_) en el trabajo ["Las Armas de Ovidio"](https://investigaciones.nmas.com.mx/las-armas-de-ovidio/), de Iñigo Arredondo (N+ Focus)

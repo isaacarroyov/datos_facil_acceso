@@ -1,2 +1,7 @@
 .DS_Store
 ignored_files/
+geom_mexico_mun.shp
+geom_mexico_mun.shx
+geom_mexico_mun.prj
+geom_mexico_mun.dbf
+geom_mexico_mun.cpg
