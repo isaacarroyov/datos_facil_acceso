@@ -53,6 +53,7 @@ path2main = os.getcwd()
 path2gobmex = path2main + "/GobiernoMexicano"
 path2geoms = path2gobmex + "/geometrias"
 path2mg = path2geoms + '/og_geoms'
+path2modgeoms = path2geoms + "/mod_geoms"
 
 # Datos de división municipal
 og_mun = (geopandas.read_file(filename = path2mg + "/00mun.shp")
@@ -74,11 +75,16 @@ Markdown(
 """
 > La tabla omite la columna **`geometry`** por cuestiones de espacio
 
-A partir de este se crearán los siguientes archivos:
+A partir de este se crearán los siguientes archivos GeoJSON:
 
 * Geometría del perímetro de México
 * Geometrías de los Estados de México
 * Geometrías de los Municipios de México
+
+Tenerlos como GeoJSON da mayor facilidad de carga como archivo _raw_ para 
+usarse con Altair (una de mis principales herramientas para la 
+creación de gráficos interactivos), así como facilidad para compartir con 
+otras personas.
 
 Para todos los casos se cortarán las siguientes islas:
 
@@ -191,8 +197,9 @@ df_cve_mun['nombre_municipio'] = (df_cve_mun['nombre_municipio']
 
 df_cve_mun = (df_cve_mun
               .drop(columns = ['len_nombre'])
-              .rename(columns = {'cvegeo': 'cve_mun'}))
+              .rename(columns = {'cvegeo': 'cve_geo'}))
 
+df_cve_mun['cve_mun'] = df_cve_mun['cve_geo'].apply(lambda x: x[2:])
 
 # %% [markdown]
 """
@@ -209,15 +216,14 @@ df_cve_ent = pd.read_csv(
     filepath_or_buffer= path2gobmex + "/cve_nom_estados.csv",
     dtype = 'object')
 
-df_cve_mun['cve_ent'] = df_cve_mun['cve_mun'].apply(lambda x: x[:2])
+df_cve_mun['cve_ent'] = df_cve_mun['cve_geo'].apply(lambda x: x[:2])
 
 db_cve_nom_mun = (pd.merge(
     left = df_cve_mun,
     right = df_cve_ent,
     how = 'left',
     on = "cve_ent")
-  [['nombre_estado', 'cve_ent', 'nombre_municipio', 'cve_mun']])
-
+  [['cve_geo', 'nombre_estado', 'cve_ent', 'nombre_municipio', 'cve_mun']])
 
 # %%
 #| label: show-db_cve_nom_mun
@@ -277,7 +283,7 @@ mun_no_ent_islas = (og_mun[~(mask_list_mun_no_ent_islas)]
 """
 
 # %%
-#| eval: false
+#| label: create-recorte_cuadro
 
 from shapely.geometry import Polygon
 def recorte_cuadro(shp, minX, maxX, minY, maxY):
@@ -358,27 +364,276 @@ mun_yucatan_no_islas = recorte_cuadro(
 ### Cortando islas: Isla Guadalupe, Baja California
 """
 
+# %%
+#| label: create-mun_bc_no_islas
+
+mun_bc = og_mun.query('cve_ent == "02"')
+bbox_bc_minX = -117.562296
+bbox_bc_maxX = -112.662364
+bbox_bc_minY = 28.005716
+bbox_bc_maxY = 32.542616
+
+mun_bc_no_islas = recorte_cuadro(
+    shp= mun_bc,
+    maxX= bbox_bc_maxX,
+    minX= bbox_bc_minX,
+    maxY= bbox_bc_maxY,
+    minY= bbox_bc_minY)
+
 # %% [markdown]
 """
 ### Unión de entidades con las de las islas cortadas
+
+Después de cortar las islas de nuestro interés, se unen todas en un solo 
+`geopandas.GeoDataFrame` que se pondrá como nombre final `sf_mun` (ya que 
+tengo la costumbre de nombrar así las variables que contienen objetos 
+vectoriales, esta costumbre la cargo por **`R`** y la librería `{sf}`)
 """
+
+# %%
+#| label: create-sf_mun
+
+sf_mun = (pd.concat([
+    mun_no_ent_islas,
+    mun_colima_no_islas,
+    mun_nayarit_no_islas,
+    mun_yucatan_no_islas,
+    mun_bc_no_islas])
+  .reset_index(drop = True)
+  .sort_values(by = "cvegeo")
+  .rename(columns = {'cvegeo': 'cve_geo'})
+  .drop(columns= ['nomgeo'])
+  .merge(
+    right = db_cve_nom_mun,
+    on = ['cve_geo', 'cve_ent', 'cve_mun'],
+    how = 'left')
+  [['cve_geo',
+    'nombre_estado',
+    'cve_ent',
+    'nombre_municipio',
+    'cve_mun',
+    'geometry']])
 
 # %% [markdown]
 """
 ## Perímetro de México
+
+A continuación se crea el primer archivo vectorial: la geometría de México 
+(país)
 """
+
+# %%
+#| label: create-sf_nac
+
+geometry_nac = sf_mun['geometry'].unary_union
+
+sf_nac = geopandas.GeoDataFrame(
+    data = {'cve_ent': ["00"],
+            "nombre_entidad": ["Nacional"]},
+    crs = 4326,
+    geometry = [geometry_nac])
 
 # %% [markdown]
 """
 ## División de los Estados
+
+A partir de los municipios modificados se crean las geometrías de los 
+estados de México. Para ello se va a crear un diccionario donde se 
+almacenarán los `geopandas.GeoDataFrame`s (32 en total).
+"""
+
+# %%
+#| label: create-func_isolate_ent
+
+def func_isolate_ent(gdf, codigo_entidad):
+    # Aislar entidad de interés
+    sf_ent_interes = gdf[gdf['cve_ent'].str.contains(codigo_entidad)]
+    # Unir todos los municipios que lo conforman
+    geom_ent_interes = sf_ent_interes['geometry'].unary_union
+    # Extraer la información (Código y Nombre) del estado
+    dict_ent_interes = (sf_ent_interes
+                        .drop(columns = ['geometry'])
+                        .drop_duplicates(subset=['cve_ent', 'nombre_estado'])
+                        [['cve_ent','nombre_estado']]
+                        .reset_index(drop = True)
+                        .to_dict())
+    # Crear geopandas.GeoDataFrame final
+    sf_final = geopandas.GeoDataFrame(
+        data = dict_ent_interes,
+        crs = 4326,
+        geometry = [geom_ent_interes])
+    return sf_final
+
+# %% [markdown]
+"""
+Ahora se itera por los diferentes códigos de los estados para crear las 
+geometrías individuales de cada uno.
+"""
+
+# %%
+#| label: create-dict_gdfs
+
+list_cve_ent = sf_mun['cve_ent'].unique().tolist()
+dict_gdfs = dict()
+
+for codigo in list_cve_ent:
+    dict_gdfs[codigo] = func_isolate_ent(
+        gdf = sf_mun,
+        codigo_entidad = codigo)
+
+# %% [markdown]
+"""
+En la sección del código se irán guardan las geometrías de las entidades
 """
 
 # %% [markdown]
 """
 ## Simplificación de los Municipios
+
+La función que se usa es [`geopandas.GeoSeries.simplify`](https://geopandas.org/en/stable/docs/reference/api/geopandas.GeoSeries.simplify.html), 
+la cual tiene como argumento **`tolerance`** que, en palabras sencillas, 
+indica el _poder_ de simplificación. A mayor número, más simplificadas las 
+geometrías. 
+
+
+Elegir la tolerancia depende de cada persona, ya que el resultado final se 
+ve reflejado en el mapa y en el peso del archivo final.
 """
+
+# %%
+#| label: create-sf_mun_simplified
+
+simplified_geoms = (sf_mun['geometry']
+                    .simplify(
+                        tolerance = 0.0013,
+                        preserve_topology = True))
+
+sf_mun_simplified = sf_mun.copy()
+sf_mun_simplified['geometry'] = simplified_geoms
 
 # %% [markdown]
 """
 ## Guardar geometrías modificadas
 """
+
+# %% [markdown]
+"""
+### Perímetro de México
+
+El nombre del archivo es **`geom_mexico.geojson`**
+"""
+
+# %%
+#| label: save-sf_nac_as-geom_mexico_geojson
+
+# TODO: Evaluar simplificar la geometría
+
+sf_nac.to_file(
+    filename = path2modgeoms + "/geom_mexico.geojson",
+    driver = "GeoJSON")
+
+# %% [markdown]
+"""
+### Estados
+
+Se van a crear 33 archivos:
+
+* Archivo de perímetro de la entidad (32 archivos): Bajo el nombre de 
+**`geom_ent_XX.geojson`**, donde **XX** es la clave de dos digitos de 
+cada estado.
+
+* Archivo de México con todas las divisiones de los estados (1 archivo): 
+Bajo el nombre **`geom_mexico_ent.geojson`**
+"""
+
+# %% [markdown]
+"""
+#### Estados individuales
+"""
+
+# %%
+#| label: save_all_in_dict_gdfs
+
+for key in dict_gdfs:
+    dict_gdfs[key].to_file(
+        filename = path2modgeoms + f"/geom_ent_{key}.geojson",
+        driver = "GeoJSON")
+
+# %% [markdown]
+"""
+#### Estados unidos
+"""
+
+# %%
+#| label: save_union_dict_gdfs
+
+# TODO: Evaluar simplificar la geometría
+
+(geopandas.GeoDataFrame(
+    pd.concat([dict_gdfs[key] for key in dict_gdfs]))
+    .reset_index(drop = True)
+    .to_file(
+        filename = path2modgeoms + "/geom_mexico_ent.geojson",
+        driver = "GeoJSON"))
+
+# %% [markdown]
+"""
+### Municipios 
+
+Se van a crear 34 archivos:
+
+* Archivo de división municipal de la entidad (32 archivos): 
+Bajo el nombre de **`geom_ent_mun_XX.geojson`**, donde **XX** es la clave 
+de dos dígitos de cada estado
+
+* Archivo de división municipal de todo el país: Bajo el nombre 
+**`geom_mexico_mun.shp`**
+
+* Archivo de división municipal de todo el país, simplificado: Bajo el 
+nombre **`geom_mexico_mun_simplified.geojson`**
+"""
+
+# %% [markdown]
+"""
+#### Municipios por estados individuales (no simplificado)
+"""
+
+# %%
+#| label: save_mun_per_state_no_simplified
+
+for codigo in list_cve_ent:
+    (sf_mun
+     .query(f'cve_ent == "{codigo}"')
+     .reset_index(drop = True)
+     .to_file(
+         filename = path2modgeoms + f"/geom_ent_mun_{codigo}.geojson",
+         driver = "GeoJSON"))
+
+
+# %% [markdown]
+"""
+#### Municipios unidos (no simplificado)
+
+> [!NOTE]
+> Este archivo fue guardado como GeoJSON pero para que pueda ser 
+> cargado al repositorio de GitHub, fue comprimido como un archivo ZIP.
+"""
+
+# %%
+#| label: save_mun_unidos_no_simplified
+
+sf_mun.to_file(
+    filename = path2modgeoms + f"/geom_mexico_mun.shp")
+
+
+# %% [markdown]
+"""
+#### Municipios unidos (simplificado)
+"""
+
+# %%
+#| label: save_mun_unidos_simplified
+
+sf_mun_simplified.to_file(
+    filename = path2modgeoms + f"/geom_mexico_mun_simplified.geojson",
+    driver = "GeoJSON")

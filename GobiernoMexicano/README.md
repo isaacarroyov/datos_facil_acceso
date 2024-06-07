@@ -35,7 +35,7 @@ Municipios, encuestas, medio ambiente, entre otros.
 ## Geometrías de estados y municipios
 
 > [!NOTE]
-> Datos tomados del Marco Geoestadístico 2022, de haber un cambio en el Marco Geoestadístico 2023, se actualizará
+> Datos tomados del Marco Geoestadístico 2023
 
 → [Descarga el GeoJSON de las geometrías del los **estados** de México](https://raw.githubusercontent.com/isaacarroyov/datos_facil_acceso/main/GobiernoMexicano/geometrias/00ent_mexico.geojson)
 
