@@ -37,27 +37,13 @@ Municipios, encuestas, medio ambiente, entre otros.
 > [!NOTE]
 > Datos tomados del Marco Geoestadístico 2023
 
-→ [Descarga el GeoJSON de las geometrías del los **estados** de México](https://raw.githubusercontent.com/isaacarroyov/datos_facil_acceso/main/GobiernoMexicano/geometrias/00ent_mexico.geojson)
-
-→ [Descarga el GeoJSON de las geometrías del los **municipios** de México](https://raw.githubusercontent.com/isaacarroyov/datos_facil_acceso/main/GobiernoMexicano/geometrias/00mun_simplified-t005-geopandas.geojson)
-
+<!--TODO: Actualizar Links -->
 
 ## INEGI
 
 ### Censo de Población y Vivienda
 
-**Resultados generales por entidad federativa, 2020**
-
-→ [Descarga el CSV de los resultados generales por entidad federativa del Censo de Población y Vivienda 2020](https://raw.githubusercontent.com/isaacarroyov/datos_facil_acceso/main/GobiernoMexicano/inegi/censo/2020/censo_2020_mexico_estandarizado.csv)
-
-| nombre_estado_inegi   | nombre_estado    |   cve_geo |   pob_total_2020 |   pob_h_2020 |   pob_m_2020 |
-|:----------------------|:-----------------|----------:|-----------------:|-------------:|-------------:|
-| Colima                | Colima           |        06 |           731391 |       360622 |       370769 |
-| Ciudad de México      | Ciudad de México |        09 |          9209944 |      4404927 |      4805017 |
-| Michoacán de Ocampo   | Michoacán        |        16 |          4748846 |      2306341 |      2442505 |
-| Durango               | Durango          |        10 |          1832650 |       904866 |       927784 |
-| México                | Estado de México |        15 |         16992418 |      8251295 |      8741123 |
-
+<!--TODO: Crear la base de datos -->
 
 **Resultados por AGEBS (por entidad), 2020**
 
