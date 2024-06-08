@@ -11,6 +11,10 @@ Para usar la API de Google Earth Engine se tienen dos opciones:
 
 Cada uno tiene sus ventajas y desventajas, todo depende del usuario y el tipo de proyecto.
 
+En este apartado del repositorio se documenta el código para el procesamiento y extracción de los datos, sea la transformación de datos raster a tabulados, imágenes digitales o vectores.
+
+A continuación se muestran los conjuntos de datos que se pueden encontrar en este repositorio. Cada conjunto de datos tiene una carpeta en donde se encuentran los datos extraídos; también existe la carpeta de **`/scripts`** donde se encuentra el código de la extracción y procesamiento de datos.
+
 ## TerraClimate
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi lectus nulla, dapibus quis nunc vel, dapibus porttitor dolor. Nam lacinia arcu diam, sit amet posuere massa fringilla in. Nunc varius est libero, ut rutrum metus condimentum eget. Praesent vitae elit non purus dignissim finibus. Duis sed lectus sit amet quam volutpat tincidunt. Nunc magna dui, sollicitudin et mi feugiat, auctor facilisis elit. Donec accumsan congue eleifend.
