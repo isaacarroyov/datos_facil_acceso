@@ -264,6 +264,8 @@ que las islas forman parte del municipio, caso contrario a Cozumel, donde
 # %%
 #| label: create-mun_no_ent_islas-mun_ent_islas
 
+# TODO: Adaptar codigo para leer el Marco Geoestadístico con las divisiones 
+#       de los estados a partir del corte de las islas
 list_mun_no_ent_islas = ["02", "06", "18", "31"]
 mask_list_mun_no_ent_islas = og_mun['cve_ent'].isin(list_mun_no_ent_islas)
 
