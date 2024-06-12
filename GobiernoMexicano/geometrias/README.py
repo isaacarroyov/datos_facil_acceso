@@ -34,16 +34,18 @@ Marco Geoestadístico 2023, que contiene las geometrías de México:
 * Localidades Puntuales Rurales
 * Localidades Urbanas y Rurales Amanzandas
 
-Para este espacio y en este documento se usará únicamente la División 
-Municipal
+Para este espacio y en este documento se usarán las Divisiones Estatales y 
+Municipales
 """
 
 # %%
 #| label: load-libraries-paths-00mun
+
 import pandas as pd
 from janitor import clean_names
 import geopandas
 import os
+from IPython.display import Markdown
 
 # Cambiar al folder principal del repositorio
 os.chdir("../../")
@@ -60,10 +62,18 @@ og_mun = (geopandas.read_file(filename = path2mg + "/00mun.shp")
           .to_crs(4326)
           .clean_names())
 
+og_ent = (geopandas.read_file(filename = path2mg + "/00ent.shp")
+          .to_crs(4326)
+          .clean_names())
+
+# %% [markdown]
+"""
+> Muestra de los datos en la variable **`og_mun`**
+"""
+
 # %%
 #| label: show-og_mun
 #| echo: false
-from IPython.display import Markdown
 
 Markdown(
     og_mun
@@ -73,13 +83,29 @@ Markdown(
 
 # %% [markdown]
 """
-> La tabla omite la columna **`geometry`** por cuestiones de espacio
+> Muestra de los datos en la variable **`og_ent`**
+"""
 
-A partir de este se crearán los siguientes archivos GeoJSON:
+# %%
+#| label: show-og_ent
+#| echo: false
 
-* Geometría del perímetro de México
-* Geometrías de los Estados de México
-* Geometrías de los Municipios de México
+Markdown(
+    og_ent
+    .sample(n = 5, random_state = 11)
+    .iloc[:, :-1]
+    .to_markdown(index = False))
+
+# %% [markdown]
+"""
+> Las tablas omite la columna **`geometry`** por cuestiones de espacio
+
+A partir de estos conjuntos de datos se crearán los siguientes archivos 
+GeoJSON:
+
+* Geometría del perímetro de México: Con `og_ent`
+* Geometrías de los Estados de México: Con `og_ent`
+* Geometrías de los Municipios de México: Con `og_mun`
 
 Tenerlos como GeoJSON da mayor facilidad de carga como archivo _raw_ para 
 usarse con Altair (una de mis principales herramientas para la 
@@ -98,7 +124,6 @@ Para todos los casos se cortarán las siguientes islas:
 > La decisión de eliminar esas islas se debe a la lejanía a que se tiene 
 > con la parte territorial del estado o municipio, su baja población y 
 > por la naturalidad de los proyectos a los que me dedico.
-
 """
 
 # %% [markdown]
@@ -112,6 +137,7 @@ gráfico (estático o interactivo), así como para facilidad de lectura.
 
 # %% 
 #| label: create-df_cve_mun
+
 df_cve_mun = (og_mun[['cvegeo', 'nomgeo']]
               .rename(columns = {'nomgeo': 'nombre_municipio'}))
 
@@ -193,6 +219,7 @@ Se renombran los municipios y se elimina la columna de longitud del nombre
 
 # %%
 #| label: trans_cols-rename_municipios
+
 df_cve_mun['nombre_municipio'] = (df_cve_mun['nombre_municipio']
                                   .apply(func_renamte_mun))
 
@@ -229,11 +256,11 @@ db_cve_nom_mun = (pd.merge(
 # %%
 #| label: show-db_cve_nom_mun
 #| echo: false
+
 Markdown(
   db_cve_nom_mun
   .sample(n = 5, random_state= 11)
   .to_markdown(index = False))
-
 
 # %% [markdown]
 """
@@ -251,6 +278,22 @@ Esta nueva base de datos se va a guardar bajo el nombre
 
 # %% [markdown]
 """
+Este mismo archivo (**`cve_nom_estados.csv`**) también se usará para 
+renombrar el nombre de los estados en `og_ent`
+"""
+
+# %%
+#| label: rename_vals-nombre_estado_og_ent
+
+og_ent = (og_ent
+  .drop(columns = ['nomgeo', 'cvegeo'])
+  .merge(
+    right = df_cve_ent,
+    on = "cve_ent")
+  [['nombre_estado', 'cve_ent', 'geometry']])
+
+# %% [markdown]
+"""
 ## Cortar islas
 
 La decisión de cortar o _ignorar_ las islas es con fines estéticos, ya que 
@@ -259,16 +302,33 @@ se usarían estas geometrías son resúmenes de la demarcación (geometría del
 estado o del municipio), por lo que no es necesario entrar a detalle ya 
 que las islas forman parte del municipio, caso contrario a Cozumel, donde 
 **la isla es el municipio**.
+
+Esta transformación se le hará a ambos conjuntos de datos 
+`og_mun` y `og_ent`.
+
+Las islas recortadas son las siguientes:
+
+* Islas Revillagigedo, Colima
+* Islas Marias, Nayarit
+* Arrecife Alacranes, Yucatán
+* Isla Guadalupe, Baja California
+
 """
 
 # %%
-#| label: create-mun_no_ent_islas-mun_ent_islas
+#| label: create-mun_no_islas-ent_no_islas
 
-list_mun_no_ent_islas = ["02", "06", "18", "31"]
-mask_list_mun_no_ent_islas = og_mun['cve_ent'].isin(list_mun_no_ent_islas)
+list_ent_islas = ["02", "06", "18", "31"]
 
-mun_no_ent_islas = (og_mun[~(mask_list_mun_no_ent_islas)]
+# Separción de geometrias con y sin islas (og_mun)
+mask_list_ent_islas_mun = og_mun['cve_ent'].isin(list_ent_islas)
+mun_no_islas = (og_mun[~(mask_list_ent_islas_mun)]
                     .reset_index(drop = True))
+
+# Separción de geometrias con y sin islas (og_ent)
+mask_list_ent_islas_ent = og_ent['cve_ent'].isin(list_ent_islas)
+ent_no_islas = (og_ent[~(mask_list_ent_islas_ent)]
+                .reset_index(drop = True))
 
 # %% [markdown]
 """
@@ -304,16 +364,25 @@ def recorte_cuadro(shp, minX, maxX, minY, maxY):
 """
 
 # %%
-#| label: create-mun_colima_no_islas
+#| label: create-mun_colima_no_islas-ent_colima_no_islas
 
-mun_colima = og_mun.query('cve_ent == "06"')
+# Definir bbox límite
 bbox_colima_maxX = -103.47499
 bbox_colima_minX = -104.76983
 bbox_colima_maxY = 19.563769
 bbox_colima_minY = 18.65329
 
+# Estado sin islas
+ent_colima_no_islas = recorte_cuadro(
+    shp= og_ent.query('cve_ent == "06"'),
+    maxX= bbox_colima_maxX,
+    minX= bbox_colima_minX,
+    maxY= bbox_colima_maxY,
+    minY= bbox_colima_minY)
+
+# Estado con división municipal sin islas
 mun_colima_no_islas = recorte_cuadro(
-    shp= mun_colima,
+    shp= og_mun.query('cve_ent == "06"'),
     maxX= bbox_colima_maxX,
     minX= bbox_colima_minX,
     maxY= bbox_colima_maxY,
@@ -325,16 +394,25 @@ mun_colima_no_islas = recorte_cuadro(
 """
 
 # %%
-#| label: create-mun_nayarit_no_islas
+#| label: create-mun_nayarit_no_islas-ent_nayarit_no_islas
 
-mun_nayarit = og_mun.query('cve_ent == "18"')
+# Definir bbox límite
 bbox_nayarit_minX = -105.7765
 bbox_nayarit_maxX = -103.7209 
 bbox_nayarit_minY = 20.60322 
 bbox_nayarit_maxY = 23.0845
 
+# Estado sin islas
+ent_nayarit_no_islas = recorte_cuadro(
+    shp= og_ent.query('cve_ent == "18"'),
+    maxX= bbox_nayarit_maxX,
+    minX= bbox_nayarit_minX,
+    maxY= bbox_nayarit_maxY,
+    minY= bbox_nayarit_minY)
+
+# Estado con división municipal sin islas
 mun_nayarit_no_islas = recorte_cuadro(
-    shp= mun_nayarit,
+    shp= og_mun.query('cve_ent == "18"'),
     maxX= bbox_nayarit_maxX,
     minX= bbox_nayarit_minX,
     maxY= bbox_nayarit_maxY,
@@ -346,16 +424,25 @@ mun_nayarit_no_islas = recorte_cuadro(
 """
 
 # %%
-#| label: create-mun_yucatan_no_islas
+#| label: create-mun_yucatan_no_islas-ent_yucatan_no_islas
 
-mun_yucatan = og_mun.query('cve_ent == "31"')
+# Definir bbox límite
 bbox_yucatan_minX = -90.620039
 bbox_yucatan_maxX = -87.414154
 bbox_yucatan_minY = 19.584267 
 bbox_yucatan_maxY = 21.731110
 
+# Estado con división municipal sin islas
+ent_yucatan_no_islas = recorte_cuadro(
+    shp= og_ent.query('cve_ent == "31"'),
+    maxX= bbox_yucatan_maxX,
+    minX= bbox_yucatan_minX,
+    maxY= bbox_yucatan_maxY,
+    minY= bbox_yucatan_minY)
+
+# Estado con división municipal sin islas
 mun_yucatan_no_islas = recorte_cuadro(
-    shp= mun_yucatan,
+    shp= og_mun.query('cve_ent == "31"'),
     maxX= bbox_yucatan_maxX,
     minX= bbox_yucatan_minX,
     maxY= bbox_yucatan_maxY,
@@ -367,16 +454,25 @@ mun_yucatan_no_islas = recorte_cuadro(
 """
 
 # %%
-#| label: create-mun_bc_no_islas
+#| label: create-mun_bc_no_islas-ent_bc_no_islas
 
-mun_bc = og_mun.query('cve_ent == "02"')
+# Definir bbox límite
 bbox_bc_minX = -117.562296
 bbox_bc_maxX = -112.662364
 bbox_bc_minY = 28.005716
 bbox_bc_maxY = 32.542616
 
+# Estado sin islas
+ent_bc_no_islas = recorte_cuadro(
+    shp= og_ent.query('cve_ent == "02"'),
+    maxX= bbox_bc_maxX,
+    minX= bbox_bc_minX,
+    maxY= bbox_bc_maxY,
+    minY= bbox_bc_minY)
+
+# Estado con división municipal sin islas
 mun_bc_no_islas = recorte_cuadro(
-    shp= mun_bc,
+    shp= og_mun.query('cve_ent == "02"'),
     maxX= bbox_bc_maxX,
     minX= bbox_bc_minX,
     maxY= bbox_bc_maxY,
@@ -387,22 +483,32 @@ mun_bc_no_islas = recorte_cuadro(
 ### Unión de entidades con las de las islas cortadas
 
 Después de cortar las islas de nuestro interés, se unen todas en un solo 
-`geopandas.GeoDataFrame` que se pondrá como nombre final `sf_mun` (ya que 
-tengo la costumbre de nombrar así las variables que contienen objetos 
-vectoriales, esta costumbre la cargo por **`R`** y la librería `{sf}`)
+`geopandas.GeoDataFrame` que se pondrá como nombre final `sf_mun` y 
+`sf_ent` (ya que tengo la costumbre de nombrar así las variables que 
+contienen objetos vectoriales, ya que cuando trabajo con **`R`** uso la 
+librería `{sf}`)
 """
 
 # %%
-#| label: create-sf_mun
+#| label: create-sf_mun-sf_ent
+
+sf_ent = (pd.concat([
+    ent_no_islas,
+    ent_colima_no_islas,
+    ent_nayarit_no_islas,
+    ent_yucatan_no_islas,
+    ent_bc_no_islas])
+  .sort_values(by = "cve_ent")
+  .reset_index(drop = True))
 
 sf_mun = (pd.concat([
-    mun_no_ent_islas,
+    mun_no_islas,
     mun_colima_no_islas,
     mun_nayarit_no_islas,
     mun_yucatan_no_islas,
     mun_bc_no_islas])
-  .reset_index(drop = True)
   .sort_values(by = "cvegeo")
+  .reset_index(drop = True)
   .rename(columns = {'cvegeo': 'cve_geo'})
   .drop(columns= ['nomgeo'])
   .merge(
@@ -427,66 +533,13 @@ A continuación se crea el primer archivo vectorial: la geometría de México
 # %%
 #| label: create-sf_nac
 
-geometry_nac = sf_mun['geometry'].unary_union
+geometry_nac = sf_ent['geometry'].unary_union
 
 sf_nac = geopandas.GeoDataFrame(
     data = {'cve_ent': ["00"],
             "nombre_entidad": ["Nacional"]},
     crs = 4326,
     geometry = [geometry_nac])
-
-# %% [markdown]
-"""
-## División de los Estados
-
-A partir de los municipios modificados se crean las geometrías de los 
-estados de México. Para ello se va a crear un diccionario donde se 
-almacenarán los `geopandas.GeoDataFrame`s (32 en total).
-"""
-
-# %%
-#| label: create-func_isolate_ent
-
-def func_isolate_ent(gdf, codigo_entidad):
-    # Aislar entidad de interés
-    sf_ent_interes = gdf[gdf['cve_ent'].str.contains(codigo_entidad)]
-    # Unir todos los municipios que lo conforman
-    geom_ent_interes = sf_ent_interes['geometry'].unary_union
-    # Extraer la información (Código y Nombre) del estado
-    dict_ent_interes = (sf_ent_interes
-                        .drop(columns = ['geometry'])
-                        .drop_duplicates(subset=['cve_ent', 'nombre_estado'])
-                        [['cve_ent','nombre_estado']]
-                        .reset_index(drop = True)
-                        .to_dict())
-    # Crear geopandas.GeoDataFrame final
-    sf_final = geopandas.GeoDataFrame(
-        data = dict_ent_interes,
-        crs = 4326,
-        geometry = [geom_ent_interes])
-    return sf_final
-
-# %% [markdown]
-"""
-Ahora se itera por los diferentes códigos de los estados para crear las 
-geometrías individuales de cada uno.
-"""
-
-# %%
-#| label: create-dict_gdfs
-
-list_cve_ent = sf_mun['cve_ent'].unique().tolist()
-dict_gdfs = dict()
-
-for codigo in list_cve_ent:
-    dict_gdfs[codigo] = func_isolate_ent(
-        gdf = sf_mun,
-        codigo_entidad = codigo)
-
-# %% [markdown]
-"""
-En la sección del código se irán guardan las geometrías de las entidades
-"""
 
 # %% [markdown]
 """
@@ -554,12 +607,14 @@ Bajo el nombre **`geom_mexico_ent.geojson`**
 """
 
 # %%
-#| label: save_all_in_dict_gdfs
+#| label: save-all_indiv_ent
 
-for key in dict_gdfs:
-    dict_gdfs[key].to_file(
-        filename = path2modgeoms + f"/geom_ent_{key}.geojson",
-        driver = "GeoJSON")
+for codigo in sf_ent['cve_ent'].unique().tolist():
+    (sf_ent.query(f'cve_ent == "{codigo}"')
+      .reset_index(drop = True)
+      .to_file(
+        filename = path2modgeoms + f"/geom_ent_{codigo}.geojson",
+        driver = "GeoJSON"))
 
 # %% [markdown]
 """
@@ -571,25 +626,20 @@ for key in dict_gdfs:
 
 # TODO: Evaluar simplificar la geometría
 
-(geopandas.GeoDataFrame(
-    pd.concat([dict_gdfs[key] for key in dict_gdfs]))
-    .reset_index(drop = True)
-    .to_file(
-        filename = path2modgeoms + "/geom_mexico_ent.geojson",
-        driver = "GeoJSON"))
+(sf_ent
+  .to_file(
+    filename = path2modgeoms + "/geom_mexico_ent.geojson",
+    driver = "GeoJSON"))
 
 # %% [markdown]
 """
 ### Municipios 
 
-Se van a crear 34 archivos:
+Se van a crear 33 archivos:
 
 * Archivo de división municipal de la entidad (32 archivos): 
 Bajo el nombre de **`geom_ent_mun_XX.geojson`**, donde **XX** es la clave 
 de dos dígitos de cada estado
-
-* Archivo de división municipal de todo el país: Bajo el nombre 
-**`geom_mexico_mun.shp`**
 
 * Archivo de división municipal de todo el país, simplificado: Bajo el 
 nombre **`geom_mexico_mun_simplified.geojson`**
@@ -603,31 +653,13 @@ nombre **`geom_mexico_mun_simplified.geojson`**
 # %%
 #| label: save_mun_per_state_no_simplified
 
-for codigo in list_cve_ent:
+for codigo in sf_ent['cve_ent'].unique().tolist():
     (sf_mun
      .query(f'cve_ent == "{codigo}"')
      .reset_index(drop = True)
      .to_file(
          filename = path2modgeoms + f"/geom_ent_mun_{codigo}.geojson",
          driver = "GeoJSON"))
-
-
-# %% [markdown]
-"""
-#### Municipios unidos (no simplificado)
-
-> [!NOTE]
-> 
-> Este archivo fue guardado como GeoJSON pero para que pueda ser 
-> cargado al repositorio de GitHub, fue comprimido como un archivo ZIP.
-"""
-
-# %%
-#| label: save_mun_unidos_no_simplified
-
-sf_mun.to_file(
-    filename = path2modgeoms + f"/geom_mexico_mun.shp")
-
 
 # %% [markdown]
 """
