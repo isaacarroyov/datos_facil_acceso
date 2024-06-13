@@ -11,6 +11,7 @@
 #'     fig-asp: 0.75
 #'     fig-dpi: 300
 #'     code-annotations: below
+#'     df-print: kable
 #' execute:
 #'   echo: true
 #'   eval: true
@@ -88,8 +89,7 @@ db_victimas_delitos_ent <- read_csv(
 
 set.seed(11)
 db_incidencia_mun %>%
-  slice_sample(n = 5) %>%
-  gt()
+  slice_sample(n = 5)
 
 #' **Muestra de `db_victimas_delitos_ent`**
 
@@ -98,8 +98,7 @@ db_incidencia_mun %>%
 
 set.seed(11)
 db_victimas_delitos_ent %>%
-  slice_sample(n = 5) %>%
-  gt()
+  slice_sample(n = 5)
 
 #' ## Objetivos
 #' 
