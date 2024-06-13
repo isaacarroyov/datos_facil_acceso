@@ -1,4 +1,4 @@
-# Procesamiento de datos: Incidencia delictiva del Fuero Común
+# Procesamiento de datos: Incidencia Delictiva del Fuero Común
 Isaac Arroyo
 12 de junio de 2024
 
@@ -30,6 +30,22 @@ Delictiva](https://www.gob.mx/sesnsp/acciones-y-programas/datos-abiertos-de-inci
 del SESNSP.
 
 ``` r
+# TODO: Encontrar la manera de hacer la descarga directa con el URL del 
+#       archivo de Google Drive (INCIDENCIA EN MUNICIPIOS)
+
+# - - Número de delitos - - #
+path2dataincidenciamun <- list.files(
+  path = path2ogdatasesnsp,
+  pattern = ".csv",
+  full.names = TRUE)
+
+db_incidencia_mun <- read_csv(
+    file = path2dataincidenciamun,
+    locale = locale(encoding = "latin1"),
+    col_types = cols(.default = "c")) %>%
+  janitor::clean_names()
+
+# - - Número de víctimas de delitos - - #
 url_victimas_delitos_ent <- "https://drive.google.com/file/d/1MeLHOZnPQ7kyxRg2JSQvnDh_2U5gjR2i/view"
 id_file_victimas_delitos_ent <- str_extract(
     string = url_victimas_delitos_ent,
@@ -41,429 +57,9 @@ db_victimas_delitos_ent <- read_csv(
     col_types = cols(.default = "c"),
     locale = locale(encoding = "latin1")) %>%
   janitor::clean_names()
-
-# TODO: Encontrar la manera de hacer la descarga directa con el URL del 
-#       archivo de Google Drive (INCIDENCIA EN MUNICIPIOS)
-
-path2dataincidenciamun <- list.files(
-  path = path2ogdatasesnsp,
-  pattern = ".csv",
-  full.names = TRUE)
-
-db_incidencia_mun <- read_csv(
-    file = path2dataincidenciamun,
-    locale = locale(encoding = "latin1"),
-    col_types = cols(.default = "c")) %>%
-  janitor::clean_names()
 ```
 
-> Muestra de `db_victimas_delitos_ent`
-
-<div>
-
-<div id="uckgmbqhog" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#uckgmbqhog table {
-  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-&#10;#uckgmbqhog thead, #uckgmbqhog tbody, #uckgmbqhog tfoot, #uckgmbqhog tr, #uckgmbqhog td, #uckgmbqhog th {
-  border-style: none;
-}
-&#10;#uckgmbqhog p {
-  margin: 0;
-  padding: 0;
-}
-&#10;#uckgmbqhog .gt_table {
-  display: table;
-  border-collapse: collapse;
-  line-height: normal;
-  margin-left: auto;
-  margin-right: auto;
-  color: #333333;
-  font-size: 16px;
-  font-weight: normal;
-  font-style: normal;
-  background-color: #FFFFFF;
-  width: auto;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #A8A8A8;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #A8A8A8;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-}
-&#10;#uckgmbqhog .gt_caption {
-  padding-top: 4px;
-  padding-bottom: 4px;
-}
-&#10;#uckgmbqhog .gt_title {
-  color: #333333;
-  font-size: 125%;
-  font-weight: initial;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-bottom-color: #FFFFFF;
-  border-bottom-width: 0;
-}
-&#10;#uckgmbqhog .gt_subtitle {
-  color: #333333;
-  font-size: 85%;
-  font-weight: initial;
-  padding-top: 3px;
-  padding-bottom: 5px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-top-color: #FFFFFF;
-  border-top-width: 0;
-}
-&#10;#uckgmbqhog .gt_heading {
-  background-color: #FFFFFF;
-  text-align: center;
-  border-bottom-color: #FFFFFF;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-}
-&#10;#uckgmbqhog .gt_bottom_border {
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-}
-&#10;#uckgmbqhog .gt_col_headings {
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-}
-&#10;#uckgmbqhog .gt_col_heading {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: normal;
-  text-transform: inherit;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: bottom;
-  padding-top: 5px;
-  padding-bottom: 6px;
-  padding-left: 5px;
-  padding-right: 5px;
-  overflow-x: hidden;
-}
-&#10;#uckgmbqhog .gt_column_spanner_outer {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: normal;
-  text-transform: inherit;
-  padding-top: 0;
-  padding-bottom: 0;
-  padding-left: 4px;
-  padding-right: 4px;
-}
-&#10;#uckgmbqhog .gt_column_spanner_outer:first-child {
-  padding-left: 0;
-}
-&#10;#uckgmbqhog .gt_column_spanner_outer:last-child {
-  padding-right: 0;
-}
-&#10;#uckgmbqhog .gt_column_spanner {
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  vertical-align: bottom;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  overflow-x: hidden;
-  display: inline-block;
-  width: 100%;
-}
-&#10;#uckgmbqhog .gt_spanner_row {
-  border-bottom-style: hidden;
-}
-&#10;#uckgmbqhog .gt_group_heading {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  text-transform: inherit;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: middle;
-  text-align: left;
-}
-&#10;#uckgmbqhog .gt_empty_group_heading {
-  padding: 0.5px;
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  vertical-align: middle;
-}
-&#10;#uckgmbqhog .gt_from_md > :first-child {
-  margin-top: 0;
-}
-&#10;#uckgmbqhog .gt_from_md > :last-child {
-  margin-bottom: 0;
-}
-&#10;#uckgmbqhog .gt_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  margin: 10px;
-  border-top-style: solid;
-  border-top-width: 1px;
-  border-top-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: middle;
-  overflow-x: hidden;
-}
-&#10;#uckgmbqhog .gt_stub {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  text-transform: inherit;
-  border-right-style: solid;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-&#10;#uckgmbqhog .gt_stub_row_group {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  text-transform: inherit;
-  border-right-style: solid;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-  padding-left: 5px;
-  padding-right: 5px;
-  vertical-align: top;
-}
-&#10;#uckgmbqhog .gt_row_group_first td {
-  border-top-width: 2px;
-}
-&#10;#uckgmbqhog .gt_row_group_first th {
-  border-top-width: 2px;
-}
-&#10;#uckgmbqhog .gt_summary_row {
-  color: #333333;
-  background-color: #FFFFFF;
-  text-transform: inherit;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-&#10;#uckgmbqhog .gt_first_summary_row {
-  border-top-style: solid;
-  border-top-color: #D3D3D3;
-}
-&#10;#uckgmbqhog .gt_first_summary_row.thick {
-  border-top-width: 2px;
-}
-&#10;#uckgmbqhog .gt_last_summary_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-}
-&#10;#uckgmbqhog .gt_grand_summary_row {
-  color: #333333;
-  background-color: #FFFFFF;
-  text-transform: inherit;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-&#10;#uckgmbqhog .gt_first_grand_summary_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-top-style: double;
-  border-top-width: 6px;
-  border-top-color: #D3D3D3;
-}
-&#10;#uckgmbqhog .gt_last_grand_summary_row_top {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-bottom-style: double;
-  border-bottom-width: 6px;
-  border-bottom-color: #D3D3D3;
-}
-&#10;#uckgmbqhog .gt_striped {
-  background-color: rgba(128, 128, 128, 0.05);
-}
-&#10;#uckgmbqhog .gt_table_body {
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-}
-&#10;#uckgmbqhog .gt_footnotes {
-  color: #333333;
-  background-color: #FFFFFF;
-  border-bottom-style: none;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-}
-&#10;#uckgmbqhog .gt_footnote {
-  margin: 0px;
-  font-size: 90%;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-&#10;#uckgmbqhog .gt_sourcenotes {
-  color: #333333;
-  background-color: #FFFFFF;
-  border-bottom-style: none;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-}
-&#10;#uckgmbqhog .gt_sourcenote {
-  font-size: 90%;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-&#10;#uckgmbqhog .gt_left {
-  text-align: left;
-}
-&#10;#uckgmbqhog .gt_center {
-  text-align: center;
-}
-&#10;#uckgmbqhog .gt_right {
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
-&#10;#uckgmbqhog .gt_font_normal {
-  font-weight: normal;
-}
-&#10;#uckgmbqhog .gt_font_bold {
-  font-weight: bold;
-}
-&#10;#uckgmbqhog .gt_font_italic {
-  font-style: italic;
-}
-&#10;#uckgmbqhog .gt_super {
-  font-size: 65%;
-}
-&#10;#uckgmbqhog .gt_footnote_marks {
-  font-size: 75%;
-  vertical-align: 0.4em;
-  position: initial;
-}
-&#10;#uckgmbqhog .gt_asterisk {
-  font-size: 100%;
-  vertical-align: 0;
-}
-&#10;#uckgmbqhog .gt_indent_1 {
-  text-indent: 5px;
-}
-&#10;#uckgmbqhog .gt_indent_2 {
-  text-indent: 10px;
-}
-&#10;#uckgmbqhog .gt_indent_3 {
-  text-indent: 15px;
-}
-&#10;#uckgmbqhog .gt_indent_4 {
-  text-indent: 20px;
-}
-&#10;#uckgmbqhog .gt_indent_5 {
-  text-indent: 25px;
-}
-</style>
-
-| ano  | clave_ent | entidad                         | bien_juridico_afectado           | tipo_de_delito                   | subtipo_de_delito                | modalidad                        | sexo            | rango_de_edad          | enero | febrero | marzo | abril | mayo | junio | julio | agosto | septiembre | octubre | noviembre | diciembre |
-|------|-----------|---------------------------------|----------------------------------|----------------------------------|----------------------------------|----------------------------------|-----------------|------------------------|-------|---------|-------|-------|------|-------|-------|--------|------------|---------|-----------|-----------|
-| 2023 | 30        | Veracruz de Ignacio de la Llave | La vida y la Integridad corporal | Feminicidio                      | Feminicidio                      | Con arma blanca                  | Mujer           | Menores de edad (0-17) | 0     | 0       | 0     | 1     | 0    | 0     | 0     | 0      | 0          | 0       | 0         | 0         |
-| 2024 | 1         | Aguascalientes                  | La vida y la Integridad corporal | Aborto                           | Aborto                           | Aborto                           | No identificado | No identificado        | 0     | 1       | 1     | 0     | 0    | NA    | NA    | NA     | NA         | NA      | NA        | NA        |
-| 2017 | 19        | Nuevo León                      | La vida y la Integridad corporal | Homicidio                        | Homicidio culposo                | Con otro elemento                | Hombre          | Adultos (18 y más)     | 6     | 2       | 4     | 0     | 2    | 4     | 3     | 3      | 0          | 5       | 0         | 1         |
-| 2018 | 30        | Veracruz de Ignacio de la Llave | La sociedad                      | Otros delitos contra la sociedad | Otros delitos contra la sociedad | Otros delitos contra la sociedad | Hombre          | Menores de edad (0-17) | 0     | 0       | 0     | 0     | 0    | 0     | 0     | 0      | 0          | 0       | 0         | 0         |
-| 2020 | 4         | Campeche                        | La vida y la Integridad corporal | Homicidio                        | Homicidio doloso                 | Con otro elemento                | Hombre          | Menores de edad (0-17) | 0     | 0       | 0     | 0     | 0    | 0     | 0     | 0      | 0          | 0       | 0         | 0         |
-
-</div>
-
-</div>
-
-> Muestra de `db_victimas_delitos_ent`
+**Muestra de `db_incidencia_mun`**
 
 <div>
 
@@ -869,16 +465,543 @@ db_incidencia_mun <- read_csv(
 
 </div>
 
-Morbi a aliquam odio. Sed feugiat nibh et pulvinar commodo. Nullam
-dapibus pharetra justo sed blandit. Nullam at velit volutpat, tincidunt
-lacus non, bibendum ex. Cras id luctus nulla, eget tempor libero. Proin
-tincidunt consequat massa in viverra. Phasellus sit amet mi vitae velit
-vehicula eleifend.
+**Muestra de `db_victimas_delitos_ent`**
 
-Morbi orci urna, malesuada et viverra ac, tincidunt in libero. Interdum
-et malesuada fames ac ante ipsum primis in faucibus. Pellentesque quis
-laoreet augue, in interdum turpis. In iaculis erat magna, commodo
-hendrerit leo elementum sit amet. Proin gravida dolor nisi, vel aliquam
-nibh sagittis eget. Vivamus suscipit, felis at lobortis dictum, dolor
-tellus imperdiet ipsum, id maximus lacus diam quis nisl. Nam pretium
-arcu id nisl lobortis vehicula.
+<div>
+
+<div id="uckgmbqhog" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#uckgmbqhog table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+&#10;#uckgmbqhog thead, #uckgmbqhog tbody, #uckgmbqhog tfoot, #uckgmbqhog tr, #uckgmbqhog td, #uckgmbqhog th {
+  border-style: none;
+}
+&#10;#uckgmbqhog p {
+  margin: 0;
+  padding: 0;
+}
+&#10;#uckgmbqhog .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+&#10;#uckgmbqhog .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+&#10;#uckgmbqhog .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+&#10;#uckgmbqhog .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+&#10;#uckgmbqhog .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+&#10;#uckgmbqhog .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+&#10;#uckgmbqhog .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+&#10;#uckgmbqhog .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+&#10;#uckgmbqhog .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+&#10;#uckgmbqhog .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+&#10;#uckgmbqhog .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+&#10;#uckgmbqhog .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+&#10;#uckgmbqhog .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+&#10;#uckgmbqhog .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+&#10;#uckgmbqhog .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+&#10;#uckgmbqhog .gt_from_md > :first-child {
+  margin-top: 0;
+}
+&#10;#uckgmbqhog .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+&#10;#uckgmbqhog .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+&#10;#uckgmbqhog .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+&#10;#uckgmbqhog .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+&#10;#uckgmbqhog .gt_row_group_first td {
+  border-top-width: 2px;
+}
+&#10;#uckgmbqhog .gt_row_group_first th {
+  border-top-width: 2px;
+}
+&#10;#uckgmbqhog .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+&#10;#uckgmbqhog .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+&#10;#uckgmbqhog .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+&#10;#uckgmbqhog .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+&#10;#uckgmbqhog .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+&#10;#uckgmbqhog .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+&#10;#uckgmbqhog .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+&#10;#uckgmbqhog .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+&#10;#uckgmbqhog .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+&#10;#uckgmbqhog .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+&#10;#uckgmbqhog .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+&#10;#uckgmbqhog .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+&#10;#uckgmbqhog .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+&#10;#uckgmbqhog .gt_left {
+  text-align: left;
+}
+&#10;#uckgmbqhog .gt_center {
+  text-align: center;
+}
+&#10;#uckgmbqhog .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+&#10;#uckgmbqhog .gt_font_normal {
+  font-weight: normal;
+}
+&#10;#uckgmbqhog .gt_font_bold {
+  font-weight: bold;
+}
+&#10;#uckgmbqhog .gt_font_italic {
+  font-style: italic;
+}
+&#10;#uckgmbqhog .gt_super {
+  font-size: 65%;
+}
+&#10;#uckgmbqhog .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+&#10;#uckgmbqhog .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+&#10;#uckgmbqhog .gt_indent_1 {
+  text-indent: 5px;
+}
+&#10;#uckgmbqhog .gt_indent_2 {
+  text-indent: 10px;
+}
+&#10;#uckgmbqhog .gt_indent_3 {
+  text-indent: 15px;
+}
+&#10;#uckgmbqhog .gt_indent_4 {
+  text-indent: 20px;
+}
+&#10;#uckgmbqhog .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+
+| ano  | clave_ent | entidad                         | bien_juridico_afectado           | tipo_de_delito                   | subtipo_de_delito                | modalidad                        | sexo            | rango_de_edad          | enero | febrero | marzo | abril | mayo | junio | julio | agosto | septiembre | octubre | noviembre | diciembre |
+|------|-----------|---------------------------------|----------------------------------|----------------------------------|----------------------------------|----------------------------------|-----------------|------------------------|-------|---------|-------|-------|------|-------|-------|--------|------------|---------|-----------|-----------|
+| 2023 | 30        | Veracruz de Ignacio de la Llave | La vida y la Integridad corporal | Feminicidio                      | Feminicidio                      | Con arma blanca                  | Mujer           | Menores de edad (0-17) | 0     | 0       | 0     | 1     | 0    | 0     | 0     | 0      | 0          | 0       | 0         | 0         |
+| 2024 | 1         | Aguascalientes                  | La vida y la Integridad corporal | Aborto                           | Aborto                           | Aborto                           | No identificado | No identificado        | 0     | 1       | 1     | 0     | 0    | NA    | NA    | NA     | NA         | NA      | NA        | NA        |
+| 2017 | 19        | Nuevo León                      | La vida y la Integridad corporal | Homicidio                        | Homicidio culposo                | Con otro elemento                | Hombre          | Adultos (18 y más)     | 6     | 2       | 4     | 0     | 2    | 4     | 3     | 3      | 0          | 5       | 0         | 1         |
+| 2018 | 30        | Veracruz de Ignacio de la Llave | La sociedad                      | Otros delitos contra la sociedad | Otros delitos contra la sociedad | Otros delitos contra la sociedad | Hombre          | Menores de edad (0-17) | 0     | 0       | 0     | 0     | 0    | 0     | 0     | 0      | 0          | 0       | 0         | 0         |
+| 2020 | 4         | Campeche                        | La vida y la Integridad corporal | Homicidio                        | Homicidio doloso                 | Con otro elemento                | Hombre          | Menores de edad (0-17) | 0     | 0       | 0     | 0     | 0    | 0     | 0     | 0      | 0          | 0       | 0         | 0         |
+
+</div>
+
+</div>
+
+## Objetivos
+
+El objetivo con ambos conjuntos es crear nuevos conjuntos, con
+información extra que es de interés general. Los conjuntos de datos
+contemplados son los siguientes:
+
+- **Incidencia Delictiva del Fuero Común anual a nivel municipal**:
+  - Año
+  - Ubicación (Codigo y nombre de la entidad y municipio)
+  - Bien Jurídico Afectado, Tipo, Subtipo y Modalidad del delito
+  - Número de delitos
+  - Número de delitos por cada 100 mil habitantes
+- **Incidencia Delicitva del fuero Común anual a nivel estatal**:
+  - Año
+  - Ubicación (Codigo y nombre de la entidad)
+  - Bien Jurídico Afectado, Tipo, Subtipo y Modalidad del delito
+  - Número de delitos
+  - Número de delitos por cada 100 mil habitantes
+- **Víctimas de Delitos del Fuero Común anual a nivel estatal
+  (general)**:
+  - Año
+  - Ubicación (Codigo y nombre de la entidad)
+  - Bien Jurídico Afectado, Tipo, Subtipo y Modalidad del delito
+  - Número de delitos por género
+  - Número de delitos por cada 100 mil habitantes del total de la
+    población total por género
+- **Víctimas de Delitos del Fuero Común anual a nivel estatal (rango de
+  edad)**:
+  - Año
+  - Ubicación (Codigo y nombre de la entidad)
+  - Bien Jurídico Afectado, Tipo, Subtipo y Modalidad del delito
+  - Género
+  - Rango de edad
+  - Número de delitos
+  - Número de delitos por cada 100 mil habitantes de la población total
+  - Número de delitos por cada 100 mil habitantes de la población del
+    rango de edad
+
+> \[!NOTE\]
+>
+> Los conjuntos de datos propuestos y el procesamiento de datos están
+> sujetos cambios dependiendo del desarrollo de los proyectos que se
+> harán con ellos o conforme se avance en la documentación.
+
+## Lista de cambios
+
+Curabitur orci lacus, cursus a fermentum nec, pretium a nulla. Curabitur
+nec condimentum eros. Aliquam nibh enim, ullamcorper in malesuada in,
+egestas at magna. Sed commodo id dui sed varius:
+
+- Nulla ultrices maximus risus.
+- Nam sodales vehicula nulla, ut placerat nunc dignissim non.
+- Quisque tincidunt justo a ultrices dignissim. Curabitur aliquet ut
+  elit id aliquam.
+- Vivamus dictum imperdiet odio, ac consequat augue dapibus pulvinar.
+- Interdum et malesuada fames ac ante ipsum primis in faucibus.
+- Donec sit amet libero a justo aliquam sagittis ut a eros.
+
+## Pendiente 2
+
+Cras vestibulum lacinia felis et gravida. Etiam tempus lorem et dictum
+iaculis. Etiam dapibus magna nisl, eget eleifend quam auctor quis.
+Maecenas semper nunc nec nunc tempus, non egestas purus porttitor.
+Nullam nisi felis, suscipit vel ullamcorper vitae, lobortis euismod
+lacus. Aenean molestie faucibus libero at efficitur. Sed suscipit a eros
+at eleifend. In quis ante commodo, tempus nisl a, elementum neque.
+Nullam convallis fermentum tortor. Nunc scelerisque, nunc vel
+scelerisque tempor, metus justo dictum augue, et luctus ante sapien eu
+tellus. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+Vestibulum non tristique ante. Curabitur a risus non justo varius dictum
+sed sit amet magna. Curabitur rhoncus, diam eget commodo finibus, metus
+mi feugiat tellus, eu vestibulum lacus massa quis arcu.
+
+## Pendiente 3
+
+Suspendisse potenti. In cursus nibh ut diam cursus, vitae mattis erat
+hendrerit. Aliquam ornare risus ut ante porta, in laoreet lectus
+viverra. Etiam ligula magna, tincidunt quis dui in, cursus laoreet
+tortor. Vivamus nec molestie ipsum. Suspendisse eu pulvinar libero.
+Praesent eu consectetur ligula. Etiam purus dolor, commodo at leo et,
+aliquet facilisis mauris.
+
+## Pendiente 4
+
+Duis ac ex venenatis turpis vulputate porttitor ut euismod libero. Fusce
+sem neque, volutpat mattis sapien id, ultrices porta elit. Sed consequat
+risus eu diam vehicula aliquet. Sed in mi posuere risus sollicitudin
+rutrum ut id odio. In hac habitasse platea dictumst. Duis tincidunt
+interdum pellentesque. In blandit vulputate dui, nec iaculis diam
+ullamcorper quis.
+
+## Pendiente 5
+
+Curabitur orci lacus, cursus a fermentum nec, pretium a nulla. Curabitur
+nec condimentum eros. Aliquam nibh enim, ullamcorper in malesuada in,
+egestas at magna. Sed commodo id dui sed varius. Nulla ultrices maximus
+risus. Nam sodales vehicula nulla, ut placerat nunc dignissim non.
+Quisque tincidunt justo a ultrices dignissim. Curabitur aliquet ut elit
+id aliquam. Vivamus dictum imperdiet odio, ac consequat augue dapibus
+pulvinar. Interdum et malesuada fames ac ante ipsum primis in faucibus.
+Donec sit amet libero a justo aliquam sagittis ut a eros.
+
+## Pendiente 6
+
+Cras vestibulum lacinia felis et gravida. Etiam tempus lorem et dictum
+iaculis. Etiam dapibus magna nisl, eget eleifend quam auctor quis.
+Maecenas semper nunc nec nunc tempus, non egestas purus porttitor.
+Nullam nisi felis, suscipit vel ullamcorper vitae, lobortis euismod
+lacus. Aenean molestie faucibus libero at efficitur. Sed suscipit a eros
+at eleifend. In quis ante commodo, tempus nisl a, elementum neque.
+Nullam convallis fermentum tortor. Nunc scelerisque, nunc vel
+scelerisque tempor, metus justo dictum augue, et luctus ante sapien eu
+tellus. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+Vestibulum non tristique ante. Curabitur a risus non justo varius dictum
+sed sit amet magna. Curabitur rhoncus, diam eget commodo finibus, metus
+mi feugiat tellus, eu vestibulum lacus massa quis arcu.
+
+## Pendiente 7
+
+Suspendisse potenti. In cursus nibh ut diam cursus, vitae mattis erat
+hendrerit. Aliquam ornare risus ut ante porta, in laoreet lectus
+viverra. Etiam ligula magna, tincidunt quis dui in, cursus laoreet
+tortor. Vivamus nec molestie ipsum. Suspendisse eu pulvinar libero.
+Praesent eu consectetur ligula. Etiam purus dolor, commodo at leo et,
+aliquet facilisis mauris.
+
+## Pendiente 8
+
+Duis ac ex venenatis turpis vulputate porttitor ut euismod libero. Fusce
+sem neque, volutpat mattis sapien id, ultrices porta elit. Sed consequat
+risus eu diam vehicula aliquet. Sed in mi posuere risus sollicitudin
+rutrum ut id odio. In hac habitasse platea dictumst. Duis tincidunt
+interdum pellentesque. In blandit vulputate dui, nec iaculis diam
+ullamcorper quis.
