@@ -1,10 +1,9 @@
 #' ---
-#' title: 'Procesamiento y transformación de datos: Sequía en México'
+#' title: 'Procesamiento de datos: Incidencia delictiva del Fuero Común'
 #' author: Isaac Arroyo
 #' date-format: long
 #' date: last-modified
 #' lang: es
-#' jupyter: python3
 #' format:
 #'   gfm:
 #'     html-math-method: katex
@@ -17,58 +16,47 @@
 #'   eval: true
 #'   warning: false
 #' ---
-#' 
-#' ## Introducción y objetivos
-#'
-#' Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas 
-#' scelerisque felis elit, sed dictum nisi volutpat nec. Vestibulum ante 
-#' ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; 
-#' Vestibulum mauris risus, congue id sem et, imperdiet molestie nisl. 
-#' Vivamus eget libero in nisl sollicitudin commodo. Ut odio velit, 
-#' placerat ac volutpat quis, consectetur at justo. Nam faucibus, neque at 
-#' dictum fringilla, arcu est sollicitudin neque, non mattis orci tortor 
-#' sed dolor. Integer nisl nibh, lobortis at cursus in, commodo nec erat. 
-#' Duis nec dapibus felis. Cras sodales nulla at posuere finibus. Morbi 
-#' molestie commodo tortor ut tincidunt.
-
+ 
 #| label: setwd-to-path2README_R
 #| eval: false
 #| echo: false
 
 setwd("./GobiernoMexicano/sesnsp/")
 
+#' ## Introducción y objetivos
 #'
+#' De acuerdo con la página del Secretariado Ejecutivo del Sistema Nacional 
+#' de Seguridad Pública (SESNSP):
+#' 
+#' > La incidencia delictiva se refiere a la presunta ocurrencia de delitos 
+#' registrados en averiguaciones previas iniciadas o carpetas de 
+#' investigación, reportadas por las Procuradurías de Justicia y Fiscalías 
+#' Generales de las entidades federativas 
 
 #| label: load-libraries-paths
 
 library(tidyverse)
+library(gt)
 
-#' 
-#' Fusce porttitor ligula et est tempor, ut viverra lectus suscipit. 
-#' Pellentesque pellentesque eleifend felis, non eleifend lacus faucibus 
-#' vitae. Vestibulum congue tempus justo, at maximus augue imperdiet et. 
-#' Nullam pharetra volutpat tortor eu ultricies. Nam sed lectus sem. 
-#' Integer quam felis, cursus eget arcu at, faucibus tincidunt mi. Etiam 
-#' sed vestibulum lorem, sed finibus arcu. Aliquam quis faucibus urna, ut 
-#' tincidunt nulla. Phasellus rhoncus risus a lacus venenatis, id luctus 
-#' est molestie. Morbi quis turpis eu ex ullamcorper interdum. Class aptent 
-#' taciti sociosqu ad litora torquent per conubia nostra, per inceptos 
-#' himenaeos. Pellentesque non odio ut arcu elementum maximus pretium ac 
-#' quam. Proin dapibus ipsum odio.
+path2main <- paste0(getwd(), "/../..")
+path2gobmex <- paste0(path2main, "/GobiernoMexicano")
+path2sesnsp <- paste0(path2gobmex, "/sesnsp")
+path2ogdatasesnsp <- paste0(path2sesnsp,
+                            "/og_incidencia_delitos_fuero_comun")
+
+#' En este documento se usan los datos de la Incidencia Delicitiva del 
+#' Fuero Común (nivel municipal), así como el número de víctimas (nivel 
+#' estatal), ambos encontrados en el portal [Datos Abiertos de 
+#' Incidencia Delictiva](https://www.gob.mx/sesnsp/acciones-y-programas/datos-abiertos-de-incidencia-delictiva?state=published) 
+#' del SESNSP.
 
 #| label: load-csv_incidencia-victimas_delictiva_nivel_ent-mun
 #| output: false
+
 url_victimas_delitos_ent <- "https://drive.google.com/file/d/1MeLHOZnPQ7kyxRg2JSQvnDh_2U5gjR2i/view"
 id_file_victimas_delitos_ent <- str_extract(
     string = url_victimas_delitos_ent,
     pattern = "(?<=d/)(.*?)(?=/view)")
-
-# TODO: Encontrar la manera de hacer la descarga directa con el URL del 
-#       archivo de Google Drive (INCIDENCIA EN MUNICIPIOS)
-# url_incidencia_delitos_mun <- ""
-# id_file_victimas_delitos_ent <- str_extract(
-#     string = url_incidencia_delitos_mun,
-#     pattern = "(?<=d/)(.*?)(?=/view)")
 
 db_victimas_delitos_ent <- read_csv(
     file = paste0("https://drive.google.com/uc?export=download&id=",
@@ -77,19 +65,40 @@ db_victimas_delitos_ent <- read_csv(
     locale = locale(encoding = "latin1")) %>%
   janitor::clean_names()
 
-# db_incidencia_mun
+# TODO: Encontrar la manera de hacer la descarga directa con el URL del 
+#       archivo de Google Drive (INCIDENCIA EN MUNICIPIOS)
 
+path2dataincidenciamun <- list.files(
+  path = path2ogdatasesnsp,
+  pattern = ".csv",
+  full.names = TRUE)
 
-#' Vestibulum aliquet pharetra lorem, quis cursus est dapibus a. Nunc 
-#' fringilla aliquam urna non volutpat. Aenean faucibus ullamcorper erat 
-#' quis auctor. Quisque sodales ornare ligula ac molestie. Duis tincidunt 
-#' rhoncus rutrum. Aenean sagittis a tellus ac accumsan. Mauris quis 
-#' pretium nisl, pulvinar convallis ante. Mauris placerat nibh eu lectus 
-#' ullamcorper, sed dapibus urna interdum. Duis sem justo, rutrum sed 
-#' tortor ac, lacinia tincidunt nisi. Suspendisse efficitur ante a velit 
-#' consectetur, auctor lobortis orci maximus. In maximus dolor eget est 
-#' commodo blandit.
-#' 
+db_incidencia_mun <- read_csv(
+    file = path2dataincidenciamun,
+    locale = locale(encoding = "latin1"),
+    col_types = cols(.default = "c")) %>%
+  janitor::clean_names()
+
+#' > Muestra de `db_victimas_delitos_ent`
+
+#| label: sample-db_victimas_delitos_ent
+#| echo: false
+
+set.seed(11)
+db_victimas_delitos_ent %>%
+  slice_sample(n = 5) %>%
+  gt()
+
+#' > Muestra de `db_victimas_delitos_ent`
+
+#| label: sample-db_incidencia_mun
+#| echo: false
+
+set.seed(11)
+db_incidencia_mun %>%
+  slice_sample(n = 5) %>%
+  gt()
+
 #' Morbi a aliquam odio. Sed feugiat nibh et pulvinar commodo. Nullam 
 #' dapibus pharetra justo sed blandit. Nullam at velit volutpat, tincidunt 
 #' lacus non, bibendum ex. Cras id luctus nulla, eget tempor libero. 
