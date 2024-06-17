@@ -32,3 +32,13 @@ Las carpetas de las fuentes contienen la documentación del procesamiento y tran
 * [**Mundo**](https://github.com/isaacarroyov/datos_facil_acceso/tree/main/Mundo)
   * Geomtrías de los países del mundo
   * Geometría de los estados de Estados Unidos de América
+
+---
+
+## Cambios comunes
+
+Existen ciertos tipos de cambios que son los primeros en realizarse y son los más comunes en todos los _scripts_ de procesamiento. 
+
+1. **Limpieza de nombres de columnas**: La limpieza consta de estandarizar los nombres al formato [**`snake_case`**](https://developer.mozilla.org/en-US/docs/Glossary/Snake_case) con la ayuda de la función **`clean_names`** de la librería [`{janitor}` (R)](https://sfirke.github.io/janitor/index.html) o [`pyjanitor` (Python)](https://pyjanitor-devs.github.io/pyjanitor/). **Este cambio se hace para datos estructurados (tablas y CSVs) así como [datos vectoriales](https://docs.qgis.org/3.34/es/docs/gentle_gis_introduction/vector_data.html)**
+
+2. **Reproyección**: Consta de transformar la reproyección a [`crs = 4326`](https://epsg.io/4326). **Este cambio se hace únicamente a datos vectoriales**.

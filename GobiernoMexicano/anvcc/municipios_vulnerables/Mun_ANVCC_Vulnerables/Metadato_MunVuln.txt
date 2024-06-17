@@ -1,0 +1,19 @@
+Metadatos
+
+1. Titulo: Municipios Vulnerables al cambio climatico
+
+2. Descripción: Conjunto de información en formato vector y en formato de texto, que muestra la priorización de los municipios más vulnerables al cambio climático en tres distintos niveles basandonse en la información resultado del Atlas Nacional de Vulnerabilidad al Cambio Climático.
+
+3. Fecha: Noviembre del 2023
+
+4. Autor: Instituto Nacional de Ecología y Cambio Climático
+
+5. Formato: SHAPE
+
+6. Tamaño del archivo: 56.6 mb
+
+7. Palabras Clave: Cambio Climático, Vulnerabilidad, Municipios, Atlas Nacional
+
+8. Metadato de origen: Atlas Nacional de Vunerabilidad al cambio climático https://atlasvulnerabilidad.inecc.gob.mx/page/index.html#zoom=undefined&lat=23.5000&lon=-101.9000&layers=1.
+
+9. Idioma: español
