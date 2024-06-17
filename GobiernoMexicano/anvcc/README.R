@@ -30,7 +30,7 @@
 #| label: setworkingdir
 #| eval: false
 
-setwd("./scripts/processing")
+setwd("./GobiernoMexicano/anvcc")
 
 #' ## Introducción
 #' 
@@ -53,8 +53,8 @@ library(tidyverse)
 library(sf)
 
 path2main <- paste0(getwd(), "/../..")
-path2data <- paste0(path2main, "/data")
-path2anvccfolder <- paste0(path2data, "/anvcc")
+path2gobmex <- paste0(path2main, "/GobiernoMexicano")
+path2anvccfolder <- paste0(path2gobmex, "/anvcc")
 
 # Temas dentro del ANVCC
 path2anvccmunfolder <- paste0(path2anvccfolder, "/municipios_vulnerables")
@@ -66,19 +66,10 @@ path2anvccctfolder <- paste0(path2anvccfolder, "/amenazaCT")
 #' columna de geometría (POINT, POLYGON o MULTIPOLYGON), esta columna es 
 #' la que se ignora en las muestras de datos
 #' 
-#' ## Cambios en común
-#' 
-#' Todos los conjuntos de datos de datos van a pasar por la reproyección 
-#' a `crs = 4326` y la limpieza de los nombres de las columnas. La limpieza 
-#' consta de estandarizar los nombres al formato [**`snake_case`**](https://developer.mozilla.org/en-US/docs/Glossary/Snake_case) 
-#' con la ayuda de la función **`clean_names`** de la librería 
-#' [`{janitor}`](https://sfirke.github.io/janitor/index.html). Al estar 
-#' trabajando con R y debido a la comodidad de las funciones del 
-#' {tidyverse}, también los objetos `simple_feature` serán transformados a 
-#' `tibble` 
-#'
-#' <!-- TODO: Agregar alcaración como bullet points (complementando con la versión de Python) al README principal de datos_facil_acceso -->
-#' 
+#' En varias ocasiones, por la comodidad de las funciones de limpieza y 
+#' procesamiento de datos con {tidyverse}, algunos objetos `simple_feature` 
+#' serán transformados a `tibble`
+#'  
 #' ## Infraestructura de presas de generación de energía o almacenamiento de agua
 #' 
 #' En este apartado se tienen 3 conjuntos de datos:
@@ -534,11 +525,9 @@ df_anvcc_mun_renamed_transformed_na <- df_anvcc_mun_renamed %>%
 
 # Cargar base de datos de relacion de nombres-codigos de 
 # entidades y municipios
-# TODO: Cambiar a la dirección _local_ del repositorio datos_facil_acceso
+
 cve_nom_ent_mun <- read_csv(
-  file = paste0("https://raw.githubusercontent.com/isaacarroyov/",
-                "datos_facil_acceso/main/GobiernoMexicano/",
-                "cve_nom_municipios.csv"))
+  file = paste0(path2gobmex, "/cve_nom_municipios.csv"))
 
 db_anvcc_mun <- df_anvcc_mun_renamed_transformed_na %>%
   left_join(
