@@ -102,6 +102,9 @@ contemplados son los siguientes:
   - Bien Jurídico Afectado, Tipo, Subtipo y Modalidad del delito
   - Número de delitos
   - Número de delitos por cada 100 mil habitantes
+- **Víctimas de Delitos del Fuero Común mensual a nivel estatal
+  (general)**:
+  - Es la misma información que la base original pero en *long format*.
 - **Víctimas de Delitos del Fuero Común anual a nivel estatal
   (general)**:
   - Año
@@ -149,11 +152,12 @@ bases de datos originales.
 
 **Para `db_incidencia_mun`**
 
-- Cras vestibulum lacinia felis et gravida.
-- Etiam tempus lorem et dictum iaculis.
-- Etiam dapibus magna nisl, eget eleifend quam auctor quis.
-- Maecenas semper nunc nec nunc tempus, non egestas purus porttitor.
-- Nullam nisi felis, suscipit vel ullamcorper vitae, lobortis euismod
+1.  Agrupar por año, municipio y (sub)tipo el número de delitos
+2.  Adjuntar el valor de la población del municipio (los que tengan
+    dicha información) para el tasado de delitos por 100 mil habitantes.
+3.  Agrupar por año, estado y (sub)tipo el número de delitos.
+4.  Adjuntar el valor de la población del estado para el tasado de
+    delitos por 100 mil habitantes.
 
 **Para `db_victimas_delitos_ent`**
 
@@ -339,7 +343,48 @@ db_victimas_delitos_ent_long <- db_victimas_delitos_ent_renamed %>%
 | 2019-11-15      | 2019   | 11      | 31      | Yucatán       | La vida y la Integridad corporal | Homicidio      | Homicidio doloso  | Con arma blanca          | Mujer  | Adultos (18 y más)     |          0 |
 | 2022-07-15      | 2022   | 07      | 18      | Nayarit       | La vida y la Integridad corporal | Lesiones       | Lesiones dolosas  | Con otro elemento        | Hombre | Adultos (18 y más)     |          4 |
 
-## Pendiente 3
+## Cambios a `db_incidencia_mun_long`
+
+### Agrupar por año, municipio y (sub)tipo el número de delitos
+
+Suspendisse potenti. In cursus nibh ut diam cursus, vitae mattis erat
+hendrerit. Aliquam ornare risus ut ante porta, in laoreet lectus
+viverra. Etiam ligula magna, tincidunt quis dui in, cursus laoreet
+tortor. Vivamus nec molestie ipsum. Suspendisse eu pulvinar libero.
+Praesent eu consectetur ligula. Etiam purus dolor, commodo at leo et,
+aliquet facilisis mauris.
+
+### Adjuntar el valor de la población del municipio para el tasado de delitos por 100 mil habitantes.
+
+> \[!IMPORTANT\]
+>
+> El tasado para el delito de **Feminicidio** es con respecto al número
+> de mujeres por cada 100 mil habitantes. Es por ello que se crea la
+> columna específica. En la columna `n_delitos_100khab` se hace con
+> respecto a la población de ambos géneros, esto para cuando se hagan
+> agregaciones por modalidad (por ejemplo: agrupar por delitos hechos
+> con arma de fuego) se haga la sumatoria y todo quede con respecto a la
+> población del municipio o estado. Sin embargo, para el estudio
+> específico del delito de **Feminicidio**, se usa la información de la
+> columna `n_delitos_100kmujeres`
+
+Suspendisse potenti. In cursus nibh ut diam cursus, vitae mattis erat
+hendrerit. Aliquam ornare risus ut ante porta, in laoreet lectus
+viverra. Etiam ligula magna, tincidunt quis dui in, cursus laoreet
+tortor. Vivamus nec molestie ipsum. Suspendisse eu pulvinar libero.
+Praesent eu consectetur ligula. Etiam purus dolor, commodo at leo et,
+aliquet facilisis mauris.
+
+### Agrupar por año, estado y (sub)tipo el número de delitos.
+
+Suspendisse potenti. In cursus nibh ut diam cursus, vitae mattis erat
+hendrerit. Aliquam ornare risus ut ante porta, in laoreet lectus
+viverra. Etiam ligula magna, tincidunt quis dui in, cursus laoreet
+tortor. Vivamus nec molestie ipsum. Suspendisse eu pulvinar libero.
+Praesent eu consectetur ligula. Etiam purus dolor, commodo at leo et,
+aliquet facilisis mauris.
+
+### Adjuntar el valor de la población del estado para el tasado de delitos por 100 mil habitantes.
 
 Suspendisse potenti. In cursus nibh ut diam cursus, vitae mattis erat
 hendrerit. Aliquam ornare risus ut ante porta, in laoreet lectus
