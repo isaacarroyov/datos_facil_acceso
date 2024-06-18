@@ -1,6 +1,6 @@
 # Procesamiento de datos: Incidencia Delictiva del Fuero Común
 Isaac Arroyo
-17 de junio de 2024
+18 de junio de 2024
 
 ## Introducción y objetivos
 
@@ -347,33 +347,103 @@ db_victimas_delitos_ent_long <- db_victimas_delitos_ent_renamed %>%
 
 ### Agrupar por año, municipio y (sub)tipo el número de delitos
 
-Suspendisse potenti. In cursus nibh ut diam cursus, vitae mattis erat
-hendrerit. Aliquam ornare risus ut ante porta, in laoreet lectus
-viverra. Etiam ligula magna, tincidunt quis dui in, cursus laoreet
-tortor. Vivamus nec molestie ipsum. Suspendisse eu pulvinar libero.
-Praesent eu consectetur ligula. Etiam purus dolor, commodo at leo et,
-aliquet facilisis mauris.
+El enfoque de los proyectos donde uso estos conjuntos de datos
+normalmente uso los datos de los años completos, esto no significa que
+no uso el dato meses por mes solo que no es tan común.
+
+``` r
+df_incidencia_mun_year <- db_incidencia_mun_long %>%
+  # El conjunto de datos tiene muchas columnas por las cuales se 
+  # hará la agrupación, por lo que es más fácil seleccionar 
+  # aquellas variables que NO se usarán en la agrupación
+  group_by(across(-c(date_year_month, n_month, n_delitos))) %>%
+  summarise(n_delitos = sum(n_delitos, na.rm = TRUE)) %>%
+  ungroup()
+```
+
+| n_year | cve_ent | nombre_estado | cve_geo | nombre_municipio       | bien_juridico_afectado            | tipo_de_delito       | subtipo_de_delito             | modalidad            | n_delitos |
+|:-------|:--------|:--------------|:--------|:-----------------------|:----------------------------------|:---------------------|:------------------------------|:---------------------|----------:|
+| 2024   | 20      | Oaxaca        | 20474   | Santiago Llano Grande  | El patrimonio                     | Despojo              | Despojo                       | Despojo              |         1 |
+| 2021   | 20      | Oaxaca        | 20404   | Santa María Chachoápam | El patrimonio                     | Robo                 | Otros robos                   | Con violencia        |         0 |
+| 2018   | 32      | Zacatecas     | 32002   | Apulco                 | Libertad personal                 | Secuestro            | Secuestro                     | Secuestro extorsivo  |         0 |
+| 2024   | 13      | Hidalgo       | 13015   | Cardonal               | El patrimonio                     | Robo                 | Robo en transporte individual | Con violencia        |         0 |
+| 2020   | 32      | Zacatecas     | 32033   | Moyahua de Estrada     | La libertad y la seguridad sexual | Violación equiparada | Violación equiparada          | Violación equiparada |         0 |
 
 ### Adjuntar el valor de la población del municipio para el tasado de delitos por 100 mil habitantes.
 
-> \[!IMPORTANT\]
->
-> El tasado para el delito de **Feminicidio** es con respecto al número
-> de mujeres por cada 100 mil habitantes. Es por ello que se crea la
-> columna específica. En la columna `n_delitos_100khab` se hace con
-> respecto a la población de ambos géneros, esto para cuando se hagan
-> agregaciones por modalidad (por ejemplo: agrupar por delitos hechos
-> con arma de fuego) se haga la sumatoria y todo quede con respecto a la
-> población del municipio o estado. Sin embargo, para el estudio
-> específico del delito de **Feminicidio**, se usa la información de la
-> columna `n_delitos_100kmujeres`
+Los datos de la población serán los que publicó la CONAPO, la
+**Proyección de población municipal, 205-2030**
 
-Suspendisse potenti. In cursus nibh ut diam cursus, vitae mattis erat
-hendrerit. Aliquam ornare risus ut ante porta, in laoreet lectus
-viverra. Etiam ligula magna, tincidunt quis dui in, cursus laoreet
-tortor. Vivamus nec molestie ipsum. Suspendisse eu pulvinar libero.
-Praesent eu consectetur ligula. Etiam purus dolor, commodo at leo et,
-aliquet facilisis mauris.
+``` r
+db_pob_mun_conapo <- read_csv(
+    file = paste0(path2gobmex,
+                  "/conapo_proyecciones",
+                  "/conapo_pob_mun_gender_2015_2030.csv"),
+    col_types = cols(.default = "c")) %>%
+  mutate(pob_mid_year = as.numeric(pob_mid_year))
+```
+
+| n_year | nombre_estado | cve_ent | nombre_municipio     | cve_mun | genero  | pob_mid_year |
+|:-------|:--------------|:--------|:---------------------|:--------|:--------|-------------:|
+| 2024   | Veracruz      | 30      | Tuxpan               | 30189   | Hombres |        85011 |
+| 2023   | Guerrero      | 12      | Taxco de Alarcón     | 12055   | Mujeres |        59219 |
+| 2016   | Oaxaca        | 20      | Tataltepec de Valdés | 20543   | Mujeres |         3014 |
+| 2027   | Michoacán     | 16      | Arteaga              | 16010   | Mujeres |        11922 |
+| 2019   | Puebla        | 21      | Tianguismanalco      | 21175   | Hombres |         6339 |
+
+> \[!NOTE\]
+>
+> Al paso del tiempo se fueron integrando más municipios a México, por
+> lo que existen los casos donde no se tienen datos de la población
+> proyectada. Los datos de proyección de población municipal tienen
+> 2,457 municipios, el INEGI tiene registro de 2,475 y los datos del
+> SESNSP cuenta con 2,483 municipios (este último es porque tiene
+> valores como `Otros municipios de X`, donde X es un estado cualquiera)
+
+El tasado para el delito de **Feminicidio** es con respecto al número de
+mujeres por cada 100 mil habitantes. Es por ello que se crea la columna
+específica. En la columna `n_delitos_100khab` se hace con respecto a la
+población de ambos géneros, esto para cuando se hagan agregaciones por
+modalidad (por ejemplo: agrupar por delitos hechos con arma de fuego) se
+haga la sumatoria y todo quede con respecto a la población del municipio
+o estado. Sin embargo, para el estudio específico del delito de
+**Feminicidio**, se usa la información de la columna
+`n_delitos_100kmujeres`
+
+``` r
+db_incidencia_mun_year_x100khab <- df_incidencia_mun_year %>%
+  left_join(
+    y = db_pob_mun_conapo %>% 
+          filter(genero == "Total") %>%
+          select(n_year, cve_mun, pob_mid_year),
+    by = join_by(n_year, cve_geo == cve_mun)) %>%
+  mutate(n_delitos_x100khab = (n_delitos / pob_mid_year) * 100000) %>%
+  # Adjuntar población femenina
+  left_join(
+    y = db_pob_mun_conapo %>%
+          filter(genero == "Mujeres") %>%
+          rename(pob_mid_year_mujeres = pob_mid_year) %>%
+          select(n_year, cve_mun, pob_mid_year_mujeres),
+    by = join_by(n_year, cve_geo == cve_mun)) %>%
+  # Eliminar el valor de celdas que NO sean Feminicidio
+  mutate(
+    pob_mid_year_mujeres = if_else(
+      condition = subtipo_de_delito == "Feminicidio",
+      true = pob_mid_year_mujeres,
+      false = NA_integer_)) %>%
+  # Cálculo de delitos de feminicidio por cada 100 mil mujeres
+  mutate(
+    n_delitos_x100kmujeres = (n_delitos / pob_mid_year_mujeres) * 100000) %>%
+  select(!c(pob_mid_year, pob_mid_year_mujeres))
+```
+
+| n_year | cve_ent | nombre_estado | cve_geo | nombre_municipio       | bien_juridico_afectado           | tipo_de_delito | subtipo_de_delito | modalidad           | n_delitos | n_delitos_x100khab | n_delitos_x100kmujeres |
+|:-------|:--------|:--------------|:--------|:-----------------------|:---------------------------------|:---------------|:------------------|:--------------------|----------:|-------------------:|-----------------------:|
+| 2024   | 20      | Oaxaca        | 20474   | Santiago Llano Grande  | El patrimonio                    | Despojo        | Despojo           | Despojo             |         1 |         28.8350634 |                     NA |
+| 2021   | 20      | Oaxaca        | 20404   | Santa María Chachoápam | El patrimonio                    | Robo           | Otros robos       | Con violencia       |         0 |          0.0000000 |                     NA |
+| 2018   | 32      | Zacatecas     | 32002   | Apulco                 | Libertad personal                | Secuestro      | Secuestro         | Secuestro extorsivo |         0 |          0.0000000 |                     NA |
+| 2021   | 27      | Tabasco       | 27017   | Tenosique              | La vida y la Integridad corporal | Feminicidio    | Feminicidio       | Con arma de fuego   |         1 |          1.5550165 |              3.0270925 |
+| 2022   | 32      | Zacatecas     | 32017   | Guadalupe              | La vida y la Integridad corporal | Feminicidio    | Feminicidio       | Con arma blanca     |         1 |          0.4899895 |              0.9580288 |
 
 ### Agrupar por año, estado y (sub)tipo el número de delitos.
 

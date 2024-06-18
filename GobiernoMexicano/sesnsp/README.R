@@ -374,19 +374,70 @@ db_victimas_delitos_ent_long %>%
 #' ## Cambios a `db_incidencia_mun_long`
 #' 
 #' ### Agrupar por año, municipio y (sub)tipo el número de delitos
-#' 
-#' Suspendisse potenti. In cursus nibh ut diam cursus, vitae mattis erat 
-#' hendrerit. Aliquam ornare risus ut ante porta, in laoreet lectus 
-#' viverra. Etiam ligula magna, tincidunt quis dui in, cursus laoreet 
-#' tortor. Vivamus nec molestie ipsum. Suspendisse eu pulvinar libero. 
-#' Praesent eu consectetur ligula. Etiam purus dolor, commodo at leo et, 
-#' aliquet facilisis mauris.
-#' 
+#'
+#' El enfoque de los proyectos donde uso estos conjuntos de datos 
+#' normalmente uso los datos de los años completos, esto no significa 
+#' que no uso el dato meses por mes solo que no es tan común.
+
+#| label: create-df_incidencia_mun_year
+
+df_incidencia_mun_year <- db_incidencia_mun_long %>%
+  # El conjunto de datos tiene muchas columnas por las cuales se 
+  # hará la agrupación, por lo que es más fácil seleccionar 
+  # aquellas variables que NO se usarán en la agrupación
+  group_by(across(-c(date_year_month, n_month, n_delitos))) %>%
+  summarise(n_delitos = sum(n_delitos, na.rm = TRUE)) %>%
+  ungroup()
+
+#'
+
+#| label: show_sample-df_incidencia_mun_year
+#| echo: false
+
+set.seed(1)
+df_incidencia_mun_year %>%
+  slice_sample(n = 5)
+
 #' ### Adjuntar el valor de la población del municipio para el tasado de delitos por 100 mil habitantes.
 #' 
-#' > [!IMPORTANT]
-#' > 
-#' > El tasado para el delito de **Feminicidio** es con respecto al número 
+#' Los datos de la población serán los que publicó la CONAPO, la 
+#' **Proyección de población municipal, 205-2030**
+
+#| label: load-db_pob_mun_conapo
+
+db_pob_mun_conapo <- read_csv(
+    file = paste0(path2gobmex,
+                  "/conapo_proyecciones",
+                  "/conapo_pob_mun_gender_2015_2030.csv"),
+    col_types = cols(.default = "c")) %>%
+  mutate(pob_mid_year = as.numeric(pob_mid_year))
+
+#' 
+
+#| label: show_sample-db_pob_mun_conapo
+#| echo: false
+
+n_mun_mg_inegi <- nrow(cve_nom_ent_mun)
+n_mun_sesnsp <- nrow(distinct(.data = df_incidencia_mun_year, cve_geo))
+n_mun_conapo <- nrow(distinct(.data = db_pob_mun_conapo, cve_mun))
+
+set.seed(1)
+db_pob_mun_conapo %>%
+  slice_sample(n = 5)
+
+#' > [!NOTE]
+#' >
+#' > Al paso del tiempo se fueron integrando más municipios a México, 
+#' por lo que existen los casos donde no se tienen datos de la población 
+#' proyectada. Los datos de proyección de población municipal tienen 
+#' `{r} format(x = n_mun_conapo, big.mark = ',')` municipios, el INEGI 
+#' tiene registro de `{r} format(x = n_mun_mg_inegi, big.mark = ',')` y 
+#' los datos del SESNSP cuenta con 
+#' `{r} format(x = n_mun_sesnsp, big.mark = ',')` municipios (este último 
+#' es porque tiene valores como `Otros municipios de X`, donde X es un 
+#' estado cualquiera)
+#' 
+#' El tasado para el delito de **Feminicidio** es con respecto al número 
 #' de mujeres por cada 100 mil habitantes. Es por ello que se crea la 
 #' columna específica. En la columna `n_delitos_100khab` se hace con respecto 
 #' a la población de ambos géneros, esto para cuando se hagan agregaciones 
@@ -395,14 +446,47 @@ db_victimas_delitos_ent_long %>%
 #' municipio o estado. Sin embargo, para el estudio específico del delito 
 #' de **Feminicidio**, se usa la información de la columna 
 #' `n_delitos_100kmujeres`
-#' 
-#' Suspendisse potenti. In cursus nibh ut diam cursus, vitae mattis erat 
-#' hendrerit. Aliquam ornare risus ut ante porta, in laoreet lectus 
-#' viverra. Etiam ligula magna, tincidunt quis dui in, cursus laoreet 
-#' tortor. Vivamus nec molestie ipsum. Suspendisse eu pulvinar libero. 
-#' Praesent eu consectetur ligula. Etiam purus dolor, commodo at leo et, 
-#' aliquet facilisis mauris.
-#' 
+
+#| label: create-db_incidencia_mun_year_x100khab
+
+db_incidencia_mun_year_x100khab <- df_incidencia_mun_year %>%
+  left_join(
+    y = db_pob_mun_conapo %>% 
+          filter(genero == "Total") %>%
+          select(n_year, cve_mun, pob_mid_year),
+    by = join_by(n_year, cve_geo == cve_mun)) %>%
+  mutate(n_delitos_x100khab = (n_delitos / pob_mid_year) * 100000) %>%
+  # Adjuntar población femenina
+  left_join(
+    y = db_pob_mun_conapo %>%
+          filter(genero == "Mujeres") %>%
+          rename(pob_mid_year_mujeres = pob_mid_year) %>%
+          select(n_year, cve_mun, pob_mid_year_mujeres),
+    by = join_by(n_year, cve_geo == cve_mun)) %>%
+  # Eliminar el valor de celdas que NO sean Feminicidio
+  mutate(
+    pob_mid_year_mujeres = if_else(
+      condition = subtipo_de_delito == "Feminicidio",
+      true = pob_mid_year_mujeres,
+      false = NA_integer_)) %>%
+  # Cálculo de delitos de feminicidio por cada 100 mil mujeres
+  mutate(
+    n_delitos_x100kmujeres = (n_delitos / pob_mid_year_mujeres) * 100000) %>%
+  select(!c(pob_mid_year, pob_mid_year_mujeres))
+
+#'   
+
+#| label: show_sample-db_incidencia_mun_year_x100khab
+#| echo: false
+
+set.seed(1)
+db_incidencia_mun_year_x100khab %>%
+  slice_sample(n = 3) %>%
+  bind_rows(
+    db_incidencia_mun_year_x100khab %>%
+      filter(subtipo_de_delito == "Feminicidio", n_delitos > 0) %>%
+      slice_sample(n = 2))
+
 #' ### Agrupar por año, estado y (sub)tipo el número de delitos.
 #' 
 #' Suspendisse potenti. In cursus nibh ut diam cursus, vitae mattis erat 
