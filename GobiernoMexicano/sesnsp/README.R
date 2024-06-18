@@ -106,6 +106,11 @@ db_victimas_delitos_ent %>%
 #' información extra que es de interés general. Los 
 #' conjuntos de datos contemplados son los siguientes:
 #' 
+#' * **Incidencia Delictiva del Fuero Común mensual a nivel municipal**:
+#'   * Es la misma información que la base original pero en _long format_
+#' * **Incidencia Delicitva del fuero Común mensual a nivel estatal**:
+#'   * Es la misma información que la base original de municipios pero 
+#' agrupada por estado y en _long format_
 #' * **Incidencia Delictiva del Fuero Común anual a nivel municipal**:
 #'   * Año
 #'   * Ubicación (Codigo y nombre de la entidad y municipio)
@@ -145,33 +150,224 @@ db_victimas_delitos_ent %>%
 #' 
 #' ## Lista de cambios 
 #' 
-#' Curabitur orci lacus, cursus a fermentum nec, pretium a nulla. Curabitur 
-#' nec condimentum eros. Aliquam nibh enim, ullamcorper in malesuada in, 
-#' egestas at magna. Sed commodo id dui sed varius: 
+#' ### Cambios generales
 #' 
-#' * Nulla ultrices maximus risus. 
-#' * Nam sodales vehicula nulla, ut placerat nunc dignissim non.
-#' * Quisque tincidunt justo a ultrices dignissim. Curabitur aliquet ut elit 
-#' id aliquam.
-#' * Vivamus dictum imperdiet odio, ac consequat augue dapibus pulvinar. 
-#' * Interdum et malesuada fames ac ante ipsum primis in faucibus. 
-#' * Donec sit amet libero a justo aliquam sagittis ut a eros.
+#' Existen tipos de cambios que se usarán en las dos bases de 
+#' datos originales, estos son:
 #' 
-#' ## Pendiente 2
+#' * Renombramiento de municipios y estados
+#' * Renombrar la columna de Año (por la función `clean_names` se renombró 
+#' a `ano`)
+#' * Cambio de _long format_ a _wide format_: Esto para crear una variable 
+#' de fecha, de esta manera la base de datos original como una serie 
+#' de tiempo.
 #' 
-#' Cras vestibulum lacinia felis et gravida. Etiam tempus lorem et dictum 
-#' iaculis. Etiam dapibus magna nisl, eget eleifend quam auctor quis. 
-#' Maecenas semper nunc nec nunc tempus, non egestas purus porttitor. 
-#' Nullam nisi felis, suscipit vel ullamcorper vitae, lobortis euismod 
-#' lacus. Aenean molestie faucibus libero at efficitur. Sed suscipit a eros 
-#' at eleifend. In quis ante commodo, tempus nisl a, elementum neque. 
-#' Nullam convallis fermentum tortor. Nunc scelerisque, nunc vel 
-#' scelerisque tempor, metus justo dictum augue, et luctus ante sapien eu 
-#' tellus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
-#' Vestibulum non tristique ante. Curabitur a risus non justo varius dictum 
-#' sed sit amet magna. Curabitur rhoncus, diam eget commodo finibus, metus 
-#' mi feugiat tellus, eu vestibulum lacus massa quis arcu.
+#' ### Cambios específicos 
 #' 
+#' Los siguientes cambios se hacen de manera específica a cada una de las 
+#' bases de datos originales.
+#' 
+#' **Para `db_incidencia_mun`**
+#' 
+#' * Cras vestibulum lacinia felis et gravida. 
+#' * Etiam tempus lorem et dictum iaculis.
+#' * Etiam dapibus magna nisl, eget eleifend quam auctor quis. 
+#' * Maecenas semper nunc nec nunc tempus, non egestas purus porttitor. 
+#' * Nullam nisi felis, suscipit vel ullamcorper vitae, lobortis euismod 
+#' 
+#' **Para `db_victimas_delitos_ent`**
+#' 
+#' * Aenean molestie faucibus libero at efficitur.
+#' * Sed suscipit a eros at eleifend. 
+#' * In quis ante commodo, tempus nisl a, elementum neque. 
+#' * Nullam convallis fermentum tortor. 
+#' * Nunc scelerisque, nunc vel scelerisque tempor, metus justo dictum 
+#' augue, et luctus ante sapien eu tellus. 
+#' * Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+#' 
+#' ## Cambios generales
+#' 
+#' ### Renombramiento de valores (nombre de municipios y estados) y de columnas
+#' 
+#' Muchas veces (si no es que en todas las ocasiones) el nombre de los 
+#' estados y municipios son los que dicta el INEGI. La _desventaja_ de esto 
+#' es que muchas veces los nombres son demasiado largos o no son como 
+#' estan _popularmente_ conocidos. Por ejemplo, el municipio que comúnmente 
+#' se le conoce como **Dolores Hidalgo**, cuenta como nombre oficial 
+#' **Dolores Hidalgo, Cuna de la Independencia Nacional**, haciendo que la 
+#' búsqueda y el nombre en una visualización (mapa, gráfica o tabla) sea un 
+#' poco más _complicada_.
+#' 
+#' Afortunadamente, en el repositorio se cuenta con un conjunto de datos que 
+#' facilita el renombramiento.
+
+#| label: load-cve_nom_ent_mun
+
+cve_nom_ent_mun <- read_csv(paste0(path2gobmex, "/cve_nom_municipios.csv"))
+
+#'
+
+#| label: show_sample_cve_nom_ent_mun
+#| echo: false
+
+set.seed(1)
+cve_nom_ent_mun %>%
+  slice_sample(n = 5)
+
+#' Con este conjunto en el ambiente, se hace el renombramiento. Los pasos 
+#' para cada conjunto de datos son similares, obviamente adaptados al las 
+#' columnas disponibles en cada uno
+
+#| label: join-cve_nom_ent_mun-db_incidencia_mun
+
+# - - Incidencia delictiva (municipios) - - #
+db_incidencia_mun_renamed <- db_incidencia_mun %>%
+  # Quitar las columnas de clave de entidad y nombres (entidad y municipios)
+  select(!c(entidad, clave_ent, municipio))  %>%
+  # Renombrar la clave del municipio a `cve_geo`
+  rename(cve_geo = cve_municipio) %>%
+  # Completar con el 0' al inicio de `cve_geo`
+  mutate(
+    cve_geo = if_else(
+      condition = as.integer(cve_geo) >= 10000,
+      true = cve_geo,
+      false = paste0("0", cve_geo))) %>%
+  # Unir con los nombres de los municipios
+  left_join(
+    y = select(.data = cve_nom_ent_mun, -cve_mun),
+    by = join_by(cve_geo)) %>%
+  # Reordenar las columnas
+  relocate(nombre_estado, .before = cve_geo) %>%
+  relocate(cve_ent, .before = nombre_estado) %>%
+  relocate(nombre_municipio, .after = cve_geo) %>%
+  # Renombrar `ano`
+  rename(n_year = ano)
+
+#'
+
+#| label: show_sample-db_incidencia_mun_renamed
+#| echo: false
+
+set.seed(1)
+db_incidencia_mun_renamed %>%
+  slice_sample(n = 5)
+
+#'
+
+#| label: join-cve_nom_ent_mun-db_victimas_delitos_ent
+
+# - - Número de víctimas (estados) - - #
+db_victimas_delitos_ent_renamed <- db_victimas_delitos_ent %>%
+  select(!c(entidad))  %>%
+  rename(cve_ent = clave_ent) %>%
+  mutate(
+    cve_ent = if_else(
+      condition = as.integer(cve_ent) >= 10,
+      true = cve_ent,
+      false = paste0("0", cve_ent))) %>%
+  left_join(
+    y = distinct(.data = cve_nom_ent_mun, cve_ent, nombre_estado),
+    by = join_by(cve_ent)) %>%
+  relocate(nombre_estado, .after = cve_ent) %>%
+  rename(n_year = ano)
+
+#' 
+
+#| label: show_sample-db_victimas_delitos_ent_renamed
+#| echo: false
+
+set.seed(1)
+db_victimas_delitos_ent_renamed %>%
+  slice_sample(n = 5)
+
+#' ### Transformación de _wide format_ a _long format_
+#' 
+#' Esta tarea se hace para que se pueda tener la base de datos como 
+#' normalmente se encuentran los datos de series de tiempo.
+#' 
+#' Este cambio tambien implica sustituir los nombres de los meses por 
+#' el número de mes para crear la columna de tiempo.
+
+#| label: wide2long-db_incidencia_mun_renamed
+
+db_incidencia_mun_long <- db_incidencia_mun_renamed %>%
+  pivot_longer(
+    cols = enero:diciembre,
+    names_to = "n_month",
+    values_to = "n_delitos") %>%
+  mutate(
+    # Cambiar a valores numéricos el número de delitos
+    n_delitos = as.numeric(n_delitos),
+    # Cambiar nombres a número de mes
+    n_month = case_when(
+      n_month == "enero" ~ "01",
+      n_month == "febrero" ~ "02",
+      n_month == "marzo" ~ "03",
+      n_month == "abril" ~ "04",
+      n_month == "mayo" ~ "05",
+      n_month == "junio" ~ "06",
+      n_month == "julio" ~ "07",
+      n_month == "agosto" ~ "08",
+      n_month == "septiembre" ~ "09",
+      n_month == "octubre" ~ "10",
+      n_month == "noviembre" ~ "11",
+      n_month == "diciembre" ~ "12",
+      .default = NA_character_),
+  date_year_month = paste(n_year, n_month, "15", sep = "-")) %>%
+  relocate(date_year_month, .before = n_year) %>%
+  relocate(n_month, .after = n_year) %>%
+  # Asegurar que solo se cuenten con los datos del último mes 
+  # de actualizacion
+  filter(!is.na(n_delitos))
+
+#'
+
+#| label: show_sample-db_incidencia_mun_long
+#| echo: false
+
+set.seed(1)
+db_incidencia_mun_long %>%
+  slice_sample(n = 5)
+
+#'
+
+#| label: wide2long-db_victimas_delitos_ent_renamed
+
+db_victimas_delitos_ent_long <- db_victimas_delitos_ent_renamed %>%
+  pivot_longer(
+    cols = enero:diciembre,
+    names_to = "n_month",
+    values_to = "n_victimas") %>%
+  mutate(
+    n_victimas = as.numeric(n_victimas),
+    n_month = case_when(
+      n_month == "enero" ~ "01",
+      n_month == "febrero" ~ "02",
+      n_month == "marzo" ~ "03",
+      n_month == "abril" ~ "04",
+      n_month == "mayo" ~ "05",
+      n_month == "junio" ~ "06",
+      n_month == "julio" ~ "07",
+      n_month == "agosto" ~ "08",
+      n_month == "septiembre" ~ "09",
+      n_month == "octubre" ~ "10",
+      n_month == "noviembre" ~ "11",
+      n_month == "diciembre" ~ "12",
+      .default = NA_character_),
+  date_year_month = paste(n_year, n_month, "15", sep = "-")) %>%
+  relocate(date_year_month, .before = n_year) %>%
+  relocate(n_month, .after = n_year) %>%
+  filter(!is.na(n_victimas))
+
+#'
+
+#| label: show_sample-db_victimas_delitos_ent_long
+#| echo: false
+
+set.seed(1)
+db_victimas_delitos_ent_long %>%
+  slice_sample(n = 5)
+
 #' ## Pendiente 3
 #' 
 #' Suspendisse potenti. In cursus nibh ut diam cursus, vitae mattis erat 
