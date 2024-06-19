@@ -1,6 +1,6 @@
 # Procesamiento de datos: Incidencia Delictiva del Fuero Común
 Isaac Arroyo
-18 de junio de 2024
+19 de junio de 2024
 
 ## Introducción y objetivos
 
@@ -199,7 +199,9 @@ cve_nom_ent_mun <- read_csv(paste0(path2gobmex, "/cve_nom_municipios.csv"))
 
 Con este conjunto en el ambiente, se hace el renombramiento. Los pasos
 para cada conjunto de datos son similares, obviamente adaptados al las
-columnas disponibles en cada uno
+columnas disponibles en cada uno.
+
+<!--TODO: Agregar un [!NOTE] o [!WARNING] por los municipios que no estan en la base del INEGI debido a que son etiquetados como "Otros municipios"-->
 
 ``` r
 # - - Incidencia delictiva (municipios) - - #
@@ -213,11 +215,16 @@ db_incidencia_mun_renamed <- db_incidencia_mun %>%
     cve_geo = if_else(
       condition = as.integer(cve_geo) >= 10000,
       true = cve_geo,
-      false = paste0("0", cve_geo))) %>%
-  # Unir con los nombres de los municipios
+      false = paste0("0", cve_geo)),
+    cve_ent = substr(x = cve_geo, start = 1, stop = 2)) %>%
+  # Unir claves-nombres de los municipios
   left_join(
-    y = select(.data = cve_nom_ent_mun, -cve_mun),
+    y = select(.data = cve_nom_ent_mun, cve_geo, nombre_municipio),
     by = join_by(cve_geo)) %>%
+  # Unir claves-nombres de los estados
+  left_join(
+    y = distinct(.data = cve_nom_ent_mun, cve_ent, nombre_estado),
+    by = join_by(cve_ent)) %>%
   # Reordenar las columnas
   relocate(nombre_estado, .before = cve_geo) %>%
   relocate(cve_ent, .before = nombre_estado) %>%
@@ -361,18 +368,18 @@ df_incidencia_mun_year <- db_incidencia_mun_long %>%
   ungroup()
 ```
 
-| n_year | cve_ent | nombre_estado | cve_geo | nombre_municipio       | bien_juridico_afectado            | tipo_de_delito       | subtipo_de_delito             | modalidad            | n_delitos |
-|:-------|:--------|:--------------|:--------|:-----------------------|:----------------------------------|:---------------------|:------------------------------|:---------------------|----------:|
-| 2024   | 20      | Oaxaca        | 20474   | Santiago Llano Grande  | El patrimonio                     | Despojo              | Despojo                       | Despojo              |         1 |
-| 2021   | 20      | Oaxaca        | 20404   | Santa María Chachoápam | El patrimonio                     | Robo                 | Otros robos                   | Con violencia        |         0 |
-| 2018   | 32      | Zacatecas     | 32002   | Apulco                 | Libertad personal                 | Secuestro            | Secuestro                     | Secuestro extorsivo  |         0 |
-| 2024   | 13      | Hidalgo       | 13015   | Cardonal               | El patrimonio                     | Robo                 | Robo en transporte individual | Con violencia        |         0 |
-| 2020   | 32      | Zacatecas     | 32033   | Moyahua de Estrada     | La libertad y la seguridad sexual | Violación equiparada | Violación equiparada          | Violación equiparada |         0 |
+| n_year | cve_ent | nombre_estado | cve_geo | nombre_municipio    | bien_juridico_afectado            | tipo_de_delito       | subtipo_de_delito             | modalidad            | n_delitos |
+|:-------|:--------|:--------------|:--------|:--------------------|:----------------------------------|:---------------------|:------------------------------|:---------------------|----------:|
+| 2024   | 20      | Oaxaca        | 20472   | Santiago Laollaga   | El patrimonio                     | Despojo              | Despojo                       | Despojo              |         0 |
+| 2021   | 20      | Oaxaca        | 20402   | Santa María Cortijo | El patrimonio                     | Robo                 | Otros robos                   | Con violencia        |         0 |
+| 2018   | 31      | Yucatán       | 31100   | Ucú                 | Libertad personal                 | Secuestro            | Secuestro                     | Secuestro extorsivo  |         0 |
+| 2024   | 13      | Hidalgo       | 13014   | Calnali             | El patrimonio                     | Robo                 | Robo en transporte individual | Con violencia        |         0 |
+| 2020   | 32      | Zacatecas     | 32025   | Luis Moya           | La libertad y la seguridad sexual | Violación equiparada | Violación equiparada          | Violación equiparada |         0 |
 
 ### Adjuntar el valor de la población del municipio para el tasado de delitos por 100 mil habitantes.
 
 Los datos de la población serán los que publicó la CONAPO, la
-**Proyección de población municipal, 205-2030**
+**Proyección de población municipal, 2015-2030**[^1]
 
 ``` r
 db_pob_mun_conapo <- read_csv(
@@ -437,31 +444,120 @@ db_incidencia_mun_year_x100khab <- df_incidencia_mun_year %>%
   select(!c(pob_mid_year, pob_mid_year_mujeres))
 ```
 
-| n_year | cve_ent | nombre_estado | cve_geo | nombre_municipio       | bien_juridico_afectado           | tipo_de_delito | subtipo_de_delito | modalidad           | n_delitos | n_delitos_x100khab | n_delitos_x100kmujeres |
-|:-------|:--------|:--------------|:--------|:-----------------------|:---------------------------------|:---------------|:------------------|:--------------------|----------:|-------------------:|-----------------------:|
-| 2024   | 20      | Oaxaca        | 20474   | Santiago Llano Grande  | El patrimonio                    | Despojo        | Despojo           | Despojo             |         1 |         28.8350634 |                     NA |
-| 2021   | 20      | Oaxaca        | 20404   | Santa María Chachoápam | El patrimonio                    | Robo           | Otros robos       | Con violencia       |         0 |          0.0000000 |                     NA |
-| 2018   | 32      | Zacatecas     | 32002   | Apulco                 | Libertad personal                | Secuestro      | Secuestro         | Secuestro extorsivo |         0 |          0.0000000 |                     NA |
-| 2021   | 27      | Tabasco       | 27017   | Tenosique              | La vida y la Integridad corporal | Feminicidio    | Feminicidio       | Con arma de fuego   |         1 |          1.5550165 |              3.0270925 |
-| 2022   | 32      | Zacatecas     | 32017   | Guadalupe              | La vida y la Integridad corporal | Feminicidio    | Feminicidio       | Con arma blanca     |         1 |          0.4899895 |              0.9580288 |
+| n_year | cve_ent | nombre_estado | cve_geo | nombre_municipio    | bien_juridico_afectado           | tipo_de_delito | subtipo_de_delito | modalidad           | n_delitos | n_delitos_x100khab | n_delitos_x100kmujeres |
+|:-------|:--------|:--------------|:--------|:--------------------|:---------------------------------|:---------------|:------------------|:--------------------|----------:|-------------------:|-----------------------:|
+| 2024   | 20      | Oaxaca        | 20472   | Santiago Laollaga   | El patrimonio                    | Despojo        | Despojo           | Despojo             |         0 |          0.0000000 |                     NA |
+| 2021   | 20      | Oaxaca        | 20402   | Santa María Cortijo | El patrimonio                    | Robo           | Otros robos       | Con violencia       |         0 |          0.0000000 |                     NA |
+| 2018   | 31      | Yucatán       | 31100   | Ucú                 | Libertad personal                | Secuestro      | Secuestro         | Secuestro extorsivo |         0 |          0.0000000 |                     NA |
+| 2021   | 27      | Tabasco       | 27017   | Tenosique           | La vida y la Integridad corporal | Feminicidio    | Feminicidio       | Con arma de fuego   |         1 |          1.5550165 |              3.0270925 |
+| 2022   | 32      | Zacatecas     | 32017   | Guadalupe           | La vida y la Integridad corporal | Feminicidio    | Feminicidio       | Con arma blanca     |         1 |          0.4899895 |              0.9580288 |
 
 ### Agrupar por año, estado y (sub)tipo el número de delitos.
 
-Suspendisse potenti. In cursus nibh ut diam cursus, vitae mattis erat
-hendrerit. Aliquam ornare risus ut ante porta, in laoreet lectus
-viverra. Etiam ligula magna, tincidunt quis dui in, cursus laoreet
-tortor. Vivamus nec molestie ipsum. Suspendisse eu pulvinar libero.
-Praesent eu consectetur ligula. Etiam purus dolor, commodo at leo et,
-aliquet facilisis mauris.
+El enfoque de los proyectos donde uso estos conjuntos de datos
+normalmente uso los datos de los años completos, esto no significa que
+no uso el dato meses por mes solo que no es tan común.
+
+``` r
+df_incidencia_ent_year <- db_incidencia_mun_long %>%
+  group_by(across(-c(date_year_month, n_month, n_delitos,
+                     nombre_municipio, cve_geo))) %>%
+  summarise(n_delitos = sum(n_delitos, na.rm = TRUE)) %>%
+  ungroup()
+```
+
+| n_year | cve_ent | nombre_estado | bien_juridico_afectado                             | tipo_de_delito                   | subtipo_de_delito                | modalidad                        | n_delitos |
+|:-------|:--------|:--------------|:---------------------------------------------------|:---------------------------------|:---------------------------------|:---------------------------------|----------:|
+| 2020   | 18      | Nayarit       | La sociedad                                        | Otros delitos contra la sociedad | Otros delitos contra la sociedad | Otros delitos contra la sociedad |         5 |
+| 2022   | 25      | Sinaloa       | Libertad personal                                  | Secuestro                        | Secuestro                        | Secuestro con calidad de rehén   |         0 |
+| 2016   | 17      | Morelos       | La vida y la Integridad corporal                   | Lesiones                         | Lesiones culposas                | Con arma blanca                  |         0 |
+| 2023   | 17      | Morelos       | Otros bienes jurídicos afectados (del fuero común) | Narcomenudeo                     | Narcomenudeo                     | Narcomenudeo                     |       531 |
+| 2019   | 07      | Chiapas       | Libertad personal                                  | Secuestro                        | Secuestro                        | Secuestro extorsivo              |        16 |
 
 ### Adjuntar el valor de la población del estado para el tasado de delitos por 100 mil habitantes.
 
-Suspendisse potenti. In cursus nibh ut diam cursus, vitae mattis erat
-hendrerit. Aliquam ornare risus ut ante porta, in laoreet lectus
-viverra. Etiam ligula magna, tincidunt quis dui in, cursus laoreet
-tortor. Vivamus nec molestie ipsum. Suspendisse eu pulvinar libero.
-Praesent eu consectetur ligula. Etiam purus dolor, commodo at leo et,
-aliquet facilisis mauris.
+Los datos de la población serán los que publicó la CONAPO, la
+**Población a mitad e inicio de año de los estados de México
+(1950-2070)**[^2]
+
+``` r
+db_pob_ent_conapo <- read_csv(
+    file = paste0(path2gobmex,
+                  "/conapo_proyecciones",
+                  "/conapo_pob_ent_gender_1950_2070.csv"),
+    col_types = cols(.default = "c")) %>%
+  select(-pob_start_year) %>%
+  mutate(pob_mid_year = as.numeric(pob_mid_year))
+```
+
+| n_year | nombre_estado | cve_ent | genero  | pob_mid_year |
+|:-------|:--------------|:--------|:--------|-------------:|
+| 1979   | Puebla        | 21      | Total   |      3376487 |
+| 2050   | Coahuila      | 05      | Total   |      4090838 |
+| 2017   | Oaxaca        | 20      | Mujeres |      2143863 |
+| 2067   | Oaxaca        | 20      | Mujeres |      2489994 |
+| 2054   | Tamaulipas    | 28      | Mujeres |      2032292 |
+
+Un agregado extra es también el número de delitos y tasado a nivel
+nacional
+
+``` r
+df_incidencia_nac_year <- df_incidencia_ent_year %>%
+  group_by(across(-c(cve_ent, nombre_estado))) %>%
+  summarise(n_delitos = sum(n_delitos, na.rm = TRUE)) %>%
+  ungroup() %>%
+  mutate(
+    cve_ent = "00",
+    nombre_estado = "Nacional") %>%
+  relocate(cve_ent, .after = n_year) %>%
+  relocate(nombre_estado, .after = cve_ent)
+```
+
+| n_year | cve_ent | nombre_estado | bien_juridico_afectado                             | tipo_de_delito | subtipo_de_delito          | modalidad                               | n_delitos |
+|:-------|:--------|:--------------|:---------------------------------------------------|:---------------|:---------------------------|:----------------------------------------|----------:|
+| 2020   | 00      | Nacional      | El patrimonio                                      | Robo           | Robo de autopartes         | Sin violencia                           |       133 |
+| 2024   | 00      | Nacional      | La vida y la Integridad corporal                   | Homicidio      | Homicidio culposo          | En accidente de tránsito                |       128 |
+| 2018   | 00      | Nacional      | El patrimonio                                      | Robo           | Robo de autopartes         | Sin violencia                           |        25 |
+| 2018   | 00      | Nacional      | El patrimonio                                      | Robo           | Robo de vehículo automotor | Robo de coche de 4 ruedas Con violencia |      2021 |
+| 2018   | 00      | Nacional      | Otros bienes jurídicos afectados (del fuero común) | Falsedad       | Falsedad                   | Falsedad                                |        99 |
+
+Similar al caso del tasado de delitos a nivel municipal, se tiene que
+agregar información específica de la población de mujeres para el tasado
+del tasado del delito de Feminicidio.
+
+``` r
+db_incidencia_ent_nac_year_x100khab <- bind_rows(
+    df_incidencia_ent_year,
+    df_incidencia_nac_year) %>%
+  left_join(
+    y = db_pob_ent_conapo %>%
+          filter(genero == "Total") %>%
+          select(n_year, cve_ent, pob_mid_year),
+    by = join_by(n_year, cve_ent)) %>%
+  mutate(n_delitos_x100khab = (n_delitos / pob_mid_year) * 100000) %>%
+  left_join(
+    y = db_pob_ent_conapo %>%
+          filter(genero == "Mujeres") %>%
+          rename(pob_mid_year_mujeres = pob_mid_year) %>%
+          select(n_year, cve_ent, pob_mid_year_mujeres),
+    by = join_by(n_year, cve_ent)) %>%
+  mutate(
+    pob_mid_year_mujeres = if_else(
+      condition = subtipo_de_delito == "Feminicidio",
+      true = pob_mid_year_mujeres,
+      false = NA_integer_)) %>%
+  mutate(
+    n_delitos_x100kmujeres = (n_delitos / pob_mid_year_mujeres) * 100000) %>%
+  select(!c(pob_mid_year, pob_mid_year_mujeres))
+```
+
+| n_year | cve_ent | nombre_estado | bien_juridico_afectado                             | tipo_de_delito                | subtipo_de_delito             | modalidad                                                                           | n_delitos | n_delitos_x100khab | n_delitos_x100kmujeres |
+|:-------|:--------|:--------------|:---------------------------------------------------|:------------------------------|:------------------------------|:------------------------------------------------------------------------------------|----------:|-------------------:|-----------------------:|
+| 2021   | 00      | Nacional      | Otros bienes jurídicos afectados (del fuero común) | Otros delitos del Fuero Común | Otros delitos del Fuero Común | Otros delitos del Fuero Común                                                       |       844 |          0.6543501 |                     NA |
+| 2018   | 17      | Morelos       | El patrimonio                                      | Robo                          | Robo en transporte individual | Sin violencia                                                                       |        83 |          4.1910619 |                     NA |
+| 2017   | 00      | Nacional      | El patrimonio                                      | Robo                          | Robo de maquinaria            | Robo de cables, tubos y otros objetos destinados a servicios públicos Sin violencia |         4 |          0.0032057 |                     NA |
+| 2023   | 00      | Nacional      | La vida y la Integridad corporal                   | Feminicidio                   | Feminicidio                   | Con otro elemento                                                                   |         6 |          0.0045754 |              0.0089556 |
+| 2022   | 23      | Quintana Roo  | La vida y la Integridad corporal                   | Feminicidio                   | Feminicidio                   | No especificado                                                                     |         4 |          0.2023103 |              0.4079938 |
 
 ## Pendiente 4
 
@@ -515,3 +611,11 @@ risus eu diam vehicula aliquet. Sed in mi posuere risus sollicitudin
 rutrum ut id odio. In hac habitasse platea dictumst. Duis tincidunt
 interdum pellentesque. In blandit vulputate dui, nec iaculis diam
 ullamcorper quis.
+
+[^1]: Para mayor información sobre conjunto de datos, visitar:
+    [Procesamiento y transformación de datos: Proyecciones de
+    población](https://github.com/isaacarroyov/datos_facil_acceso/tree/main/GobiernoMexicano/conapo_proyecciones)
+
+[^2]: Para mayor información sobre conjunto de datos, visitar:
+    [Procesamiento y transformación de datos: Proyecciones de
+    población](https://github.com/isaacarroyov/datos_facil_acceso/tree/main/GobiernoMexicano/conapo_proyecciones)
