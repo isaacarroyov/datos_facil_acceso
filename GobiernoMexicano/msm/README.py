@@ -467,7 +467,7 @@ cve_nom_ent_mun_cuenca = (pd.merge(left = cve_nom_mun_cuenca,
                                    right= cve_nom_mun,
                                    how = 'left',
                                    left_on = 'cve_concatenada',
-                                   right_on = 'cve_mun')
+                                   right_on = 'cve_geo')
                           .drop(columns = ['cve_concatenada']))
 
 # %%
@@ -491,10 +491,10 @@ msm_long = (pd.merge(
     right = cve_nom_ent_mun_cuenca,
     how = 'left',
     left_on = 'cve_concatenada',
-    right_on = 'cve_mun')
+    right_on = 'cve_geo')
   .drop(columns = ['cve_concatenada'])
   # Reordenamiento de las columnas
-  [['nombre_estado', 'cve_ent', 'nombre_municipio', 'cve_mun',
+  [['nombre_estado', 'cve_ent', 'nombre_municipio', 'cve_geo',
     'org_cuenca', 'clv_oc', 'con_cuenca', 'cve_conc',
     'full_date', 'sequia']])
 
@@ -503,10 +503,10 @@ msm_long_filled = (pd.merge(
     right = cve_nom_ent_mun_cuenca,
     how = 'left',
     left_on = 'cve_concatenada',
-    right_on = 'cve_mun')
+    right_on = 'cve_geo')
   .drop(columns = ['cve_concatenada'])
   # Reordenamiento de las columnas
-  [['nombre_estado', 'cve_ent', 'nombre_municipio', 'cve_mun',
+  [['nombre_estado', 'cve_ent', 'nombre_municipio', 'cve_geo',
     'org_cuenca', 'clv_oc', 'con_cuenca', 'cve_conc',
     'full_date', 'sequia']])
 
@@ -515,10 +515,10 @@ db_rachas_mun = (pd.merge(
     right = cve_nom_ent_mun_cuenca,
     how = 'left',
     left_on = 'cve_concatenada',
-    right_on = 'cve_mun')
+    right_on = 'cve_geo')
   .drop(columns = ['cve_concatenada'])
   # Reordenamiento y selección de las columnas
-  [['nombre_estado', 'cve_ent', 'nombre_municipio', 'cve_mun',
+  [['nombre_estado', 'cve_ent', 'nombre_municipio', 'cve_geo',
     'org_cuenca', 'clv_oc', 'con_cuenca', 'cve_conc',
     'sequia', 'full_date_start_racha', 'full_date_end_racha',
     'racha_dias']])
@@ -528,10 +528,10 @@ db_rachas_max_mun = (pd.merge(
     right = cve_nom_ent_mun_cuenca,
     how = 'left',
     left_on = 'cve_concatenada',
-    right_on = 'cve_mun')
+    right_on = 'cve_geo')
   .drop(columns = ['cve_concatenada'])
   # Reordenamiento y selección de las columnas
-  [['nombre_estado', 'cve_ent', 'nombre_municipio', 'cve_mun',
+  [['nombre_estado', 'cve_ent', 'nombre_municipio', 'cve_geo',
     'org_cuenca', 'clv_oc', 'con_cuenca', 'cve_conc',
     'sequia', 'full_date_start_racha', 'full_date_end_racha',
     'racha_dias']])
