@@ -520,6 +520,12 @@ df_anvcc_mun_renamed_transformed_na <- df_anvcc_mun_renamed %>%
         false = str_to_title(string = .x))))
 
 #' #### Asignar nombres de estados-municipios
+#' 
+#' > [!NOTE]
+#' > 
+#' > Hay municipios que no aparecen en la base de datos porque puede que 
+#' hayan sido de reciente creación y no se tomaron en cuenta al momento de 
+#' la creación de la base de datos de vulnerabilidades.
 
 #| label: transform_cols-agregar_cve_mun_ent
 
@@ -529,7 +535,7 @@ df_anvcc_mun_renamed_transformed_na <- df_anvcc_mun_renamed %>%
 cve_nom_ent_mun <- read_csv(
   file = paste0(path2gobmex, "/cve_nom_municipios.csv"))
 
-db_anvcc_mun <- df_anvcc_mun_renamed_transformed_na %>%
+df_anvcc_mun_renamed_transformed_na_named_ubi <- df_anvcc_mun_renamed_transformed_na %>%
   left_join(
     y = cve_nom_ent_mun,
     by = join_by(cve_geo)) %>%
@@ -541,12 +547,56 @@ db_anvcc_mun <- df_anvcc_mun_renamed_transformed_na %>%
 
 #' 
 
-#| label: show_sample-sf_anvcc_mun
+#| label: show_sample-df_anvcc_mun_renamed_transformed_na_named_ubi
 #| echo: false
 
 set.seed(11)
-db_anvcc_mun %>%
+df_anvcc_mun_renamed_transformed_na_named_ubi %>%
   slice_sample(n = 5)
+ 
+#' #### Transformación _wide2long_
+#' 
+#' Esta transformación se hace para poder tener en una columna las 
+#' diferentes vulnerabilidades, el nivel de vulnerabilidad y si tiene 
+#' aumento o no. Resulta más amable a la hora de visualizar.
+
+#| label: create-db_anvcc_mun
+
+db_anvcc_mun <- df_anvcc_mun_renamed_transformed_na_named_ubi %>%
+  pivot_longer(
+    cols = vul_prod_forrajera:aumento_vul_asentamientos_inu,
+    names_to = "name",
+    values_to = "value") %>%
+  mutate(
+    tipo_info = if_else(
+      condition = str_starts(
+        string = name,
+        pattern = "vul_"),
+      true = "vulnerabilidad_actual",
+      false = "aumento_vulnerabilidad"),
+    tipo_vul = case_when(
+      str_ends(string = name, "prod_forrajera") ~ "Producción forrajera en estrés hídrico",
+      str_ends(string = name, "prod_ganadera_eh") ~ "Producción ganadera en estrés hídrico",
+      str_ends(string = name, "prod_ganadera_inu") ~ "Producción ganadera en inundaciones",
+      str_ends(string = name, "poblacion_dengue") ~ "Población expuesta al dengue",
+      str_ends(string = name, "asentamientos_deslaves") ~ "Asentamientos humanos expuestos a deslaves",
+      str_ends(string = name, "asentamientos_inu") ~ "Asentamientos humanos expuestos a inundaciones",
+      .default = NA_character_)) %>%
+  select(-name) %>%
+  pivot_wider(
+    names_from = tipo_info,
+    values_from = value)
+
+#'
+
+#| label: show_sample-db_anvcc_mun
+#| echo: false
+
+set.seed(1)
+db_anvcc_mun %>%
+  group_by(nivel_priorizacion) %>%
+  slice_sample(n = 1) %>%
+  ungroup()
 
 #' ## Guardar conjuntos de datos
 #' 
@@ -694,22 +744,24 @@ db_anvcc_mun %>%
 #' |`nombre_municipio`|Nombrel del municipio|
 #' |`cve_geo`|Clave del Municipio según INEGI|
 #' |`nivel_priorizacion`|Priorizacion del municipios de acuerdo al número y tipo de vulnerabilidades actuales y futuras|
-#' |`vul_prod_forrajera`|Clasificación de la Vulnerabilidad de acuerdo a la estandarización nacional de la vulnerabilidad de Producción Forrajera ante Estrés Hídrico (Muy Alta(1-0.75), Alta(0.75-0.5), Media(0.5-0.25), Baja(0.25-0)). NA = no aplica|
-#' |`aumento_vul_prod_forrajera`|Indica si hay aumento de la Vulnerabilidad con alguno de los 4 modelos utilizados para la Vulnerabildiad de la Producción Forrajera ante Estrés Hídrico|
-#' |`vul_prod_ganadera_eh`|Clasificación de la Vulnerabilidad de acuerdo a la estandarización nacional de la vulnerabilidad de Producción ganadera extensiva ante Estrés Hídrico (Muy Alta(1-0.75), Alta(0.75-0.5), Media(0.5-0.25), Baja(0.25-0)). NA = no aplica|
-#' |`aumento_vul_prod_ganadera_eh`|Indica si hay aumento de la Vulnerabilidad con alguno de los 4 modelos utilizados para la Vulnerabildiad de la Producción ganadera extensiva ante Estrés Hídrico|
-#' |`vul_poblacion_dengue`|Clasificación de la Vulnerabilidad de acuerdo a la estandarización nacional de la vulnerabilidad de la población al incremento en distribución del dengue (Muy Alta(1-0.75), Alta(0.75-0.5), Media(0.5-0.25), Baja(0.25-0)). NA = no aplica|
-#' |`aumento_vul_poblacion_dengue`|Indica si hay aumento de la Vulnerabilidad con alguno de los 4 modelos utilizados para la Vulnerabildiad de la población al incremento en distribución del dengue ante Estrés Hídrico|
-#' |`vul_asentamientos_deslaves`|Clasificación de la Vulnerabilidad de acuerdo a la estandarización nacional de la vulnerabilidad de asentamientos humanos a deslaves (Muy Alta(1-0.75), Alta(0.75-0.5), Media(0.5-0.25), Baja(0.25-0). NA = no aplica)|
-#' |`aumento_vul_asentamientos_deslaves`|Indica si hay aumento de la Vulnerabilidad con alguno de los 4 modelos utilizados para la Vulnerabildiad de asentamientos humanos a deslaves|
-#' |`vul_prod_ganadera_inu`|Clasificación de la Vulnerabilidad de acuerdo a la estandarización nacional de la Vulnerabilidad de la producción ganadera extensiva a inundaciones (Muy Alta(1-0.75), Alta(0.75-0.5), Media(0.5-0.25), Baja(0.25-0)). NA = no aplica|
-#' |`aumento_vul_prod_ganadera_inu`|Indica si hay aumento de la Vulnerabilidad con alguno de los 4 modelos utilizados para la Vulnerabildiad de la producción ganadera extensiva a inundaciones|
-#' |`vul_asentamientos_inu`|Clasificación de la Vulnerabilidad de acuerdo a la estandarización nacional la vulnerabilidad de asentamientos humanos a inundaciones. (Muy Alta(1-0.75), Alta(0.75-0.5), Media(0.5-0.25), Baja(0.25-0)). NA = no aplica|
-#' |`aumento_vul_asentamientos_inu`|Indica si hay aumento de la Vulnerabilidad con alguno de los 4 modelos utilizados para la Vulnerabildiad de asentamientos humanos a inundaciones|
+#' |`tipo_vul`|Tipo de vulnerabilidad|
+#' |`vulnerabilidad_actual`|Vulnerabilidad actual, toma los valores **Sin Vulnerabilidad**, **Bajo**, **Medio**, **Alto**, **Muy Alto**, y `NA`|
+#' |`aumento_vulnerabilidad`|Si existe o no aumento en la vulnerabilidad, toma los valores **Aumento** y `NA`|
+#' 
+#' Los **tipos de vulnerabilidad (`tipo_vul`)** son:
+#' 
+#' 1. Vulnerabilidad de Producción Forrajera ante Estrés Hídrico
+#' 2. Vulnerabilidad de Producción Ganadera Extensiva ante Estrés Hídrico
+#' 3. Vulnerabilidad de Producción Ganadera Extensiva ante inundaciones 
+#' 4. Vulnerabilidad de la población al incremento en distribución del dengue
+#' 5. Vulnerabilidad de asentamientos humanos a deslaves 
+#' 6. Vulnerabildiad de asentamientos humanos a inundaciones
 
-#| label: show_sample-sf_anvcc_mun_final
+#| label: show_sample-db_anvcc_mun_final
 #| echo: false
 
 set.seed(13)
 db_anvcc_mun %>%
-  slice_sample(n = 5)
+  group_by(nivel_priorizacion) %>%
+  slice_sample(n = 1) %>%
+  ungroup()

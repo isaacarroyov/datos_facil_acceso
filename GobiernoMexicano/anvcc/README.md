@@ -489,6 +489,12 @@ df_anvcc_mun_renamed_transformed_na <- df_anvcc_mun_renamed %>%
 
 #### Asignar nombres de estados-municipios
 
+> \[!NOTE\]
+>
+> Hay municipios que no aparecen en la base de datos porque puede que
+> hayan sido de reciente creación y no se tomaron en cuenta al momento
+> de la creación de la base de datos de vulnerabilidades.
+
 ``` r
 # Cargar base de datos de relacion de nombres-codigos de 
 # entidades y municipios
@@ -496,7 +502,7 @@ df_anvcc_mun_renamed_transformed_na <- df_anvcc_mun_renamed %>%
 cve_nom_ent_mun <- read_csv(
   file = paste0(path2gobmex, "/cve_nom_municipios.csv"))
 
-db_anvcc_mun <- df_anvcc_mun_renamed_transformed_na %>%
+df_anvcc_mun_renamed_transformed_na_named_ubi <- df_anvcc_mun_renamed_transformed_na %>%
   left_join(
     y = cve_nom_ent_mun,
     by = join_by(cve_geo)) %>%
@@ -514,6 +520,46 @@ db_anvcc_mun <- df_anvcc_mun_renamed_transformed_na %>%
 | Chihuahua        | 08      | Saucillo             | 08062   | Primer Nivel de Priorización  | Alto               | Aumento                    | Medio                | Aumento                      | Medio                | Aumento                      | Medio                      | NA                                 | Medio                 | Aumento                       | Bajo                  | Aumento                       |
 | Oaxaca           | 20      | Santa María Huatulco | 20413   | Primer Nivel de Priorización  | Medio              | Aumento                    | Sin Vulnerabilidad   | NA                           | Alto                 | NA                           | Medio                      | NA                                 | Bajo                  | NA                            | Bajo                  | NA                            |
 | Estado de México | 15      | Temascalapa          | 15084   | Primer Nivel de Priorización  | Alto               | Aumento                    | Bajo                 | Aumento                      | NA                   | Aumento                      | Bajo                       | Aumento                            | Alto                  | Aumento                       | Medio                 | Aumento                       |
+
+#### Transformación *wide2long*
+
+Esta transformación se hace para poder tener en una columna las
+diferentes vulnerabilidades, el nivel de vulnerabilidad y si tiene
+aumento o no. Resulta más amable a la hora de visualizar.
+
+``` r
+db_anvcc_mun <- df_anvcc_mun_renamed_transformed_na_named_ubi %>%
+  pivot_longer(
+    cols = vul_prod_forrajera:aumento_vul_asentamientos_inu,
+    names_to = "name",
+    values_to = "value") %>%
+  mutate(
+    tipo_info = if_else(
+      condition = str_starts(
+        string = name,
+        pattern = "vul_"),
+      true = "vulnerabilidad_actual",
+      false = "aumento_vulnerabilidad"),
+    tipo_vul = case_when(
+      str_ends(string = name, "prod_forrajera") ~ "Producción forrajera en estrés hídrico",
+      str_ends(string = name, "prod_ganadera_eh") ~ "Producción ganadera en estrés hídrico",
+      str_ends(string = name, "prod_ganadera_inu") ~ "Producción ganadera en inundaciones",
+      str_ends(string = name, "poblacion_dengue") ~ "Población expuesta al dengue",
+      str_ends(string = name, "asentamientos_deslaves") ~ "Asentamientos humanos expuestos a deslaves",
+      str_ends(string = name, "asentamientos_inu") ~ "Asentamientos humanos expuestos a inundaciones",
+      .default = NA_character_)) %>%
+  select(-name) %>%
+  pivot_wider(
+    names_from = tipo_info,
+    values_from = value)
+```
+
+| nombre_estado | cve_ent | nombre_municipio    | cve_geo | nivel_priorizacion            | tipo_vul                                   | vulnerabilidad_actual | aumento_vulnerabilidad |
+|:--------------|:--------|:--------------------|:--------|:------------------------------|:-------------------------------------------|:----------------------|:-----------------------|
+| Sonora        | 26      | Guaymas             | 26029   | Primer Nivel de Priorización  | Población expuesta al dengue               | Medio                 | Aumento                |
+| Zacatecas     | 32      | Momax               | 32030   | Segundo Nivel de Priorización | Producción forrajera en estrés hídrico     | Alto                  | Aumento                |
+| Michoacán     | 16      | Churumuco           | 16029   | Tercer Nivel de Priorización  | Población expuesta al dengue               | Alto                  | Aumento                |
+| Puebla        | 21      | Xayacatlán de Bravo | 21196   | NA                            | Asentamientos humanos expuestos a deslaves | NA                    | NA                     |
 
 ## Guardar conjuntos de datos
 
@@ -656,30 +702,30 @@ db_anvcc_mun %>%
     na = "")
 ```
 
-| Columna                              | Descripción                                                                                                                                                                                                                                 |
-|--------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `nombre_estado`                      | Nombre del estado                                                                                                                                                                                                                           |
-| `cve_ent`                            | Clave del Estado segun INEGI                                                                                                                                                                                                                |
-| `nombre_municipio`                   | Nombrel del municipio                                                                                                                                                                                                                       |
-| `cve_geo`                            | Clave del Municipio según INEGI                                                                                                                                                                                                             |
-| `nivel_priorizacion`                 | Priorizacion del municipios de acuerdo al número y tipo de vulnerabilidades actuales y futuras                                                                                                                                              |
-| `vul_prod_forrajera`                 | Clasificación de la Vulnerabilidad de acuerdo a la estandarización nacional de la vulnerabilidad de Producción Forrajera ante Estrés Hídrico (Muy Alta(1-0.75), Alta(0.75-0.5), Media(0.5-0.25), Baja(0.25-0)). NA = no aplica              |
-| `aumento_vul_prod_forrajera`         | Indica si hay aumento de la Vulnerabilidad con alguno de los 4 modelos utilizados para la Vulnerabildiad de la Producción Forrajera ante Estrés Hídrico                                                                                     |
-| `vul_prod_ganadera_eh`               | Clasificación de la Vulnerabilidad de acuerdo a la estandarización nacional de la vulnerabilidad de Producción ganadera extensiva ante Estrés Hídrico (Muy Alta(1-0.75), Alta(0.75-0.5), Media(0.5-0.25), Baja(0.25-0)). NA = no aplica     |
-| `aumento_vul_prod_ganadera_eh`       | Indica si hay aumento de la Vulnerabilidad con alguno de los 4 modelos utilizados para la Vulnerabildiad de la Producción ganadera extensiva ante Estrés Hídrico                                                                            |
-| `vul_poblacion_dengue`               | Clasificación de la Vulnerabilidad de acuerdo a la estandarización nacional de la vulnerabilidad de la población al incremento en distribución del dengue (Muy Alta(1-0.75), Alta(0.75-0.5), Media(0.5-0.25), Baja(0.25-0)). NA = no aplica |
-| `aumento_vul_poblacion_dengue`       | Indica si hay aumento de la Vulnerabilidad con alguno de los 4 modelos utilizados para la Vulnerabildiad de la población al incremento en distribución del dengue ante Estrés Hídrico                                                       |
-| `vul_asentamientos_deslaves`         | Clasificación de la Vulnerabilidad de acuerdo a la estandarización nacional de la vulnerabilidad de asentamientos humanos a deslaves (Muy Alta(1-0.75), Alta(0.75-0.5), Media(0.5-0.25), Baja(0.25-0). NA = no aplica)                      |
-| `aumento_vul_asentamientos_deslaves` | Indica si hay aumento de la Vulnerabilidad con alguno de los 4 modelos utilizados para la Vulnerabildiad de asentamientos humanos a deslaves                                                                                                |
-| `vul_prod_ganadera_inu`              | Clasificación de la Vulnerabilidad de acuerdo a la estandarización nacional de la Vulnerabilidad de la producción ganadera extensiva a inundaciones (Muy Alta(1-0.75), Alta(0.75-0.5), Media(0.5-0.25), Baja(0.25-0)). NA = no aplica       |
-| `aumento_vul_prod_ganadera_inu`      | Indica si hay aumento de la Vulnerabilidad con alguno de los 4 modelos utilizados para la Vulnerabildiad de la producción ganadera extensiva a inundaciones                                                                                 |
-| `vul_asentamientos_inu`              | Clasificación de la Vulnerabilidad de acuerdo a la estandarización nacional la vulnerabilidad de asentamientos humanos a inundaciones. (Muy Alta(1-0.75), Alta(0.75-0.5), Media(0.5-0.25), Baja(0.25-0)). NA = no aplica                    |
-| `aumento_vul_asentamientos_inu`      | Indica si hay aumento de la Vulnerabilidad con alguno de los 4 modelos utilizados para la Vulnerabildiad de asentamientos humanos a inundaciones                                                                                            |
+| Columna                  | Descripción                                                                                                         |
+|--------------------------|---------------------------------------------------------------------------------------------------------------------|
+| `nombre_estado`          | Nombre del estado                                                                                                   |
+| `cve_ent`                | Clave del Estado segun INEGI                                                                                        |
+| `nombre_municipio`       | Nombrel del municipio                                                                                               |
+| `cve_geo`                | Clave del Municipio según INEGI                                                                                     |
+| `nivel_priorizacion`     | Priorizacion del municipios de acuerdo al número y tipo de vulnerabilidades actuales y futuras                      |
+| `tipo_vul`               | Tipo de vulnerabilidad                                                                                              |
+| `vulnerabilidad_actual`  | Vulnerabilidad actual, toma los valores **Sin Vulnerabilidad**, **Bajo**, **Medio**, **Alto**, **Muy Alto**, y `NA` |
+| `aumento_vulnerabilidad` | Si existe o no aumento en la vulnerabilidad, toma los valores **Aumento** y `NA`                                    |
 
-| nombre_estado | cve_ent | nombre_municipio | cve_geo | nivel_priorizacion           | vul_prod_forrajera | aumento_vul_prod_forrajera | vul_prod_ganadera_eh | aumento_vul_prod_ganadera_eh | vul_poblacion_dengue | aumento_vul_poblacion_dengue | vul_asentamientos_deslaves | aumento_vul_asentamientos_deslaves | vul_prod_ganadera_inu | aumento_vul_prod_ganadera_inu | vul_asentamientos_inu | aumento_vul_asentamientos_inu |
-|:--------------|:--------|:-----------------|:--------|:-----------------------------|:-------------------|:---------------------------|:---------------------|:-----------------------------|:---------------------|:-----------------------------|:---------------------------|:-----------------------------------|:----------------------|:------------------------------|:----------------------|:------------------------------|
-| Querétaro     | 22      | Peñamiller       | 22013   | Primer Nivel de Priorización | Alto               | NA                         | Medio                | Aumento                      | NA                   | Aumento                      | Muy Alto                   | Aumento                            | NA                    | NA                            | NA                    | NA                            |
-| Oaxaca        | 20      | Magdalena Apasco | 20045   | Primer Nivel de Priorización | Alto               | Aumento                    | Medio                | NA                           | NA                   | NA                           | Alto                       | NA                                 | Alto                  | NA                            | Alto                  | NA                            |
-| Puebla        | 21      | Zoquiapan        | 21216   | NA                           | NA                 | NA                         | NA                   | NA                           | NA                   | NA                           | NA                         | NA                                 | NA                    | NA                            | NA                    | NA                            |
-| Guanajuato    | 11      | Moroleón         | 11021   | Primer Nivel de Priorización | Alto               | Aumento                    | Medio                | NA                           | NA                   | NA                           | Medio                      | Aumento                            | NA                    | NA                            | NA                    | NA                            |
-| Chihuahua     | 08      | Nonoava          | 08049   | Primer Nivel de Priorización | Alto               | Aumento                    | Medio                | Aumento                      | NA                   | Aumento                      | Alto                       | NA                                 | NA                    | NA                            | Medio                 | Aumento                       |
+Los **tipos de vulnerabilidad (`tipo_vul`)** son:
+
+1.  Vulnerabilidad de Producción Forrajera ante Estrés Hídrico
+2.  Vulnerabilidad de Producción Ganadera Extensiva ante Estrés Hídrico
+3.  Vulnerabilidad de Producción Ganadera Extensiva ante inundaciones
+4.  Vulnerabilidad de la población al incremento en distribución del
+    dengue
+5.  Vulnerabilidad de asentamientos humanos a deslaves
+6.  Vulnerabildiad de asentamientos humanos a inundaciones
+
+| nombre_estado | cve_ent | nombre_municipio                        | cve_geo | nivel_priorizacion            | tipo_vul                                       | vulnerabilidad_actual | aumento_vulnerabilidad |
+|:--------------|:--------|:----------------------------------------|:--------|:------------------------------|:-----------------------------------------------|:----------------------|:-----------------------|
+| Tlaxcala      | 29      | Ziltlaltépec de Trinidad Sánchez Santos | 29037   | Primer Nivel de Priorización  | Asentamientos humanos expuestos a inundaciones | Alto                  | NA                     |
+| Puebla        | 21      | Zinacatepec                             | 21214   | Segundo Nivel de Priorización | Asentamientos humanos expuestos a inundaciones | NA                    | NA                     |
+| Oaxaca        | 20      | Santo Domingo Ingenio                   | 20505   | Tercer Nivel de Priorización  | Población expuesta al dengue                   | Muy Alto              | Aumento                |
+| Tamaulipas    | 28      | Jiménez                                 | 28018   | NA                            | Asentamientos humanos expuestos a inundaciones | NA                    | NA                     |
