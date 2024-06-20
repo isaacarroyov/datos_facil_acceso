@@ -125,24 +125,22 @@ db_victimas_delitos_ent %>%
 #'   * Número de delitos por cada 100 mil habitantes
 #' * **Víctimas de Delitos del Fuero Común mensual a nivel estatal (general)**:
 #'   * Es la misma información que la base original pero en _long format_.
-#' * **Víctimas de Delitos del Fuero Común anual a nivel estatal (general)**:
+#' * **Víctimas de Delitos del Fuero Común anual, por género a nivel estatal**:
 #'   * Año
 #'   * Ubicación (Codigo y nombre de la entidad)
 #'   * Bien Jurídico Afectado, Tipo, Subtipo y Modalidad del delito
-#'   * Número de delitos por género
-#'   * Número de delitos por cada 100 mil habitantes del total de la 
-#' población total por género
-#' * **Víctimas de Delitos del Fuero Común anual a nivel estatal 
-#' (rango de edad)**:
+#'   * Número de víctimas por género
+#'   * Número de víctimas por cada 100 mil habitantes: Con respecto al 
+#' total de cada género.
+#' * **Víctimas de Delitos del Fuero Común anual, por género y rango de edad a nivel estatal**:
 #'   * Año
 #'   * Ubicación (Codigo y nombre de la entidad)
 #'   * Bien Jurídico Afectado, Tipo, Subtipo y Modalidad del delito
 #'   * Género
 #'   * Rango de edad
 #'   * Número de delitos
-#'   * Número de delitos por cada 100 mil habitantes de la población total
-#'   * Número de delitos por cada 100 mil habitantes de la población del 
-#' rango de edad
+#'   * Número de delitos por cada 100 mil habitantes: Con respecto al 
+#' total de la población de cada género-rango de edad
 #' 
 #' > [!NOTE]
 #' > 
@@ -169,24 +167,55 @@ db_victimas_delitos_ent %>%
 #' Los siguientes cambios se hacen de manera específica a cada una de las 
 #' bases de datos originales.
 #' 
-#' **Para `db_incidencia_mun`**
+#' **Base de datos de Incidencia Delictiva del Fuero Común anual a 
+#' nivel municipal** (`db_incidencia_mun`):
 #' 
-#' 1. Agrupar por año, municipio y (sub)tipo el número de delitos
+#' 1. Agrupar por año, estado, municipio y (sub)tipo el número de delitos 
+#' y sumar el número de delitos.
 #' 2. Adjuntar el valor de la población del municipio (los que tengan dicha 
 #' información) para el tasado de delitos por 100 mil habitantes.
-#' 3. Agrupar por año, estado y (sub)tipo el número de delitos.
-#' 4. Adjuntar el valor de la población del estado para el tasado de 
+#' 
+#' **Base de datos de Incidencia Delictiva del Fuero Común anual a 
+#' nivel estatal y nacional** (`db_incidencia_mun`):
+#' 
+#' 1. Agrupar por año, estado y (sub)tipo el número de delitos y sumar el 
+#' número de delitos.
+#' 2. Agrupar por año y (sub)tipo el número de delitos y sumar el 
+#' número de delitos para obtener el valor Nacional.
+#' 3. Adjuntar el valor de la población del estado y país para el tasado de 
 #' delitos por 100 mil habitantes.
+#'  
+#' **Base de datos de Víctimas de Delitos del Fuero Común anual, por 
+#' género a nivel estatal** (`db_victimas_delitos_ent`):
 #' 
-#' **Para `db_victimas_delitos_ent`**
+#' 1. Agrupar por año, estado, género y (sub)tipo el número de delitos y 
+#' sumar el número de victimas.
+#' 2. Crear una tercera categoría en género llamado `Todos`, este seria el 
+#' resultado de la suma de victimas clasificadas como Hombre, Mujer y 
+#' No identificado.
+#' 3. Eliminar la categoría `No identificado`
+#' 4. Adjuntar el valor de la población del estado para el tasado de 
+#' víctimas por 100 mil habitantes.
 #' 
-#' * Aenean molestie faucibus libero at efficitur.
-#' * Sed suscipit a eros at eleifend. 
-#' * In quis ante commodo, tempus nisl a, elementum neque. 
-#' * Nullam convallis fermentum tortor. 
-#' * Nunc scelerisque, nunc vel scelerisque tempor, metus justo dictum 
-#' augue, et luctus ante sapien eu tellus. 
-#' * Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+#' **Base de datos de Víctimas de Delitos del Fuero Común anual, por 
+#' género y rango de edad a nivel estatal** (`db_victimas_delitos_ent`):
+#' 
+#' 1. Agrupar por año, estado, género, rango de edad y (sub)tipo el número 
+#' de delitos y sumar el número de victimas.
+#' 2. Crear una tercera categoría en género llamado `Todos`, este sería el 
+#' resultado de la suma de victimas clasificadas como Hombre, Mujer y 
+#' No identificado.
+#' 3. Crear una tercera categoría en rango de edad llamado `Todos`, este 
+#' seria el resultado de la suma de victimas clasificadas como Menores de 
+#' edad, Adultos, No especificado y No identificado.
+#' 4. Tener las nuevas categorías implica tener diversas combinaciones de 
+#' la información como _número de víctimas de X delito hombres menores de 
+#' edad_. No todas las combinaciones son relevantes, por lo que se tendrán 
+#' que eliminar aquellas que contengan los valores `No identificad`o o `No 
+#' especificado`
+#' 4. Adjuntar el valor de la población estatal correspondiente a la 
+#' combinación de género y rango de edad para el tasado de víctimas por 
+#' 100 mil habitantes.
 #' 
 #' ## Cambios generales
 #' 
@@ -221,7 +250,22 @@ cve_nom_ent_mun %>%
 #' para cada conjunto de datos son similares, obviamente adaptados al las 
 #' columnas disponibles en cada uno.
 #' 
-#' <!--TODO: Agregar un [!NOTE] o [!WARNING] por los municipios que no estan en la base del INEGI debido a que son etiquetados como "Otros municipios"-->
+#' > [!WARNING]
+#' > 
+#' > En la base de datos de incidencia delictiva del SESNSP existe el valor 
+#' de **Otros Municipios**. Estos valores son los que tienen un 999 como 
+#' últimos dígitos de `cve_municipio`. Es por eso, que para conservar la 
+#' información del estado se crea la variable `cve_ent` a partir de los 
+#' primeros dos dígitos de `cve_municipio` (después renombrado a `cve_geo`)
+
+#| label: tbl-otros-municipios
+#| echo: false
+
+db_incidencia_mun %>%
+  filter(str_detect(municipio, "tros")) %>%
+  distinct(entidad, municipio, cve_municipio)
+
+#'
 
 #| label: join-cve_nom_ent_mun-db_incidencia_mun
 
@@ -378,9 +422,11 @@ set.seed(1)
 db_victimas_delitos_ent_long %>%
   slice_sample(n = 5)
 
-#' ## Cambios a `db_incidencia_mun_long`
+#' ## Bases de datos con `db_incidencia_mun_long`
 #' 
-#' ### Agrupar por año, municipio y (sub)tipo el número de delitos
+#' ### Número anual de delitos a nivel municipal
+#' 
+#' #### Agrupar por año, municipio y (sub)tipo el número de delitos
 #'
 #' El enfoque de los proyectos donde uso estos conjuntos de datos 
 #' normalmente uso los datos de los años completos, esto no significa 
@@ -405,7 +451,7 @@ set.seed(1)
 df_incidencia_mun_year %>%
   slice_sample(n = 5)
 
-#' ### Adjuntar el valor de la población del municipio para el tasado de delitos por 100 mil habitantes.
+#' #### Adjuntar el valor de la población del municipio para el tasado de delitos por 100 mil habitantes.
 #' 
 #' Los datos de la población serán los que publicó la CONAPO, la 
 #' **Proyección de población municipal, 2015-2030**^[Para mayor información 
@@ -443,8 +489,7 @@ db_pob_mun_conapo %>%
 #' tiene registro de `{r} format(x = n_mun_mg_inegi, big.mark = ',')` y 
 #' los datos del SESNSP cuenta con 
 #' `{r} format(x = n_mun_sesnsp, big.mark = ',')` municipios (este último 
-#' es porque tiene valores como `Otros municipios de X`, donde X es un 
-#' estado cualquiera)
+#' es porque tiene valores como **Otros municipios**)
 #' 
 #' El tasado para el delito de **Feminicidio** es con respecto al número 
 #' de mujeres por cada 100 mil habitantes. Es por ello que se crea la 
@@ -496,7 +541,9 @@ db_incidencia_mun_year_x100khab %>%
       filter(subtipo_de_delito == "Feminicidio", n_delitos > 0) %>%
       slice_sample(n = 2))
 
-#' ### Agrupar por año, estado y (sub)tipo el número de delitos.
+#' ### Número anual de delitos a nivel estatal
+#' 
+#' #### Agrupar por año, estado y (sub)tipo el número de delitos.
 #' 
 #' El enfoque de los proyectos donde uso estos conjuntos de datos 
 #' normalmente uso los datos de los años completos, esto no significa 
@@ -519,7 +566,7 @@ set.seed(1)
 df_incidencia_ent_year %>%
   slice_sample(n = 5)
 
-#' ### Adjuntar el valor de la población del estado para el tasado de delitos por 100 mil habitantes.
+#' #### Adjuntar el valor de la población del estado para el tasado de delitos por 100 mil habitantes.
 #' 
 #' Los datos de la población serán los que publicó la CONAPO, la **Población 
 #' a mitad e inicio de año de los estados de México (1950-2070)**^[Para 
@@ -612,17 +659,32 @@ db_incidencia_ent_nac_year_x100khab %>%
       filter(subtipo_de_delito == "Feminicidio", n_delitos > 0) %>%
       slice_sample(n = 2))
 
+#' ## Bases de datos con `db_victimas_delitos_ent_long`
 #' 
-#' ## Pendiente 4
+#' <!--TODO: Empezar a partir de aqui-->
 #' 
-#' Duis ac ex venenatis turpis vulputate porttitor ut euismod libero. 
-#' Fusce sem neque, volutpat mattis sapien id, ultrices porta elit. Sed 
-#' consequat risus eu diam vehicula aliquet. Sed in mi posuere risus 
-#' sollicitudin rutrum ut id odio. In hac habitasse platea dictumst. Duis 
-#' tincidunt interdum pellentesque. In blandit vulputate dui, nec iaculis 
-#' diam ullamcorper quis.
+#' ### Número anual de víctimas de delitos por género
 #' 
-#' ## Pendiente 5
+#' #### Agrupación por año, estado, género y (sub)tipo el número de delitos
+#' 
+#' Curabitur orci lacus, cursus a fermentum nec, pretium a nulla. Curabitur 
+#' nec condimentum eros. Aliquam nibh enim, ullamcorper in malesuada in, 
+#' egestas at magna. Sed commodo id dui sed varius. Nulla ultrices maximus 
+#' risus. Nam sodales vehicula nulla, ut placerat nunc dignissim non. 
+#' Quisque tincidunt justo a ultrices dignissim. Curabitur aliquet ut elit 
+#' id aliquam. Vivamus dictum imperdiet odio, ac consequat augue dapibus 
+#' pulvinar. Interdum et malesuada fames ac ante ipsum primis in faucibus. 
+#' Donec sit amet libero a justo aliquam sagittis ut a eros.
+ 
+#| eval: false
+
+# Crear una tercera categoría en género llamado `Todos`, este seria el 
+# resultado de la suma de victimas clasificadas como Hombre, Mujer y 
+# No identificado.
+
+# Eliminar la categoría `No identificado`
+
+#' #### Adjuntar el valor de la población del estado para el tasado de víctimas por 100 mil habitantes.
 #' 
 #' Curabitur orci lacus, cursus a fermentum nec, pretium a nulla. Curabitur 
 #' nec condimentum eros. Aliquam nibh enim, ullamcorper in malesuada in, 
@@ -633,7 +695,40 @@ db_incidencia_ent_nac_year_x100khab %>%
 #' pulvinar. Interdum et malesuada fames ac ante ipsum primis in faucibus. 
 #' Donec sit amet libero a justo aliquam sagittis ut a eros.
 #' 
-#' ## Pendiente 6
+#' ### Número anual de víctimas de delitos por género y rango de edad
+#' 
+#' #### Agrupar por año, estado, género, rango de edad y (sub)tipo el número 
+#' 
+#' Cras vestibulum lacinia felis et gravida. Etiam tempus lorem et dictum 
+#' iaculis. Etiam dapibus magna nisl, eget eleifend quam auctor quis. 
+#' Maecenas semper nunc nec nunc tempus, non egestas purus porttitor. 
+#' Nullam nisi felis, suscipit vel ullamcorper vitae, lobortis euismod 
+#' lacus. Aenean molestie faucibus libero at efficitur. Sed suscipit a eros 
+#' at eleifend. In quis ante commodo, tempus nisl a, elementum neque. 
+#' Nullam convallis fermentum tortor. Nunc scelerisque, nunc vel 
+#' scelerisque tempor, metus justo dictum augue, et luctus ante sapien eu 
+#' tellus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+#' Vestibulum non tristique ante. Curabitur a risus non justo varius dictum 
+#' sed sit amet magna. Curabitur rhoncus, diam eget commodo finibus, metus 
+#' mi feugiat tellus, eu vestibulum lacus massa quis arcu.
+
+#| eval: false
+
+# Crear una tercera categoría en género llamado `Todos`, este sería el 
+# resultado de la suma de victimas clasificadas como Hombre, Mujer y 
+# No identificado.
+
+# Crear una tercera categoría en rango de edad llamado `Todos`, este 
+# seria el resultado de la suma de victimas clasificadas como Menores de 
+# edad, Adultos, No especificado y No identificado.
+
+# Tener las nuevas categorías implica tener diversas combinaciones de 
+# la información como _número de víctimas de X delito hombres menores de 
+# edad_. No todas las combinaciones son relevantes, por lo que se tendrán 
+# que eliminar aquellas que contengan los valores `No identificad`o o `No 
+# especificado`
+
+#' #### Adjuntar el valor de la población estatal correspondiente a la combinación de género y rango de edad para el tasado de víctimas por 100 mil habitantes.
 #' 
 #' Cras vestibulum lacinia felis et gravida. Etiam tempus lorem et dictum 
 #' iaculis. Etiam dapibus magna nisl, eget eleifend quam auctor quis. 
