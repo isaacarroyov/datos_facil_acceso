@@ -411,6 +411,7 @@ db_victimas_delitos_ent_long <- db_victimas_delitos_ent_renamed %>%
   date_year_month = paste(n_year, n_month, "15", sep = "-")) %>%
   relocate(date_year_month, .before = n_year) %>%
   relocate(n_month, .after = n_year) %>%
+  rename(genero = sexo) %>%
   filter(!is.na(n_victimas))
 
 #'
@@ -667,33 +668,106 @@ db_incidencia_ent_nac_year_x100khab %>%
 #' 
 #' #### Agrupación por año, estado, género y (sub)tipo el número de delitos
 #' 
-#' Curabitur orci lacus, cursus a fermentum nec, pretium a nulla. Curabitur 
-#' nec condimentum eros. Aliquam nibh enim, ullamcorper in malesuada in, 
-#' egestas at magna. Sed commodo id dui sed varius. Nulla ultrices maximus 
-#' risus. Nam sodales vehicula nulla, ut placerat nunc dignissim non. 
-#' Quisque tincidunt justo a ultrices dignissim. Curabitur aliquet ut elit 
-#' id aliquam. Vivamus dictum imperdiet odio, ac consequat augue dapibus 
-#' pulvinar. Interdum et malesuada fames ac ante ipsum primis in faucibus. 
-#' Donec sit amet libero a justo aliquam sagittis ut a eros.
- 
-#| eval: false
+#' El enfoque de los proyectos donde uso estos conjuntos de datos 
+#' normalmente uso los datos de los años completos, esto no significa que 
+#' no uso el dato meses por mes solo que no es tan común.
+#' 
+#' También es importante agregar el valor nacional para comparaciones.
 
-# Crear una tercera categoría en género llamado `Todos`, este seria el 
-# resultado de la suma de victimas clasificadas como Hombre, Mujer y 
-# No identificado.
+#| label: create-df_victimas_delitos_gender
 
-# Eliminar la categoría `No identificado`
+df_victimas_delitos_gender <- bind_rows(
+  # Víctimas a nivel estatal (divididas por género)
+  db_victimas_delitos_ent_long %>%
+    group_by(across(-c(date_year_month,
+                       n_month,
+                       rango_de_edad,
+                       n_victimas))) %>%
+    summarise(n_victimas = sum(n_victimas)) %>%
+    ungroup(),
+  # Víctimas a nivel nacional (divididas por género)
+  db_victimas_delitos_ent_long %>%
+    group_by(across(-c(date_year_month,
+                       cve_ent,
+                       nombre_estado,
+                       n_month,
+                       rango_de_edad,
+                       n_victimas))) %>%
+    summarise(n_victimas = sum(n_victimas)) %>%
+    ungroup() %>%
+    mutate(cve_ent = "00", nombre_estado = "Nacional") %>%
+    relocate(cve_ent, .after = n_year) %>%
+    relocate(nombre_estado, .after = cve_ent)) %>%
+  group_by(across(-c(genero, n_victimas))) %>%
+  mutate(`Total` = sum(n_victimas)) %>%
+  ungroup() %>%
+  pivot_wider(
+    names_from = genero,
+    values_from = n_victimas) %>%
+  # Eliminar la categoría `No identificado`
+  select(-`No identificado`) %>%
+  pivot_longer(
+    cols = c(`Total`, `Hombre`, `Mujer`),
+    names_to = "genero",
+    values_to = "n_victimas") %>%
+# Eliminar los datos que son etiquetados con genero == "Hombre" en 
+# el subtipo_de_delito == "Feminicidio"
+filter(!(genero == "Hombre" & subtipo_de_delito == "Feminicidio"))
+
+#'
+
+#| label: show_sample-df_victimas_delitos_gender
+#| echo: false
+
+set.seed(1)
+df_victimas_delitos_gender %>%
+  group_by(genero) %>%
+  slice_sample(n = 2)
 
 #' #### Adjuntar el valor de la población del estado para el tasado de víctimas por 100 mil habitantes.
 #' 
-#' Curabitur orci lacus, cursus a fermentum nec, pretium a nulla. Curabitur 
-#' nec condimentum eros. Aliquam nibh enim, ullamcorper in malesuada in, 
-#' egestas at magna. Sed commodo id dui sed varius. Nulla ultrices maximus 
-#' risus. Nam sodales vehicula nulla, ut placerat nunc dignissim non. 
-#' Quisque tincidunt justo a ultrices dignissim. Curabitur aliquet ut elit 
-#' id aliquam. Vivamus dictum imperdiet odio, ac consequat augue dapibus 
-#' pulvinar. Interdum et malesuada fames ac ante ipsum primis in faucibus. 
-#' Donec sit amet libero a justo aliquam sagittis ut a eros.
+#' Similar al caso del los tasados de delitos a nivel municipal y estatal, 
+#' se tiene que agregar información específica de la población de mujeres 
+#' para el tasado del tasado del delito de Feminicidio.
+
+#| label: create-db_victimas_delitos_ent_nac_x100khab
+
+db_victimas_delitos_ent_nac_x100khab <- df_victimas_delitos_gender %>%
+  left_join(
+    y = db_pob_ent_conapo %>%
+          filter(genero == "Total") %>%
+          select(!c(nombre_estado, genero)),
+    by = join_by(n_year, cve_ent)) %>%
+  mutate(n_victimas_x100khab = (n_victimas / pob_mid_year) * 100000) %>%
+  # Agregar población de mujeres
+  left_join(
+    y = db_pob_ent_conapo %>%
+          filter(genero == "Mujeres") %>%
+          rename(pob_mid_year_mujeres = pob_mid_year) %>%
+          select(!c(nombre_estado, genero)),
+    by = join_by(n_year, cve_ent)) %>%
+  mutate(
+    pob_mid_year_mujeres = if_else(
+      condition = subtipo_de_delito == "Feminicidio",
+      true = pob_mid_year_mujeres,
+      false = NA_integer_)) %>%
+  mutate(n_victimas_x100kmujeres = (n_victimas / pob_mid_year_mujeres) 
+                                    * 100000) %>%
+  select(!c(pob_mid_year, pob_mid_year_mujeres))
+
+#'
+
+#| label: show_sample-db_victimas_delitos_ent_nac_x100khab
+#| echo: false
+
+set.seed(1)
+db_victimas_delitos_ent_nac_x100khab %>%
+  slice_sample(n = 3) %>%
+  bind_rows(
+    db_victimas_delitos_ent_nac_x100khab %>%
+      filter(subtipo_de_delito == "Feminicidio", n_victimas > 0) %>%
+      slice_sample(n = 2))
+
 #' 
 #' ### Número anual de víctimas de delitos por género y rango de edad
 #' 

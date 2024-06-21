@@ -1,6 +1,6 @@
 # Procesamiento de datos: Incidencia Delictiva del Fuero Común
 Isaac Arroyo
-19 de junio de 2024
+20 de junio de 2024
 
 ## Introducción y objetivos
 
@@ -382,10 +382,11 @@ db_victimas_delitos_ent_long <- db_victimas_delitos_ent_renamed %>%
   date_year_month = paste(n_year, n_month, "15", sep = "-")) %>%
   relocate(date_year_month, .before = n_year) %>%
   relocate(n_month, .after = n_year) %>%
+  rename(genero = sexo) %>%
   filter(!is.na(n_victimas))
 ```
 
-| date_year_month | n_year | n_month | cve_ent | nombre_estado | bien_juridico_afectado           | tipo_de_delito | subtipo_de_delito | modalidad                | sexo   | rango_de_edad          | n_victimas |
+| date_year_month | n_year | n_month | cve_ent | nombre_estado | bien_juridico_afectado           | tipo_de_delito | subtipo_de_delito | modalidad                | genero | rango_de_edad          | n_victimas |
 |:----------------|:-------|:--------|:--------|:--------------|:---------------------------------|:---------------|:------------------|:-------------------------|:-------|:-----------------------|-----------:|
 | 2021-12-15      | 2021   | 12      | 07      | Chiapas       | La vida y la Integridad corporal | Lesiones       | Lesiones culposas | En accidente de tránsito | Hombre | No especificado        |          0 |
 | 2020-01-15      | 2020   | 01      | 05      | Coahuila      | La vida y la Integridad corporal | Homicidio      | Homicidio culposo | No especificado          | Mujer  | Menores de edad (0-17) |          0 |
@@ -608,37 +609,105 @@ db_incidencia_ent_nac_year_x100khab <- bind_rows(
 
 ## Bases de datos con `db_victimas_delitos_ent_long`
 
+<!--TODO: Empezar a partir de aqui-->
+
 ### Número anual de víctimas de delitos por género
 
 #### Agrupación por año, estado, género y (sub)tipo el número de delitos
 
-Curabitur orci lacus, cursus a fermentum nec, pretium a nulla. Curabitur
-nec condimentum eros. Aliquam nibh enim, ullamcorper in malesuada in,
-egestas at magna. Sed commodo id dui sed varius. Nulla ultrices maximus
-risus. Nam sodales vehicula nulla, ut placerat nunc dignissim non.
-Quisque tincidunt justo a ultrices dignissim. Curabitur aliquet ut elit
-id aliquam. Vivamus dictum imperdiet odio, ac consequat augue dapibus
-pulvinar. Interdum et malesuada fames ac ante ipsum primis in faucibus.
-Donec sit amet libero a justo aliquam sagittis ut a eros.
+El enfoque de los proyectos donde uso estos conjuntos de datos
+normalmente uso los datos de los años completos, esto no significa que
+no uso el dato meses por mes solo que no es tan común.
+
+También es importante agregar el valor nacional para comparaciones.
 
 ``` r
-# Crear una tercera categoría en género llamado `Todos`, este seria el 
-# resultado de la suma de victimas clasificadas como Hombre, Mujer y 
-# No identificado.
-
-# Eliminar la categoría `No identificado`
+df_victimas_delitos_gender <- bind_rows(
+  # Víctimas a nivel estatal (divididas por género)
+  db_victimas_delitos_ent_long %>%
+    group_by(across(-c(date_year_month,
+                       n_month,
+                       rango_de_edad,
+                       n_victimas))) %>%
+    summarise(n_victimas = sum(n_victimas)) %>%
+    ungroup(),
+  # Víctimas a nivel nacional (divididas por género)
+  db_victimas_delitos_ent_long %>%
+    group_by(across(-c(date_year_month,
+                       cve_ent,
+                       nombre_estado,
+                       n_month,
+                       rango_de_edad,
+                       n_victimas))) %>%
+    summarise(n_victimas = sum(n_victimas)) %>%
+    ungroup() %>%
+    mutate(cve_ent = "00", nombre_estado = "Nacional") %>%
+    relocate(cve_ent, .after = n_year) %>%
+    relocate(nombre_estado, .after = cve_ent)) %>%
+  group_by(across(-c(genero, n_victimas))) %>%
+  mutate(`Total` = sum(n_victimas)) %>%
+  ungroup() %>%
+  pivot_wider(
+    names_from = genero,
+    values_from = n_victimas) %>%
+  # Eliminar la categoría `No identificado`
+  select(-`No identificado`) %>%
+  pivot_longer(
+    cols = c(`Total`, `Hombre`, `Mujer`),
+    names_to = "genero",
+    values_to = "n_victimas") %>%
+# Eliminar los datos que son etiquetados con genero == "Hombre" en 
+# el subtipo_de_delito == "Feminicidio"
+filter(!(genero == "Hombre" & subtipo_de_delito == "Feminicidio"))
 ```
+
+| n_year | cve_ent | nombre_estado    | bien_juridico_afectado           | tipo_de_delito                                        | subtipo_de_delito                                     | modalidad                                             | genero | n_victimas |
+|:-------|:--------|:-----------------|:---------------------------------|:------------------------------------------------------|:------------------------------------------------------|:------------------------------------------------------|:-------|-----------:|
+| 2015   | 32      | Zacatecas        | Libertad personal                | Otros delitos que atentan contra la libertad personal | Otros delitos que atentan contra la libertad personal | Otros delitos que atentan contra la libertad personal | Hombre |        111 |
+| 2022   | 27      | Tabasco          | La sociedad                      | Trata de personas                                     | Trata de personas                                     | Trata de personas                                     | Hombre |          0 |
+| 2019   | 05      | Coahuila         | La vida y la Integridad corporal | Lesiones                                              | Lesiones culposas                                     | No especificado                                       | Mujer  |          0 |
+| 2024   | 01      | Aguascalientes   | El patrimonio                    | Extorsión                                             | Extorsión                                             | Extorsión                                             | Mujer  |         19 |
+| 2023   | 15      | Estado de México | La vida y la Integridad corporal | Aborto                                                | Aborto                                                | Aborto                                                | Total  |        156 |
+| 2024   | 05      | Coahuila         | La vida y la Integridad corporal | Lesiones                                              | Lesiones dolosas                                      | No especificado                                       | Total  |          0 |
 
 #### Adjuntar el valor de la población del estado para el tasado de víctimas por 100 mil habitantes.
 
-Curabitur orci lacus, cursus a fermentum nec, pretium a nulla. Curabitur
-nec condimentum eros. Aliquam nibh enim, ullamcorper in malesuada in,
-egestas at magna. Sed commodo id dui sed varius. Nulla ultrices maximus
-risus. Nam sodales vehicula nulla, ut placerat nunc dignissim non.
-Quisque tincidunt justo a ultrices dignissim. Curabitur aliquet ut elit
-id aliquam. Vivamus dictum imperdiet odio, ac consequat augue dapibus
-pulvinar. Interdum et malesuada fames ac ante ipsum primis in faucibus.
-Donec sit amet libero a justo aliquam sagittis ut a eros.
+Similar al caso del los tasados de delitos a nivel municipal y estatal,
+se tiene que agregar información específica de la población de mujeres
+para el tasado del tasado del delito de Feminicidio.
+
+``` r
+db_victimas_delitos_ent_nac_x100khab <- df_victimas_delitos_gender %>%
+  left_join(
+    y = db_pob_ent_conapo %>%
+          filter(genero == "Total") %>%
+          select(!c(nombre_estado, genero)),
+    by = join_by(n_year, cve_ent)) %>%
+  mutate(n_victimas_x100khab = (n_victimas / pob_mid_year) * 100000) %>%
+  # Agregar población de mujeres
+  left_join(
+    y = db_pob_ent_conapo %>%
+          filter(genero == "Mujeres") %>%
+          rename(pob_mid_year_mujeres = pob_mid_year) %>%
+          select(!c(nombre_estado, genero)),
+    by = join_by(n_year, cve_ent)) %>%
+  mutate(
+    pob_mid_year_mujeres = if_else(
+      condition = subtipo_de_delito == "Feminicidio",
+      true = pob_mid_year_mujeres,
+      false = NA_integer_)) %>%
+  mutate(n_victimas_x100kmujeres = (n_victimas / pob_mid_year_mujeres) 
+                                    * 100000) %>%
+  select(!c(pob_mid_year, pob_mid_year_mujeres))
+```
+
+| n_year | cve_ent | nombre_estado | bien_juridico_afectado           | tipo_de_delito | subtipo_de_delito | modalidad           | genero | n_victimas | n_victimas_x100khab | n_victimas_x100kmujeres |
+|:-------|:--------|:--------------|:---------------------------------|:---------------|:------------------|:--------------------|:-------|-----------:|--------------------:|------------------------:|
+| 2022   | 11      | Guanajuato    | La vida y la Integridad corporal | Lesiones       | Lesiones culposas | Con arma blanca     | Hombre |          0 |           0.0000000 |                      NA |
+| 2016   | 07      | Chiapas       | Libertad personal                | Secuestro      | Secuestro         | Secuestro extorsivo | Mujer  |         10 |           0.1833726 |                      NA |
+| 2018   | 16      | Michoacán     | La vida y la Integridad corporal | Homicidio      | Homicidio culposo | Con arma de fuego   | Total  |         21 |           0.4403086 |                      NA |
+| 2018   | 26      | Sonora        | La vida y la Integridad corporal | Feminicidio    | Feminicidio       | Con otro elemento   | Total  |         13 |           0.4390730 |               0.8796634 |
+| 2022   | 11      | Guanajuato    | La vida y la Integridad corporal | Feminicidio    | Feminicidio       | Con arma de fuego   | Total  |          5 |           0.0786063 |               0.1530254 |
 
 ### Número anual de víctimas de delitos por género y rango de edad
 
