@@ -432,13 +432,24 @@ db_victimas_delitos_ent_long %>%
 #' El enfoque de los proyectos donde uso estos conjuntos de datos 
 #' normalmente uso los datos de los años completos, esto no significa 
 #' que no uso el dato meses por mes solo que no es tan común.
+#' 
+#' > [!NOTE]
+#' > 
+#' > **Sobre el `group_by`**: Al contar con _muchas_ columnas, se opta 
+#' por escribir las columnas **que no son parte de la agrupación** dentro 
+#' de la función 
+#' [`across`](https://dplyr.tidyverse.org/reference/across.html). Para 
+#' indicar que no se tomarán en cuenta, las columnas que **no forman parte 
+#' de la agrupación** se escriben dentro de un vector que será negado con 
+#' el símbolo `-`. Esta acción se hace en gran mayoría de las agrupaciones.
+#' > 
+#' > Ejemplo: `df %>% group_by(across(-c(col1, col2, col3)))`, donde 
+#' `col1`, `col2` y `col3` son las columnas que no se toman en cuenta 
+#' para la agrupación.
 
 #| label: create-df_incidencia_mun_year
 
 df_incidencia_mun_year <- db_incidencia_mun_long %>%
-  # El conjunto de datos tiene muchas columnas por las cuales se 
-  # hará la agrupación, por lo que es más fácil seleccionar 
-  # aquellas variables que NO se usarán en la agrupación
   group_by(across(-c(date_year_month, n_month, n_delitos))) %>%
   summarise(n_delitos = sum(n_delitos, na.rm = TRUE)) %>%
   ungroup()
@@ -662,8 +673,6 @@ db_incidencia_ent_nac_year_x100khab %>%
 
 #' ## Bases de datos con `db_victimas_delitos_ent_long`
 #' 
-#' <!--TODO: Empezar a partir de aqui-->
-#' 
 #' ### Número anual de víctimas de delitos por género
 #' 
 #' #### Agrupación por año, estado, género y (sub)tipo el número de delitos
@@ -771,51 +780,147 @@ db_victimas_delitos_ent_nac_x100khab %>%
 #' 
 #' ### Número anual de víctimas de delitos por género y rango de edad
 #' 
+#' <!--TODO: Empezar a partir de aqui-->
+#' 
 #' #### Agrupar por año, estado, género, rango de edad y (sub)tipo el número 
 #' 
-#' Cras vestibulum lacinia felis et gravida. Etiam tempus lorem et dictum 
-#' iaculis. Etiam dapibus magna nisl, eget eleifend quam auctor quis. 
-#' Maecenas semper nunc nec nunc tempus, non egestas purus porttitor. 
-#' Nullam nisi felis, suscipit vel ullamcorper vitae, lobortis euismod 
-#' lacus. Aenean molestie faucibus libero at efficitur. Sed suscipit a eros 
-#' at eleifend. In quis ante commodo, tempus nisl a, elementum neque. 
-#' Nullam convallis fermentum tortor. Nunc scelerisque, nunc vel 
-#' scelerisque tempor, metus justo dictum augue, et luctus ante sapien eu 
-#' tellus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
-#' Vestibulum non tristique ante. Curabitur a risus non justo varius dictum 
-#' sed sit amet magna. Curabitur rhoncus, diam eget commodo finibus, metus 
-#' mi feugiat tellus, eu vestibulum lacus massa quis arcu.
+#' El objetivo de la agrupación de las diferentes categorías de género y 
+#' rango de edad es para poder desagregar la información de acuerdo a 
+#' diferentes necesidades del proyecto.
 
-#| eval: false
+#| label: create-df_victimas_delitos_gender_age
 
-# Crear una tercera categoría en género llamado `Todos`, este sería el 
-# resultado de la suma de victimas clasificadas como Hombre, Mujer y 
-# No identificado.
+df_victimas_delitos_gender_age <- db_victimas_delitos_ent_long %>%
+  group_by(across(-c(date_year_month, n_month, n_victimas))) %>%
+  summarise(n_victimas = sum(n_victimas, na.rm = TRUE)) %>%
+  ungroup() %>%
+  # Crear una tercera categoría en género llamado `Todos`, este sería el 
+  # resultado de la suma de victimas clasificadas como Hombre, Mujer y 
+  # No identificado.
+  group_by(across(-c(n_victimas, genero))) %>%
+  mutate(total_genero = sum(n_victimas, na.rm = TRUE)) %>%
+  ungroup() %>%
+  pivot_wider(
+    names_from = genero,
+    values_from = n_victimas) %>%
+  janitor::clean_names() %>%
+  # select(-no_identificado) %>%
+  pivot_longer(
+    # cols = total_genero:mujer,
+    cols = total_genero:no_identificado,
+    names_to = "genero",
+    values_to = "n_victimas") %>%
+  # Crear una tercera categoría en rango de edad llamado `Todos`, este 
+  # seria el resultado de la suma de victimas clasificadas como Menores de 
+  # edad, Adultos, No especificado y No identificado.
+  group_by(across(-c(n_victimas, rango_de_edad))) %>%
+  mutate(total_edad = sum(n_victimas, na.rm = TRUE)) %>%
+  ungroup() %>% 
+  pivot_wider(
+    names_from = rango_de_edad,
+    values_from = n_victimas) %>%
+  janitor::clean_names() %>%
+  # Tener las nuevas categorías implica tener diversas combinaciones de 
+  # la información como _número de víctimas de X delito hombres menores de 
+  # edad_. No todas las combinaciones son relevantes, por lo que se tendrán 
+  # que eliminar aquellas que contengan los valores `No identificado` o `No 
+  # especificado`
+  filter(genero != "no_identificado") %>%
+  select(!starts_with("no_")) %>%
+  # Renombrar rangos de edad
+  rename(
+    adultos = adultos_18_y_mas,
+    # NNA = Niñas, niños y adolescentes
+    nna = menores_de_edad_0_17) %>%
+  pivot_longer(
+    cols = total_edad:nna,
+    names_to = "rango_de_edad",
+    values_to = "n_victimas") %>%
+  # Eliminar registros de hombre y total_genero 
+  # en el subtipo_de_delito "Feminicidio"
+  filter(
+    !(genero %in% c("hombre", "total_genero") &
+      subtipo_de_delito == "Feminicidio"))
 
-# Crear una tercera categoría en rango de edad llamado `Todos`, este 
-# seria el resultado de la suma de victimas clasificadas como Menores de 
-# edad, Adultos, No especificado y No identificado.
+#'
 
-# Tener las nuevas categorías implica tener diversas combinaciones de 
-# la información como _número de víctimas de X delito hombres menores de 
-# edad_. No todas las combinaciones son relevantes, por lo que se tendrán 
-# que eliminar aquellas que contengan los valores `No identificad`o o `No 
-# especificado`
+#| label: show_sample-df_victimas_delitos_gender_age
+#| echo: false
+
+set.seed(2)
+df_victimas_delitos_gender_age %>%
+  slice_sample(n = 5)
+
+#' Como resultado se tienen 9 diferentes combinaciones de 
+#' `genero`-`rango_de_edad`
+#' 
+#' > **NNA** = **N**iñas, **N**iños y **A**dolescentes
+
+#| label: show-combinations_genero_edad
+#| echo: false
+
+df_victimas_delitos_gender_age %>%
+  distinct(genero, rango_de_edad) %>%
+  bind_cols(
+    tibble(
+      descripcion = c("Total de víctimas de todos los géneros y todas las edades",
+                      "Total de víctimas de todos los géneros, adultas",
+                      "Total de víctimas de todos los géneros, NNA",
+                      "Total de víctimas hombres de todas las edades",
+                      "Total de víctimas hombres adultos",
+                      "Total de víctimas hombres NNA",
+                      "Total de víctimas mujeres de todas las edades",
+                      "Total de víctimas mujeres adultas",
+                      "Total de víctimas mujeres NNA")))
 
 #' #### Adjuntar el valor de la población estatal correspondiente a la combinación de género y rango de edad para el tasado de víctimas por 100 mil habitantes.
 #' 
-#' Cras vestibulum lacinia felis et gravida. Etiam tempus lorem et dictum 
-#' iaculis. Etiam dapibus magna nisl, eget eleifend quam auctor quis. 
-#' Maecenas semper nunc nec nunc tempus, non egestas purus porttitor. 
-#' Nullam nisi felis, suscipit vel ullamcorper vitae, lobortis euismod 
-#' lacus. Aenean molestie faucibus libero at efficitur. Sed suscipit a eros 
-#' at eleifend. In quis ante commodo, tempus nisl a, elementum neque. 
-#' Nullam convallis fermentum tortor. Nunc scelerisque, nunc vel 
-#' scelerisque tempor, metus justo dictum augue, et luctus ante sapien eu 
-#' tellus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
-#' Vestibulum non tristique ante. Curabitur a risus non justo varius dictum 
-#' sed sit amet magna. Curabitur rhoncus, diam eget commodo finibus, metus 
-#' mi feugiat tellus, eu vestibulum lacus massa quis arcu.
+#' El conjunto de datos `df_victimas_delitos_gender_age` tiene 
+#' `{r} ncol(df_victimas_delitos_gender_age)` columnas, a lo que se 
+#' agregarán 3 columnas extra:
+#' 
+#' * Tasado con respecto a la población total (ambos genero y todas 
+#' las edades): Para todas las observaciones
+#' * Tasado con respecto a la población total de mujeres (todas las 
+#' edades): Únicamente para el género `mujer`
+#' * Tasado con respecto a su combinación de `genero`-`rango_de_edad`
+
+
+#| eval: false
+#| echo: false
+
+db_pob_ent_conapo_gender_age <- read_csv(
+    file = paste0(path2gobmex,
+                  "/conapo_proyecciones",
+                  "/conapo_pob_ent_gender_age_1950_2070.csv.bz2")) %>%
+  select(-pob_start_year) %>%
+  mutate(
+    rango_de_edad = if_else(
+      condition = edad < 18,
+      true = "nna",
+      false = "adultos")) %>%
+  group_by(across(-c(pob_mid_year, edad))) %>%
+  summarise(pob_mid_year = sum(pob_mid_year)) %>%
+  ungroup() %>%
+  pivot_wider(
+    names_from = rango_de_edad,
+    values_from = pob_mid_year) %>%
+  mutate(total_edad = adultos + nna) %>%
+  pivot_longer(
+    cols = c(adultos, nna, total_edad),
+    names_to = "rango_de_edad",
+    values_to = "pob_mid_year") %>%
+  pivot_wider(
+    names_from = genero,
+    values_from = pob_mid_year) %>%
+  janitor::clean_names() %>%
+  mutate(total_genero = hombres + mujeres) %>%
+  rename(hombre = hombres, mujer = mujeres) %>%
+  pivot_longer(
+    cols = c(hombre, mujer, total_genero),
+    names_to = "genero",
+    values_to = "pob_mid_year")
+
 #' 
 #' ## Pendiente 7
 #' 
