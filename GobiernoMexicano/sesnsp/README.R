@@ -719,9 +719,10 @@ df_victimas_delitos_gender <- bind_rows(
     cols = c(`Total`, `Hombre`, `Mujer`),
     names_to = "genero",
     values_to = "n_victimas") %>%
-# Eliminar los datos que son etiquetados con genero == "Hombre" en 
+# Eliminar los datos que son etiquetados con genero "Hombre" o "Total" en 
 # el subtipo_de_delito == "Feminicidio"
-filter(!(genero == "Hombre" & subtipo_de_delito == "Feminicidio"))
+filter(!(genero %in% c("Total", "Hombre") &
+         subtipo_de_delito == "Feminicidio"))
 
 #'
 
@@ -780,17 +781,19 @@ db_victimas_delitos_ent_nac_x100khab %>%
 #' 
 #' ### Número anual de víctimas de delitos por género y rango de edad
 #' 
-#' <!--TODO: Empezar a partir de aqui-->
-#' 
 #' #### Agrupar por año, estado, género, rango de edad y (sub)tipo el número 
 #' 
 #' El objetivo de la agrupación de las diferentes categorías de género y 
 #' rango de edad es para poder desagregar la información de acuerdo a 
 #' diferentes necesidades del proyecto.
+#' 
+#' Primero se agrupan los datos a nivel estatal, después nacional y 
+#' finalmente se unen en un solo `DataFrame`
 
-#| label: create-df_victimas_delitos_gender_age
+#| label: create-df_victimas_delitos_ent_nac_gender_age
 
-df_victimas_delitos_gender_age <- db_victimas_delitos_ent_long %>%
+# - - Conteo de víctimas a nivel estatal - - #
+df_victimas_delitos_ent_gender_age <- db_victimas_delitos_ent_long %>%
   group_by(across(-c(date_year_month, n_month, n_victimas))) %>%
   summarise(n_victimas = sum(n_victimas, na.rm = TRUE)) %>%
   ungroup() %>%
@@ -842,13 +845,27 @@ df_victimas_delitos_gender_age <- db_victimas_delitos_ent_long %>%
     !(genero %in% c("hombre", "total_genero") &
       subtipo_de_delito == "Feminicidio"))
 
+# - - Conteo de víctimas a nivel nacional - - #
+df_victimas_delitos_nac_gender_age <- df_victimas_delitos_ent_gender_age %>%
+  group_by(across(-c(cve_ent, nombre_estado, n_victimas))) %>%
+  summarise(n_victimas = sum(n_victimas, na.rm = TRUE)) %>%
+  ungroup() %>%
+  mutate(cve_ent = "00", nombre_estado = "Nacional") %>%
+  relocate(cve_ent, .after = n_year) %>%
+  relocate(nombre_estado, .after = cve_ent)
+
+# - - Unión del conteo de víctimas a nivel estatal + nacional - - #
+df_victimas_delitos_ent_nac_gender_age <- bind_rows(
+  df_victimas_delitos_ent_gender_age,
+  df_victimas_delitos_nac_gender_age)
+
 #'
 
-#| label: show_sample-df_victimas_delitos_gender_age
+#| label: show_sample-df_victimas_delitos_ent_nac_gender_age
 #| echo: false
 
 set.seed(2)
-df_victimas_delitos_gender_age %>%
+df_victimas_delitos_ent_nac_gender_age %>%
   slice_sample(n = 5)
 
 #' Como resultado se tienen 9 diferentes combinaciones de 
@@ -859,7 +876,7 @@ df_victimas_delitos_gender_age %>%
 #| label: show-combinations_genero_edad
 #| echo: false
 
-df_victimas_delitos_gender_age %>%
+df_victimas_delitos_ent_nac_gender_age %>%
   distinct(genero, rango_de_edad) %>%
   bind_cols(
     tibble(
@@ -875,30 +892,34 @@ df_victimas_delitos_gender_age %>%
 
 #' #### Adjuntar el valor de la población estatal correspondiente a la combinación de género y rango de edad para el tasado de víctimas por 100 mil habitantes.
 #' 
-#' El conjunto de datos `df_victimas_delitos_gender_age` tiene 
-#' `{r} ncol(df_victimas_delitos_gender_age)` columnas, a lo que se 
+#' El conjunto de datos `df_victimas_delitos_ent_nac_gender_age` tiene 
+#' `{r} ncol(df_victimas_delitos_ent_nac_gender_age)` columnas, a lo que se 
 #' agregarán 3 columnas extra:
 #' 
 #' * Tasado con respecto a la población total (ambos genero y todas 
 #' las edades): Para todas las observaciones
 #' * Tasado con respecto a la población total de mujeres (todas las 
 #' edades): Únicamente para el género `mujer`
-#' * Tasado con respecto a su combinación de `genero`-`rango_de_edad`
+#' * Tasado con respecto a su combinación de `genero`-`rango_de_edad`: Para 
+#' realizar este tipo de tasado, se modifica la forma del conjunto de datos 
+#' de la proyección de problación, de tal manera en que se tenga la 
+#' información de las dos columnas que tiene 
+#' `df_victimas_delitos_ent_nac_gender_age`
 
-
-#| eval: false
-#| echo: false
+#| label: create-db_pob_ent_conapo_gender_age
 
 db_pob_ent_conapo_gender_age <- read_csv(
     file = paste0(path2gobmex,
                   "/conapo_proyecciones",
-                  "/conapo_pob_ent_gender_age_1950_2070.csv.bz2")) %>%
+                  "/conapo_pob_ent_gender_age_1950_2070.csv.bz2"),
+    col_types = cols(.default = "c")) %>%
   select(-pob_start_year) %>%
   mutate(
     rango_de_edad = if_else(
       condition = edad < 18,
       true = "nna",
-      false = "adultos")) %>%
+      false = "adultos"),
+    pob_mid_year = as.numeric(pob_mid_year)) %>%
   group_by(across(-c(pob_mid_year, edad))) %>%
   summarise(pob_mid_year = sum(pob_mid_year)) %>%
   ungroup() %>%
@@ -921,7 +942,101 @@ db_pob_ent_conapo_gender_age <- read_csv(
     names_to = "genero",
     values_to = "pob_mid_year")
 
+#' La creación de las primeras dos columnas resulta similar a como se ha 
+#' estado haciendo previamente. La tercera columna tomará en cuenta como 
+#' llaves (para la unión) la categoría de rango de edad y genero
+
+#| label: create-db_victimas_delitos_ent_nac_gender_age_100khab
+
+db_victimas_delitos_ent_nac_gender_age_100khab <- df_victimas_delitos_ent_nac_gender_age %>%
+  # ~ Creación 1a columna: Tasado con respecto a la pob total ~ #
+  # Unión de información de población total
+  left_join(
+    y = db_pob_ent_conapo_gender_age %>% 
+          filter(
+            genero == "total_genero",
+            rango_de_edad == "total_edad") %>%
+        select(n_year, cve_ent, pob_mid_year),
+    by = join_by(n_year, cve_ent)) %>%
+  # [1] Cálculo de victimas por 100 mil hab (total_genero-total_edad)
+  mutate(n_victimas_x100khab = (n_victimas / pob_mid_year) * 100000) %>%
+  # ~ Creación 2a columna: Tasado con respecto a la pob total de mujeres ~ #
+  # Unión de información de población total de mujeres
+  left_join(
+    y = db_pob_ent_conapo_gender_age %>% 
+          filter(
+            genero == "mujer",
+            rango_de_edad == "total_edad") %>%
+        rename(pob_mid_year_mujeres = pob_mid_year) %>%
+        select(n_year, cve_ent, pob_mid_year_mujeres),
+    by = join_by(n_year, cve_ent)) %>%
+  # [2] Cálculo de victimas por 100 mil mujeres (total_edad)
+  mutate(n_victimas_x100kmujeres = (n_victimas / pob_mid_year_mujeres) 
+                                    * 100000) %>%
+  # ~ Creación 3a columna: Tasado con respecto a la pob 
+  #   de cada par genero-rango_de_edad ~ #
+  # Unión de información de población de cada par genero-rango_de_edad
+  left_join(
+    y = db_pob_ent_conapo_gender_age %>% 
+        rename(pob_mid_year_par = pob_mid_year) %>%
+        select(!c(nombre_estado)),
+    by = join_by(n_year, cve_ent, rango_de_edad, genero)) %>%
+  # [3] Cálculo de victimas por 100 mil mujeres (total_edad)
+  mutate(n_victimas_x100kpar = (n_victimas / pob_mid_year_par) * 100000) %>%
+  # Eliminar las columnas de población
+  select(!starts_with("pob_mid")) %>%
+  # Eliminar datos de las celdas de la columna n_victimas_x100kmujeres
+  # en aquellas observaciones que NO sean mujer
+  mutate(
+    n_victimas_x100kmujeres = if_else(
+      condition = genero == "mujer",
+      true = n_victimas_x100kmujeres,
+      false = NA_real_))
+
 #' 
+
+#| label: fact-check_db_victimas_delitos_ent_nac_gender_age_100khab-vs-db_victimas_delitos_ent_nac_x100khab
+#| echo: false
+#| eval: false
+
+db_victimas_delitos_ent_nac_gender_age_100khab %>%
+  filter(
+    genero == "total_genero",
+    rango_de_edad == "total_edad",
+    cve_ent == "00") %>% 
+  select(!c(n_victimas_x100khab,
+            genero, rango_de_edad)) %>%
+  rename(
+    n_victimas_x100kmujeres_par = n_victimas_x100kmujeres,
+    n_victimas_par = n_victimas) %>%
+  left_join(
+    y = db_victimas_delitos_ent_nac_x100khab %>% 
+        filter(
+          cve_ent == "00",
+          genero == "Total") %>%
+        select(-genero),
+    by = join_by(n_year,
+                 cve_ent,
+                 nombre_estado,
+                 bien_juridico_afectado,
+                 tipo_de_delito,
+                 subtipo_de_delito,
+                 modalidad))
+
+#' 
+
+#| label: show_sample-db_victimas_delitos_ent_nac_gender_age_100khab
+#| echo: false
+
+set.seed(3)
+db_victimas_delitos_ent_nac_gender_age_100khab %>%
+  slice_sample(n = 3) %>%
+  bind_rows(
+    db_victimas_delitos_ent_nac_gender_age_100khab %>%
+      filter(subtipo_de_delito == "Feminicidio") %>%
+      slice_sample(n = 2))
+
+#' <!--TODO: Empezar a partir de aqui: Guardar DBs + diccionarios -->
 #' ## Pendiente 7
 #' 
 #' Suspendisse potenti. In cursus nibh ut diam cursus, vitae mattis erat 
