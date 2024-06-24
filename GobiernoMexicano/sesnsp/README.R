@@ -162,61 +162,6 @@ db_victimas_delitos_ent %>%
 #' de fecha, de esta manera la base de datos original como una serie 
 #' de tiempo.
 #' 
-#' ### Cambios específicos 
-#' 
-#' Los siguientes cambios se hacen de manera específica a cada una de las 
-#' bases de datos originales.
-#' 
-#' **Base de datos de Incidencia Delictiva del Fuero Común anual a 
-#' nivel municipal** (`db_incidencia_mun`):
-#' 
-#' 1. Agrupar por año, estado, municipio y (sub)tipo el número de delitos 
-#' y sumar el número de delitos.
-#' 2. Adjuntar el valor de la población del municipio (los que tengan dicha 
-#' información) para el tasado de delitos por 100 mil habitantes.
-#' 
-#' **Base de datos de Incidencia Delictiva del Fuero Común anual a 
-#' nivel estatal y nacional** (`db_incidencia_mun`):
-#' 
-#' 1. Agrupar por año, estado y (sub)tipo el número de delitos y sumar el 
-#' número de delitos.
-#' 2. Agrupar por año y (sub)tipo el número de delitos y sumar el 
-#' número de delitos para obtener el valor Nacional.
-#' 3. Adjuntar el valor de la población del estado y país para el tasado de 
-#' delitos por 100 mil habitantes.
-#'  
-#' **Base de datos de Víctimas de Delitos del Fuero Común anual, por 
-#' género a nivel estatal** (`db_victimas_delitos_ent`):
-#' 
-#' 1. Agrupar por año, estado, género y (sub)tipo el número de delitos y 
-#' sumar el número de victimas.
-#' 2. Crear una tercera categoría en género llamado `Todos`, este seria el 
-#' resultado de la suma de victimas clasificadas como Hombre, Mujer y 
-#' No identificado.
-#' 3. Eliminar la categoría `No identificado`
-#' 4. Adjuntar el valor de la población del estado para el tasado de 
-#' víctimas por 100 mil habitantes.
-#' 
-#' **Base de datos de Víctimas de Delitos del Fuero Común anual, por 
-#' género y rango de edad a nivel estatal** (`db_victimas_delitos_ent`):
-#' 
-#' 1. Agrupar por año, estado, género, rango de edad y (sub)tipo el número 
-#' de delitos y sumar el número de victimas.
-#' 2. Crear una tercera categoría en género llamado `Todos`, este sería el 
-#' resultado de la suma de victimas clasificadas como Hombre, Mujer y 
-#' No identificado.
-#' 3. Crear una tercera categoría en rango de edad llamado `Todos`, este 
-#' seria el resultado de la suma de victimas clasificadas como Menores de 
-#' edad, Adultos, No especificado y No identificado.
-#' 4. Tener las nuevas categorías implica tener diversas combinaciones de 
-#' la información como _número de víctimas de X delito hombres menores de 
-#' edad_. No todas las combinaciones son relevantes, por lo que se tendrán 
-#' que eliminar aquellas que contengan los valores `No identificad`o o `No 
-#' especificado`
-#' 4. Adjuntar el valor de la población estatal correspondiente a la 
-#' combinación de género y rango de edad para el tasado de víctimas por 
-#' 100 mil habitantes.
-#' 
 #' ## Cambios generales
 #' 
 #' ### Renombramiento de valores (nombre de municipios y estados) y de columnas
@@ -423,6 +368,63 @@ set.seed(1)
 db_victimas_delitos_ent_long %>%
   slice_sample(n = 5)
 
+#' ### Cambios específicos 
+#' 
+#' Los siguientes cambios se hacen de manera específica a cada una de las 
+#' bases de datos originales.
+#' 
+#' **Base de datos de Incidencia Delictiva del Fuero Común anual a 
+#' nivel municipal** (Fuente: `db_incidencia_mun_long`):
+#' 
+#' 1. Agrupar por año, estado, municipio y (sub)tipo el número de delitos 
+#' y sumar el número de delitos.
+#' 2. Adjuntar el valor de la población del municipio (los que tengan dicha 
+#' información) para el tasado de delitos por 100 mil habitantes.
+#' 
+#' **Base de datos de Incidencia Delictiva del Fuero Común anual a 
+#' nivel estatal y nacional** (Fuente: `db_incidencia_mun_long`):
+#' 
+#' 1. Agrupar por año, estado y (sub)tipo el número de delitos y sumar el 
+#' número de delitos.
+#' 2. Agrupar por año y (sub)tipo el número de delitos y sumar el 
+#' número de delitos para obtener el valor Nacional.
+#' 3. Adjuntar el valor de la población del estado y país para el tasado de 
+#' delitos por 100 mil habitantes.
+#'  
+#' **Base de datos de Víctimas de Delitos del Fuero Común anual, por 
+#' género a nivel estatal** 
+#' (Fuete: `db_victimas_delitos_ent_long`):
+#' 
+#' 1. Agrupar por año, estado, género y (sub)tipo el número de delitos y 
+#' sumar el número de victimas.
+#' 2. Crear una tercera categoría en género llamado `Todos`, este seria el 
+#' resultado de la suma de victimas clasificadas como Hombre, Mujer y 
+#' No identificado.
+#' 3. Eliminar la categoría `No identificado`
+#' 4. Adjuntar el valor de la población del estado para el tasado de 
+#' víctimas por 100 mil habitantes.
+#' 
+#' **Base de datos de Víctimas de Delitos del Fuero Común anual, por 
+#' género y rango de edad a nivel estatal** 
+#' (Fuente: `db_victimas_delitos_ent_long`):
+#' 
+#' 1. Agrupar por año, estado, género, rango de edad y (sub)tipo el número 
+#' de delitos y sumar el número de victimas.
+#' 2. Crear una tercera categoría en género llamado `Todos`, este sería el 
+#' resultado de la suma de victimas clasificadas como Hombre, Mujer y 
+#' No identificado.
+#' 3. Crear una tercera categoría en rango de edad llamado `Todos`, este 
+#' seria el resultado de la suma de victimas clasificadas como Menores de 
+#' edad, Adultos, No especificado y No identificado.
+#' 4. Tener las nuevas categorías implica tener diversas combinaciones de 
+#' la información como _número de víctimas de X delito hombres menores de 
+#' edad_. No todas las combinaciones son relevantes, por lo que se tendrán 
+#' que eliminar aquellas que contengan los valores `No identificad`o o `No 
+#' especificado`
+#' 4. Adjuntar el valor de la población estatal correspondiente a la 
+#' combinación de género y rango de edad para el tasado de víctimas por 
+#' 100 mil habitantes.
+#' 
 #' ## Bases de datos con `db_incidencia_mun_long`
 #' 
 #' ### Número anual de delitos a nivel municipal
@@ -778,7 +780,6 @@ db_victimas_delitos_ent_nac_x100khab %>%
       filter(subtipo_de_delito == "Feminicidio", n_victimas > 0) %>%
       slice_sample(n = 2))
 
-#' 
 #' ### Número anual de víctimas de delitos por género y rango de edad
 #' 
 #' #### Agrupar por año, estado, género, rango de edad y (sub)tipo el número 
@@ -1036,21 +1037,254 @@ db_victimas_delitos_ent_nac_gender_age_100khab %>%
       filter(subtipo_de_delito == "Feminicidio") %>%
       slice_sample(n = 2))
 
-#' <!--TODO: Empezar a partir de aqui: Guardar DBs + diccionarios -->
-#' ## Pendiente 7
+#' <!--TODO: Terminar de escribir las descripciones de delitos del fuero comun en los diccionarios -->
+#' ## Guardar bases de datos
 #' 
-#' Suspendisse potenti. In cursus nibh ut diam cursus, vitae mattis erat 
-#' hendrerit. Aliquam ornare risus ut ante porta, in laoreet lectus 
-#' viverra. Etiam ligula magna, tincidunt quis dui in, cursus laoreet 
-#' tortor. Vivamus nec molestie ipsum. Suspendisse eu pulvinar libero. 
-#' Praesent eu consectetur ligula. Etiam purus dolor, commodo at leo et, 
-#' aliquet facilisis mauris.
+#' Se cuenta con un total de 7 bases de datos, de las cuales 3 son 
+#' únicamente las versiones oficiales en _long format_. El resto de las 
+#' bases de datos son agrupaciones anuales por genéro o rango de edad, 
+#' además estas cuentan con los valores escalados a la proporción de 
+#' 100 mil habitantes.
 #' 
-#' ## Pendiente 8
+#' ### Bases de datos _long format_
 #' 
-#' Duis ac ex venenatis turpis vulputate porttitor ut euismod libero. 
-#' Fusce sem neque, volutpat mattis sapien id, ultrices porta elit. Sed 
-#' consequat risus eu diam vehicula aliquet. Sed in mi posuere risus 
-#' sollicitudin rutrum ut id odio. In hac habitasse platea dictumst. Duis 
-#' tincidunt interdum pellentesque. In blandit vulputate dui, nec iaculis 
-#' diam ullamcorper quis.
+#' #### Incidencia Delictiva del Fuero Común mensual a nivel municipal
+#' 
+#' Se guarda bajo el nombre de **`db_incidencia_mun_long.csv.bz2`**
+
+#| label: save-db_incidencia_mun_long
+
+db_incidencia_mun_long %>%
+  write_csv(file = paste0(path2sesnsp, "/db_incidencia_mun_long.csv.bz2"))
+
+#' |**Variable**|**Tipo de dato**|**Descripción**|
+#' |---|---|---|
+#' |`date_year_month`|Fecha|Mes del año escrito en formato "YYYY-MM-DD". En todos los casos el día siempre es 15|
+#' |`n_year`|Número entero o categeórico|Número del año, puede ser tratado tanto como número entero o como categoria, depende del objetivo del proyecto|
+#' |`n_month`|Número entero o (de preferencia) categórico|Número del mes (1-12), sin embargo también puede ser tratato como categoría. En la base de datos se le da preferencia al segunto tipo de dato|
+#' |`cve_ent`|Categórico|Clave INEGI del estado|
+#' |`nombre_estado`|Categórico|Nombre del estado|
+#' |`cve_geo`|Categórico|Clave INEGI del municipio (resultado de la concatenación del código del estado y del municipio en el estado)|
+#' |`nombre_municipio`|Categórico|Nombre del municipio|
+#' |`bien_juridico_afectado`|Categórico|...|
+#' |`tipo_de_delito`|Categórico|...|
+#' |`subtipo_de_delito`|Categórico|...|
+#' |`modalidad`|Categórico|...|
+#' |`n_delitos`|Número entero|Número de delitos|
+
+#| label: tabla_final-db_incidencia_mun_long
+#| echo: false
+
+set.seed(123)
+db_incidencia_mun_long %>%
+  slice_sample(n = 5)
+
+#' #### Incidencia Delictiva del Fuero Común mensual a nivel estatal
+#' 
+#' Se guarda bajo el nombre de **`db_incidencia_ent_long.csv`**
+
+#| label: save-db_incidencia_ent_long
+
+db_incidencia_ent_long <- db_incidencia_mun_long %>%
+  group_by(across(-c(date_year_month,
+                     n_delitos,
+                     cve_geo,
+                     nombre_municipio))) %>%
+  summarise(n_delitos = sum(n_delitos, na.rm = TRUE)) %>%
+  ungroup() %>%
+  mutate(date_year_month = paste(n_year, n_month, "15", sep = "-")) %>%
+  relocate(date_year_month, .before = n_year)
+
+db_incidencia_ent_long %>%
+  write_csv(file = paste0(path2sesnsp, "/db_incidencia_ent_long.csv"))
+
+#' |**Variable**|**Tipo de dato**|**Descripción**|
+#' |---|---|---|
+#' |`date_year_month`|Fecha|Mes del año escrito en formato "YYYY-MM-DD". En todos los casos el día siempre es 15|
+#' |`n_year`|Número entero o categeórico|Número del año, puede ser tratado tanto como número entero o como categoria, depende del objetivo del proyecto|
+#' |`n_month`|Número entero o (de preferencia) categórico|Número del mes (1-12), sin embargo también puede ser tratato como categoría. En la base de datos se le da preferencia al segunto tipo de dato|
+#' |`cve_ent`|Categórico|Clave INEGI del estado|
+#' |`nombre_estado`|Categórico|Nombre del estado|
+#' |`bien_juridico_afectado`|Categórico|...|
+#' |`tipo_de_delito`|Categórico|...|
+#' |`subtipo_de_delito`|Categórico|...|
+#' |`modalidad`|Categórico|...|
+#' |`n_delitos`|Número entero|Número de delitos|
+
+#| label: tabla_final-db_incidencia_ent_long
+#| echo: false
+
+set.seed(123)
+db_incidencia_ent_long %>%
+  slice_sample(n = 5)
+
+#' #### Víctimas de Delitos del Fuero Común mensual a nivel estatal
+#' 
+#' Se guarda bajo el nombre de **`db_victimas_delitos_ent_long.csv.bz2`**
+
+#| label: save-db_victimas_delitos_ent_long
+
+db_victimas_delitos_ent_long %>%
+  write_csv(file = paste0(path2sesnsp,
+                          "/db_victimas_delitos_ent_long.csv.bz2"))
+
+#' |**Variable**|**Tipo de dato**|**Descripción**|
+#' |---|---|---|
+#' |`date_year_month`|Fecha|Mes del año escrito en formato "YYYY-MM-DD". En todos los casos el día siempre es 15|
+#' |`n_year`|Número entero o categeórico|Número del año, puede ser tratado tanto como número entero o como categoria, depende del objetivo del proyecto|
+#' |`n_month`|Número entero o (de preferencia) categórico|Número del mes (1-12), sin embargo también puede ser tratato como categoría. En la base de datos se le da preferencia al segunto tipo de dato|
+#' |`cve_ent`|Categórico|Clave INEGI del estado|
+#' |`nombre_estado`|Categórico|Nombre del estado|
+#' |`bien_juridico_afectado`|Categórico|...|
+#' |`tipo_de_delito`|Categórico|...|
+#' |`subtipo_de_delito`|Categórico|...|
+#' |`modalidad`|Categórico|...|
+#' |`genero`|Categórico|Género asignado a la víctima. Se encuentran 3: `Mujer`, `Hombre` o `No identificado`|
+#' |`rango_de_edad`|Categórico|Rango de edad asignado a la víctima, se encuentran 4: `Menores de edad (0-17)`, `Adultos (18 y más)`, `No especificado` y `No identificado`|
+#' |`n_victimas`|Número entero|Número de víctimas|
+
+#| label: tabla_final-db_victimas_delitos_ent_long
+#| echo: false
+
+set.seed(123)
+db_victimas_delitos_ent_long %>%
+  slice_sample(n = 5)
+
+#' ### Bases de datos con información extra y desagregaciones
+#' 
+#' > [!NOTE]
+#' > 
+#' > En las bases de datos que tengan la columna de `genero` y 
+#' `rango_de_edad`, los valores `Total`, `total_genero` (para el caso de 
+#' la columna `genero`) o `total_edad`, se incluyen en la suma de las 
+#' categorías `No especificado` y `No identificado`
+#' 
+#' #### Incidencia Delictiva del Fuero Común anual a nivel municipal
+#' 
+#' Se guarda bajo el nombre de **`db_incidencia_mun_year_x100khab_mujeres.csv.bz2`**
+
+#| label: save-db_incidencia_mun_year_x100khab
+
+db_incidencia_mun_year_x100khab %>%
+  write_csv(file = paste0(
+    path2sesnsp, "/db_incidencia_mun_year_x100khab_mujeres.csv.bz2"))
+
+#' |**Variable**|**Tipo de dato**|**Descripción**|
+#' |---|---|---|
+#' |`n_year`|Número entero o categeórico|Número del año, puede ser tratado tanto como número entero o como categoria, depende del objetivo del proyecto|
+#' |`cve_ent`|Categórico|Clave INEGI del estado|
+#' |`nombre_estado`|Categórico|Nombre del estado|
+#' |`cve_geo`|Categórico|Clave INEGI del municipio (resultado de la concatenación del código del estado y del municipio en el estado)|
+#' |`nombre_municipio`|Categórico|Nombre del municipio|
+#' |`bien_juridico_afectado`|Categórico|...|
+#' |`tipo_de_delito`|Categórico|...|
+#' |`subtipo_de_delito`|Categórico|...|
+#' |`modalidad`|Categórico|...|
+#' |`n_delitos`|Número entero|Número de delitos|
+#' |`n_delitos_x100khab`|Número decimal|Número de delitos por cada 100 mil habitantes. El número de habitantes es con respecto a toda la población del municipio de todas las edades y géneros|
+#' |`n_delitos_x100kmujeres`|Número decimal|Número de delitos por cada 100 mil mujeres. El número de habitantes es con respecto a toda la población de mujeres en el municipio de todas las edades|
+
+#| label: tabla_final-db_incidencia_mun_year_x100khab
+#| echo: false
+
+set.seed(123)
+db_incidencia_mun_year_x100khab %>%
+  slice_sample(n = 5)
+
+#' #### Incidencia Delictiva del Fuero Común anual a nivel estatal
+#' 
+#' Se guarda bajo el nombre de **`db_incidencia_ent_nac_year_x100khab_mujeres.csv.bz2`**
+
+#| label: save-db_incidencia_ent_nac_year_x100khab
+
+db_incidencia_ent_nac_year_x100khab %>%
+  write_csv(
+    file = paste0(path2sesnsp,
+                  "/db_incidencia_ent_nac_year_x100khab_mujeres.csv.bz2"))
+
+#' |**Variable**|**Tipo de dato**|**Descripción**|
+#' |---|---|---|
+#' |`n_year`|Número entero o categeórico|Número del año, puede ser tratado tanto como número entero o como categoria, depende del objetivo del proyecto|
+#' |`cve_ent`|Categórico|Clave INEGI del estado|
+#' |`nombre_estado`|Categórico|Nombre del estado|
+#' |`bien_juridico_afectado`|Categórico|...|
+#' |`tipo_de_delito`|Categórico|...|
+#' |`subtipo_de_delito`|Categórico|...|
+#' |`modalidad`|Categórico|...|
+#' |`n_delitos`|Número entero|Número de delitos|
+#' |`n_delitos_x100khab`|Número decimal|Número de delitos por cada 100 mil habitantes. El número de habitantes es con respecto a toda la población de la entidad de todas las edades y géneros|
+#' |`n_delitos_x100kmujeres`|Número decimal|Número de delitos por cada 100 mil mujeres. El número de habitantes es con respecto a toda la población de mujeres en la entidad de todas las edades|
+
+#| label: tabla_final-db_incidencia_ent_nac_year_x100khab
+#| echo: false
+
+set.seed(123)
+db_incidencia_ent_nac_year_x100khab %>%
+  slice_sample(n = 5)
+
+#' #### Víctimas de Delitos del Fuero Común anual a nivel estatal: Desagregado por genero
+#' 
+#' Se guarda bajo el nombre de **`db_victimas_delitos_ent_nac_x100khab_genero.csv.bz2`**
+
+#| label: save-db_victimas_delitos_ent_nac_x100khab
+
+db_victimas_delitos_ent_nac_x100khab %>%
+  write_csv(
+    file = paste0(path2sesnsp,
+                  "/db_victimas_delitos_ent_nac_x100khab_genero.csv.bz2"))
+
+#' |**Variable**|**Tipo de dato**|**Descripción**|
+#' |---|---|---|
+#' |`n_year`|Número entero o categeórico|Número del año, puede ser tratado tanto como número entero o como categoria, depende del objetivo del proyecto|
+#' |`cve_ent`|Categórico|Clave INEGI del estado|
+#' |`nombre_estado`|Categórico|Nombre del estado|
+#' |`bien_juridico_afectado`|Categórico|...|
+#' |`tipo_de_delito`|Categórico|...|
+#' |`subtipo_de_delito`|Categórico|...|
+#' |`modalidad`|Categórico|...|
+#' |`genero`|Categórico|Género asignado a la víctima. Se encuentran 3: `Mujer`, `Hombre` o `Total`|
+#' |`n_victimas`|Número entero|Número de víctimas|
+#' |`n_victimas_x100khab`|Número decimal|Número de víctimas por cada 100 mil habitantes. El número de habitantes es con respecto a toda la población de la entidad de todas las edades y géneros|
+#' |`n_victimas_x100kmujeres`|Número decimal|Número de víctimas por cada 100 mil mujeres. El número de habitantes es con respecto a toda la población de mujeres en la entidad de todas las edades|
+
+#| label: tabla_final-db_victimas_delitos_ent_nac_x100khab
+#| echo: false
+
+set.seed(123)
+db_victimas_delitos_ent_nac_x100khab %>%
+  slice_sample(n = 5)
+
+#' #### Víctimas de Delitos del Fuero Común anual a nivel estatal: Desagregado por genero y rango de edad
+#' 
+#' Se guarda bajo el nombre de **`db_victimas_delitos_ent_nac_100khab_genero_rango_de_edad.csv.bz2`**
+
+#| label: save-db_victimas_delitos_ent_nac_gender_age_100khab
+
+db_victimas_delitos_ent_nac_gender_age_100khab %>%
+  write_csv(
+    file = paste0(
+      path2sesnsp,
+      "/db_victimas_delitos_ent_nac_100khab_genero_rango_de_edad.csv.bz2"))
+
+#' |**Variable**|**Tipo de dato**|**Descripción**|
+#' |---|---|---|
+#' |`n_year`|Número entero o categeórico|Número del año, puede ser tratado tanto como número entero o como categoria, depende del objetivo del proyecto|
+#' |`cve_ent`|Categórico|Clave INEGI del estado|
+#' |`nombre_estado`|Categórico|Nombre del estado|
+#' |`bien_juridico_afectado`|Categórico|...|
+#' |`tipo_de_delito`|Categórico|...|
+#' |`subtipo_de_delito`|Categórico|...|
+#' |`modalidad`|Categórico|...|
+#' |`genero`|Categórico|Género asignado a las víctimas. Se encuentran 3: `mujer`, `hombre` o `total_genero`|
+#' |`rango_de_edad`|Categórico|Rango de edad asignado a la víctima, se encuentran 3: `nna` (Niñas, Niños y Adolescentes), `adultos` y `total_edad`|
+#' |`n_victimas`|Número entero|Número de víctimas|
+#' |`n_victimas_x100khab`|Número decimal|Número de víctimas por cada 100 mil habitantes. El número de habitantes es con respecto a toda la población de la entidad de todas las edades y géneros|
+#' |`n_victimas_x100kmujeres`|Número decimal|Número de víctimas por cada 100 mil mujeres. El número de habitantes es con respecto a toda la población de mujeres en la entidad de todas las edades. Este dato únicamente existe en las celdas cuyo género sea `mujer`|
+#' |`n_victimas_x100kpar`|Número decimal|Número de víctimas por cada 100 mil habitantes. El número de habitantes es con respecto al par de categorias `genero`-`rango_de_edad` y la entidad. Por ejemplo, si la celda tiene valores `nna` y `total_genero`, significa que es el número de víctimas por cada 100 mil habitantes que sean Niñas, Niños y Adolescentes de todos los géneros|
+
+#| label: tabla_final-db_victimas_delitos_ent_nac_gender_age_100khab
+#| echo: false
+
+set.seed(123)
+db_victimas_delitos_ent_nac_gender_age_100khab %>%
+  slice_sample(n = 5)

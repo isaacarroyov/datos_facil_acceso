@@ -1,6 +1,6 @@
 # Procesamiento de datos: Incidencia Delictiva del Fuero Común
 Isaac Arroyo
-23 de junio de 2024
+24 de junio de 2024
 
 ## Introducción y objetivos
 
@@ -143,61 +143,6 @@ originales, estos son:
 - Cambio de *long format* a *wide format*: Esto para crear una variable
   de fecha, de esta manera la base de datos original como una serie de
   tiempo.
-
-### Cambios específicos
-
-Los siguientes cambios se hacen de manera específica a cada una de las
-bases de datos originales.
-
-**Base de datos de Incidencia Delictiva del Fuero Común anual a nivel
-municipal** (`db_incidencia_mun`):
-
-1.  Agrupar por año, estado, municipio y (sub)tipo el número de delitos
-    y sumar el número de delitos.
-2.  Adjuntar el valor de la población del municipio (los que tengan
-    dicha información) para el tasado de delitos por 100 mil habitantes.
-
-**Base de datos de Incidencia Delictiva del Fuero Común anual a nivel
-estatal y nacional** (`db_incidencia_mun`):
-
-1.  Agrupar por año, estado y (sub)tipo el número de delitos y sumar el
-    número de delitos.
-2.  Agrupar por año y (sub)tipo el número de delitos y sumar el número
-    de delitos para obtener el valor Nacional.
-3.  Adjuntar el valor de la población del estado y país para el tasado
-    de delitos por 100 mil habitantes.
-
-**Base de datos de Víctimas de Delitos del Fuero Común anual, por género
-a nivel estatal** (`db_victimas_delitos_ent`):
-
-1.  Agrupar por año, estado, género y (sub)tipo el número de delitos y
-    sumar el número de victimas.
-2.  Crear una tercera categoría en género llamado `Todos`, este seria el
-    resultado de la suma de victimas clasificadas como Hombre, Mujer y
-    No identificado.
-3.  Eliminar la categoría `No identificado`
-4.  Adjuntar el valor de la población del estado para el tasado de
-    víctimas por 100 mil habitantes.
-
-**Base de datos de Víctimas de Delitos del Fuero Común anual, por género
-y rango de edad a nivel estatal** (`db_victimas_delitos_ent`):
-
-1.  Agrupar por año, estado, género, rango de edad y (sub)tipo el número
-    de delitos y sumar el número de victimas.
-2.  Crear una tercera categoría en género llamado `Todos`, este sería el
-    resultado de la suma de victimas clasificadas como Hombre, Mujer y
-    No identificado.
-3.  Crear una tercera categoría en rango de edad llamado `Todos`, este
-    seria el resultado de la suma de victimas clasificadas como Menores
-    de edad, Adultos, No especificado y No identificado.
-4.  Tener las nuevas categorías implica tener diversas combinaciones de
-    la información como *número de víctimas de X delito hombres menores
-    de edad*. No todas las combinaciones son relevantes, por lo que se
-    tendrán que eliminar aquellas que contengan los valores
-    `No identificad`o o `No  especificado`
-5.  Adjuntar el valor de la población estatal correspondiente a la
-    combinación de género y rango de edad para el tasado de víctimas por
-    100 mil habitantes.
 
 ## Cambios generales
 
@@ -393,6 +338,62 @@ db_victimas_delitos_ent_long <- db_victimas_delitos_ent_renamed %>%
 | 2016-09-15      | 2016   | 09      | 14      | Jalisco       | La vida y la Integridad corporal | Lesiones       | Lesiones culposas | No especificado          | Mujer  | Menores de edad (0-17) |          1 |
 | 2019-11-15      | 2019   | 11      | 31      | Yucatán       | La vida y la Integridad corporal | Homicidio      | Homicidio doloso  | Con arma blanca          | Mujer  | Adultos (18 y más)     |          0 |
 | 2022-07-15      | 2022   | 07      | 18      | Nayarit       | La vida y la Integridad corporal | Lesiones       | Lesiones dolosas  | Con otro elemento        | Hombre | Adultos (18 y más)     |          4 |
+
+### Cambios específicos
+
+Los siguientes cambios se hacen de manera específica a cada una de las
+bases de datos originales.
+
+**Base de datos de Incidencia Delictiva del Fuero Común anual a nivel
+municipal** (Fuente: `db_incidencia_mun_long`):
+
+1.  Agrupar por año, estado, municipio y (sub)tipo el número de delitos
+    y sumar el número de delitos.
+2.  Adjuntar el valor de la población del municipio (los que tengan
+    dicha información) para el tasado de delitos por 100 mil habitantes.
+
+**Base de datos de Incidencia Delictiva del Fuero Común anual a nivel
+estatal y nacional** (Fuente: `db_incidencia_mun_long`):
+
+1.  Agrupar por año, estado y (sub)tipo el número de delitos y sumar el
+    número de delitos.
+2.  Agrupar por año y (sub)tipo el número de delitos y sumar el número
+    de delitos para obtener el valor Nacional.
+3.  Adjuntar el valor de la población del estado y país para el tasado
+    de delitos por 100 mil habitantes.
+
+**Base de datos de Víctimas de Delitos del Fuero Común anual, por género
+a nivel estatal** (Fuete: `db_victimas_delitos_ent_long`):
+
+1.  Agrupar por año, estado, género y (sub)tipo el número de delitos y
+    sumar el número de victimas.
+2.  Crear una tercera categoría en género llamado `Todos`, este seria el
+    resultado de la suma de victimas clasificadas como Hombre, Mujer y
+    No identificado.
+3.  Eliminar la categoría `No identificado`
+4.  Adjuntar el valor de la población del estado para el tasado de
+    víctimas por 100 mil habitantes.
+
+**Base de datos de Víctimas de Delitos del Fuero Común anual, por género
+y rango de edad a nivel estatal** (Fuente:
+`db_victimas_delitos_ent_long`):
+
+1.  Agrupar por año, estado, género, rango de edad y (sub)tipo el número
+    de delitos y sumar el número de victimas.
+2.  Crear una tercera categoría en género llamado `Todos`, este sería el
+    resultado de la suma de victimas clasificadas como Hombre, Mujer y
+    No identificado.
+3.  Crear una tercera categoría en rango de edad llamado `Todos`, este
+    seria el resultado de la suma de victimas clasificadas como Menores
+    de edad, Adultos, No especificado y No identificado.
+4.  Tener las nuevas categorías implica tener diversas combinaciones de
+    la información como *número de víctimas de X delito hombres menores
+    de edad*. No todas las combinaciones son relevantes, por lo que se
+    tendrán que eliminar aquellas que contengan los valores
+    `No identificad`o o `No  especificado`
+5.  Adjuntar el valor de la población estatal correspondiente a la
+    combinación de género y rango de edad para el tasado de víctimas por
+    100 mil habitantes.
 
 ## Bases de datos con `db_incidencia_mun_long`
 
@@ -935,25 +936,269 @@ db_victimas_delitos_ent_nac_gender_age_100khab <- df_victimas_delitos_ent_nac_ge
 | 2017   | 19      | Nuevo León          | La vida y la Integridad corporal | Feminicidio           | Feminicidio           | Con otro elemento     | mujer        | total_edad    |         13 |           0.2353541 |               0.4715732 |           0.4715732 |
 | 2016   | 01      | Aguascalientes      | La vida y la Integridad corporal | Feminicidio           | Feminicidio           | Con otro elemento     | mujer        | adultos       |          0 |           0.0000000 |               0.0000000 |           0.0000000 |
 
-## Pendiente 7
+<!--TODO: Empezar a partir de aqui: Guardar DBs + diccionarios (Terminar de escribir las descripciones de delitos del fuero comun en los diccionarios) -->
 
-<!--TODO: Empezar a partir de aqui: Guardar DBs + diccionarios -->
+## Guardar bases de datos
 
-Suspendisse potenti. In cursus nibh ut diam cursus, vitae mattis erat
-hendrerit. Aliquam ornare risus ut ante porta, in laoreet lectus
-viverra. Etiam ligula magna, tincidunt quis dui in, cursus laoreet
-tortor. Vivamus nec molestie ipsum. Suspendisse eu pulvinar libero.
-Praesent eu consectetur ligula. Etiam purus dolor, commodo at leo et,
-aliquet facilisis mauris.
+Se cuenta con un total de 7 bases de datos, de las cuales 3 son
+únicamente las versiones oficiales en *long format*. El resto de las
+bases de datos son agrupaciones anuales por genéro o rango de edad,
+además estas cuentan con los valores escalados a la proporción de 100
+mil habitantes.
 
-## Pendiente 8
+### Bases de datos *long format*
 
-Duis ac ex venenatis turpis vulputate porttitor ut euismod libero. Fusce
-sem neque, volutpat mattis sapien id, ultrices porta elit. Sed consequat
-risus eu diam vehicula aliquet. Sed in mi posuere risus sollicitudin
-rutrum ut id odio. In hac habitasse platea dictumst. Duis tincidunt
-interdum pellentesque. In blandit vulputate dui, nec iaculis diam
-ullamcorper quis.
+#### Incidencia Delictiva del Fuero Común mensual a nivel municipal
+
+Se guarda bajo el nombre de **`db_incidencia_mun_long.csv.bz2`**
+
+``` r
+db_incidencia_mun_long %>%
+  write_csv(file = paste0(path2sesnsp, "/db_incidencia_mun_long.csv.bz2"))
+```
+
+| **Variable**             | **Tipo de dato**                            | **Descripción**                                                                                                                               |
+|--------------------------|---------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|
+| `date_year_month`        | Fecha                                       | Mes del año escrito en formato “YYYY-MM-DD”. En todos los casos el día siempre es 15                                                          |
+| `n_year`                 | Número entero o categeórico                 | Número del año, puede ser tratado tanto como número entero o como categoria, depende del objetivo del proyecto                                |
+| `n_month`                | Número entero o (de preferencia) categórico | Número del mes (1-12), sin embargo también puede ser tratato como categoría. En la base de datos se le da preferencia al segunto tipo de dato |
+| `cve_ent`                | Categórico                                  | Clave INEGI del estado                                                                                                                        |
+| `nombre_estado`          | Categórico                                  | Nombre del estado                                                                                                                             |
+| `cve_geo`                | Categórico                                  | Clave INEGI del municipio (resultado de la concatenación del código del estado y del municipio en el estado)                                  |
+| `nombre_municipio`       | Categórico                                  | Nombre del municipio                                                                                                                          |
+| `bien_juridico_afectado` | Categórico                                  | …                                                                                                                                             |
+| `tipo_de_delito`         | Categórico                                  | …                                                                                                                                             |
+| `subtipo_de_delito`      | Categórico                                  | …                                                                                                                                             |
+| `modalidad`              | Categórico                                  | …                                                                                                                                             |
+| `n_delitos`              | Número entero                               | Número de delitos                                                                                                                             |
+
+| date_year_month | n_year | n_month | cve_ent | nombre_estado | cve_geo | nombre_municipio         | bien_juridico_afectado            | tipo_de_delito   | subtipo_de_delito  | modalidad                                                                           | n_delitos |
+|:----------------|:-------|:--------|:--------|:--------------|:--------|:-------------------------|:----------------------------------|:-----------------|:-------------------|:------------------------------------------------------------------------------------|----------:|
+| 2019-10-15      | 2019   | 10      | 20      | Oaxaca        | 20165   | San José Ayuquila        | El patrimonio                     | Fraude           | Fraude             | Fraude                                                                              |         0 |
+| 2019-06-15      | 2019   | 06      | 28      | Tamaulipas    | 28025   | Miguel Alemán            | El patrimonio                     | Robo             | Otros robos        | Con violencia                                                                       |         1 |
+| 2022-06-15      | 2022   | 06      | 16      | Michoacán     | 16035   | La Huacana               | El patrimonio                     | Robo             | Robo de maquinaria | Robo de cables, tubos y otros objetos destinados a servicios públicos Sin violencia |         0 |
+| 2022-01-15      | 2022   | 01      | 12      | Guerrero      | 12037   | Ixcateopan de Cuauhtémoc | La libertad y la seguridad sexual | Violación simple | Violación simple   | Violación simple                                                                    |         0 |
+| 2020-10-15      | 2020   | 10      | 30      | Veracruz      | 30205   | El Higo                  | La vida y la Integridad corporal  | Lesiones         | Lesiones culposas  | Con arma de fuego                                                                   |         0 |
+
+#### Incidencia Delictiva del Fuero Común mensual a nivel estatal
+
+Se guarda bajo el nombre de **`db_incidencia_ent_long.csv`**
+
+``` r
+db_incidencia_ent_long <- db_incidencia_mun_long %>%
+  group_by(across(-c(date_year_month,
+                     n_delitos,
+                     cve_geo,
+                     nombre_municipio))) %>%
+  summarise(n_delitos = sum(n_delitos, na.rm = TRUE)) %>%
+  ungroup() %>%
+  mutate(date_year_month = paste(n_year, n_month, "15", sep = "-")) %>%
+  relocate(date_year_month, .before = n_year)
+
+db_incidencia_ent_long %>%
+  write_csv(file = paste0(path2sesnsp, "/db_incidencia_ent_long.csv"))
+```
+
+| **Variable**             | **Tipo de dato**                            | **Descripción**                                                                                                                               |
+|--------------------------|---------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|
+| `date_year_month`        | Fecha                                       | Mes del año escrito en formato “YYYY-MM-DD”. En todos los casos el día siempre es 15                                                          |
+| `n_year`                 | Número entero o categeórico                 | Número del año, puede ser tratado tanto como número entero o como categoria, depende del objetivo del proyecto                                |
+| `n_month`                | Número entero o (de preferencia) categórico | Número del mes (1-12), sin embargo también puede ser tratato como categoría. En la base de datos se le da preferencia al segunto tipo de dato |
+| `cve_ent`                | Categórico                                  | Clave INEGI del estado                                                                                                                        |
+| `nombre_estado`          | Categórico                                  | Nombre del estado                                                                                                                             |
+| `bien_juridico_afectado` | Categórico                                  | …                                                                                                                                             |
+| `tipo_de_delito`         | Categórico                                  | …                                                                                                                                             |
+| `subtipo_de_delito`      | Categórico                                  | …                                                                                                                                             |
+| `modalidad`              | Categórico                                  | …                                                                                                                                             |
+| `n_delitos`              | Número entero                               | Número de delitos                                                                                                                             |
+
+| date_year_month | n_year | n_month | cve_ent | nombre_estado   | bien_juridico_afectado                             | tipo_de_delito                                        | subtipo_de_delito                                     | modalidad                                             | n_delitos |
+|:----------------|:-------|:--------|:--------|:----------------|:---------------------------------------------------|:------------------------------------------------------|:------------------------------------------------------|:------------------------------------------------------|----------:|
+| 2020-01-15      | 2020   | 01      | 08      | Chihuahua       | Otros bienes jurídicos afectados (del fuero común) | Falsificación                                         | Falsificación                                         | Falsificación                                         |        44 |
+| 2018-07-15      | 2018   | 07      | 24      | San Luis Potosí | Otros bienes jurídicos afectados (del fuero común) | Delitos cometidos por servidores públicos             | Delitos cometidos por servidores públicos             | Delitos cometidos por servidores públicos             |        53 |
+| 2018-04-15      | 2018   | 04      | 18      | Nayarit         | La libertad y la seguridad sexual                  | Violación equiparada                                  | Violación equiparada                                  | Violación equiparada                                  |         2 |
+| 2019-04-15      | 2019   | 04      | 11      | Guanajuato      | Libertad personal                                  | Otros delitos que atentan contra la libertad personal | Otros delitos que atentan contra la libertad personal | Otros delitos que atentan contra la libertad personal |         0 |
+| 2021-01-15      | 2021   | 01      | 06      | Colima          | El patrimonio                                      | Robo                                                  | Robo de vehículo automotor                            | Robo de motocicleta Sin violencia                     |        29 |
+
+#### Víctimas de Delitos del Fuero Común mensual a nivel estatal
+
+Se guarda bajo el nombre de **`db_victimas_delitos_ent_long.csv.bz2`**
+
+``` r
+db_victimas_delitos_ent_long %>%
+  write_csv(file = paste0(path2sesnsp,
+                          "/db_victimas_delitos_ent_long.csv.bz2"))
+```
+
+| **Variable**             | **Tipo de dato**                            | **Descripción**                                                                                                                               |
+|--------------------------|---------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|
+| `date_year_month`        | Fecha                                       | Mes del año escrito en formato “YYYY-MM-DD”. En todos los casos el día siempre es 15                                                          |
+| `n_year`                 | Número entero o categeórico                 | Número del año, puede ser tratado tanto como número entero o como categoria, depende del objetivo del proyecto                                |
+| `n_month`                | Número entero o (de preferencia) categórico | Número del mes (1-12), sin embargo también puede ser tratato como categoría. En la base de datos se le da preferencia al segunto tipo de dato |
+| `cve_ent`                | Categórico                                  | Clave INEGI del estado                                                                                                                        |
+| `nombre_estado`          | Categórico                                  | Nombre del estado                                                                                                                             |
+| `bien_juridico_afectado` | Categórico                                  | …                                                                                                                                             |
+| `tipo_de_delito`         | Categórico                                  | …                                                                                                                                             |
+| `subtipo_de_delito`      | Categórico                                  | …                                                                                                                                             |
+| `modalidad`              | Categórico                                  | …                                                                                                                                             |
+| `genero`                 | Categórico                                  | Género asignado a la víctima. Se encuentran 3: `Mujer`, `Hombre` o `No identificado`                                                          |
+| `rango_de_edad`          | Categórico                                  | Rango de edad asignado a la víctima, se encuentran 4: `Menores de edad (0-17)`, `Adultos (18 y más)`, `No especificado` y `No identificado`   |
+| `n_victimas`             | Número entero                               | Número de víctimas                                                                                                                            |
+
+| date_year_month | n_year | n_month | cve_ent | nombre_estado | bien_juridico_afectado           | tipo_de_delito                                        | subtipo_de_delito                                     | modalidad                                             | genero          | rango_de_edad          | n_victimas |
+|:----------------|:-------|:--------|:--------|:--------------|:---------------------------------|:------------------------------------------------------|:------------------------------------------------------|:------------------------------------------------------|:----------------|:-----------------------|-----------:|
+| 2017-02-15      | 2017   | 02      | 05      | Coahuila      | La vida y la Integridad corporal | Homicidio                                             | Homicidio doloso                                      | Con arma de fuego                                     | Hombre          | Menores de edad (0-17) |          0 |
+| 2016-06-15      | 2016   | 06      | 17      | Morelos       | Libertad personal                | Otros delitos que atentan contra la libertad personal | Otros delitos que atentan contra la libertad personal | Otros delitos que atentan contra la libertad personal | Hombre          | Menores de edad (0-17) |          0 |
+| 2016-02-15      | 2016   | 02      | 13      | Hidalgo       | La vida y la Integridad corporal | Lesiones                                              | Lesiones culposas                                     | No especificado                                       | No identificado | No identificado        |          0 |
+| 2022-01-15      | 2022   | 01      | 25      | Sinaloa       | La sociedad                      | Corrupción de menores                                 | Corrupción de menores                                 | Corrupción de menores                                 | Mujer           | Adultos (18 y más)     |          0 |
+| 2017-10-15      | 2017   | 10      | 18      | Nayarit       | La sociedad                      | Otros delitos contra la sociedad                      | Otros delitos contra la sociedad                      | Otros delitos contra la sociedad                      | No identificado | No identificado        |          0 |
+
+### Bases de datos con información extra y desagregaciones
+
+> \[!NOTE\]
+>
+> En las bases de datos que tengan la columna de `genero` y
+> `rango_de_edad`, los valores `Total`, `total_genero` (para el caso de
+> la columna `genero`) o `total_edad`, se incluyen en la suma de las
+> categorías `No especificado` y `No identificado`
+
+#### Incidencia Delictiva del Fuero Común anual a nivel municipal
+
+Se guarda bajo el nombre de
+**`db_incidencia_mun_year_x100khab_mujeres.csv.bz2`**
+
+``` r
+db_incidencia_mun_year_x100khab %>%
+  write_csv(file = paste0(
+    path2sesnsp, "/db_incidencia_mun_year_x100khab_mujeres.csv.bz2"))
+```
+
+| **Variable**             | **Tipo de dato**            | **Descripción**                                                                                                                                        |
+|--------------------------|-----------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `n_year`                 | Número entero o categeórico | Número del año, puede ser tratado tanto como número entero o como categoria, depende del objetivo del proyecto                                         |
+| `cve_ent`                | Categórico                  | Clave INEGI del estado                                                                                                                                 |
+| `nombre_estado`          | Categórico                  | Nombre del estado                                                                                                                                      |
+| `cve_geo`                | Categórico                  | Clave INEGI del municipio (resultado de la concatenación del código del estado y del municipio en el estado)                                           |
+| `nombre_municipio`       | Categórico                  | Nombre del municipio                                                                                                                                   |
+| `bien_juridico_afectado` | Categórico                  | …                                                                                                                                                      |
+| `tipo_de_delito`         | Categórico                  | …                                                                                                                                                      |
+| `subtipo_de_delito`      | Categórico                  | …                                                                                                                                                      |
+| `modalidad`              | Categórico                  | …                                                                                                                                                      |
+| `n_delitos`              | Número entero               | Número de delitos                                                                                                                                      |
+| `n_delitos_x100khab`     | Número decimal              | Número de delitos por cada 100 mil habitantes. El número de habitantes es con respecto a toda la población del municipio de todas las edades y géneros |
+| `n_delitos_x100kmujeres` | Número decimal              | Número de delitos por cada 100 mil mujeres. El número de habitantes es con respecto a toda la población de mujeres en el municipio de todas las edades |
+
+| n_year | cve_ent | nombre_estado   | cve_geo | nombre_municipio     | bien_juridico_afectado                             | tipo_de_delito                            | subtipo_de_delito                         | modalidad                                 | n_delitos | n_delitos_x100khab | n_delitos_x100kmujeres |
+|:-------|:--------|:----------------|:--------|:---------------------|:---------------------------------------------------|:------------------------------------------|:------------------------------------------|:------------------------------------------|----------:|-------------------:|-----------------------:|
+| 2023   | 24      | San Luis Potosí | 24057   | Matlapa              | El patrimonio                                      | Robo                                      | Robo de autopartes                        | Con violencia                             |         0 |                  0 |                     NA |
+| 2015   | 26      | Sonora          | 26009   | Bacanora             | Otros bienes jurídicos afectados (del fuero común) | Delitos cometidos por servidores públicos | Delitos cometidos por servidores públicos | Delitos cometidos por servidores públicos |         0 |                  0 |                     NA |
+| 2022   | 20      | Oaxaca          | 20089   | San Andrés Dinicuiti | El patrimonio                                      | Robo                                      | Robo a institución bancaria               | Con violencia                             |         0 |                  0 |                     NA |
+| 2023   | 13      | Hidalgo         | 13039   | Mineral del Monte    | El patrimonio                                      | Robo                                      | Robo en transporte público colectivo      | Con violencia                             |         0 |                  0 |                     NA |
+| 2017   | 20      | Oaxaca          | 20217   | San Juan Tamazola    | La familia                                         | Violencia familiar                        | Violencia familiar                        | Violencia familiar                        |         0 |                  0 |                     NA |
+
+#### Incidencia Delictiva del Fuero Común anual a nivel estatal
+
+Se guarda bajo el nombre de
+**`db_incidencia_ent_nac_year_x100khab_mujeres.csv.bz2`**
+
+``` r
+db_incidencia_ent_nac_year_x100khab %>%
+  write_csv(
+    file = paste0(path2sesnsp,
+                  "/db_incidencia_ent_nac_year_x100khab_mujeres.csv.bz2"))
+```
+
+| **Variable**             | **Tipo de dato**            | **Descripción**                                                                                                                                        |
+|--------------------------|-----------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `n_year`                 | Número entero o categeórico | Número del año, puede ser tratado tanto como número entero o como categoria, depende del objetivo del proyecto                                         |
+| `cve_ent`                | Categórico                  | Clave INEGI del estado                                                                                                                                 |
+| `nombre_estado`          | Categórico                  | Nombre del estado                                                                                                                                      |
+| `bien_juridico_afectado` | Categórico                  | …                                                                                                                                                      |
+| `tipo_de_delito`         | Categórico                  | …                                                                                                                                                      |
+| `subtipo_de_delito`      | Categórico                  | …                                                                                                                                                      |
+| `modalidad`              | Categórico                  | …                                                                                                                                                      |
+| `n_delitos`              | Número entero               | Número de delitos                                                                                                                                      |
+| `n_delitos_x100khab`     | Número decimal              | Número de delitos por cada 100 mil habitantes. El número de habitantes es con respecto a toda la población de la entidad de todas las edades y géneros |
+| `n_delitos_x100kmujeres` | Número decimal              | Número de delitos por cada 100 mil mujeres. El número de habitantes es con respecto a toda la población de mujeres en la entidad de todas las edades   |
+
+| n_year | cve_ent | nombre_estado | bien_juridico_afectado           | tipo_de_delito      | subtipo_de_delito                               | modalidad                         | n_delitos | n_delitos_x100khab | n_delitos_x100kmujeres |
+|:-------|:--------|:--------------|:---------------------------------|:--------------------|:------------------------------------------------|:----------------------------------|----------:|-------------------:|-----------------------:|
+| 2024   | 00      | Nacional      | La vida y la Integridad corporal | Lesiones            | Lesiones culposas                               | Con otro elemento                 |        74 |          0.0559443 |                     NA |
+| 2015   | 31      | Yucatán       | La familia                       | Violencia familiar  | Violencia familiar                              | Violencia familiar                |      2158 |        100.1757486 |                     NA |
+| 2024   | 18      | Nayarit       | El patrimonio                    | Robo                | Robo de vehículo automotor                      | Robo de motocicleta Con violencia |        21 |          1.6037488 |                     NA |
+| 2024   | 16      | Michoacán     | El patrimonio                    | Robo                | Robo a transeúnte en espacio abierto al público | Sin violencia                     |        10 |          0.2000539 |                     NA |
+| 2018   | 00      | Nacional      | El patrimonio                    | Daño a la propiedad | Daño a la propiedad                             | Daño a la propiedad               |      1877 |          1.4897319 |                     NA |
+
+#### Víctimas de Delitos del Fuero Común anual a nivel estatal: Desagregado por genero
+
+Se guarda bajo el nombre de
+**`db_victimas_delitos_ent_nac_x100khab_genero.csv.bz2`**
+
+``` r
+db_victimas_delitos_ent_nac_x100khab %>%
+  write_csv(
+    file = paste0(path2sesnsp,
+                  "/db_victimas_delitos_ent_nac_x100khab_genero.csv.bz2"))
+```
+
+| **Variable**              | **Tipo de dato**            | **Descripción**                                                                                                                                         |
+|---------------------------|-----------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `n_year`                  | Número entero o categeórico | Número del año, puede ser tratado tanto como número entero o como categoria, depende del objetivo del proyecto                                          |
+| `cve_ent`                 | Categórico                  | Clave INEGI del estado                                                                                                                                  |
+| `nombre_estado`           | Categórico                  | Nombre del estado                                                                                                                                       |
+| `bien_juridico_afectado`  | Categórico                  | …                                                                                                                                                       |
+| `tipo_de_delito`          | Categórico                  | …                                                                                                                                                       |
+| `subtipo_de_delito`       | Categórico                  | …                                                                                                                                                       |
+| `modalidad`               | Categórico                  | …                                                                                                                                                       |
+| `genero`                  | Categórico                  | Género asignado a la víctima. Se encuentran 3: `Mujer`, `Hombre` o `Total`                                                                              |
+| `n_victimas`              | Número entero               | Número de víctimas                                                                                                                                      |
+| `n_victimas_x100khab`     | Número decimal              | Número de víctimas por cada 100 mil habitantes. El número de habitantes es con respecto a toda la población de la entidad de todas las edades y géneros |
+| `n_victimas_x100kmujeres` | Número decimal              | Número de víctimas por cada 100 mil mujeres. El número de habitantes es con respecto a toda la población de mujeres en la entidad de todas las edades   |
+
+| n_year | cve_ent | nombre_estado  | bien_juridico_afectado           | tipo_de_delito    | subtipo_de_delito | modalidad                      | genero | n_victimas | n_victimas_x100khab | n_victimas_x100kmujeres |
+|:-------|:--------|:---------------|:---------------------------------|:------------------|:------------------|:-------------------------------|:-------|-----------:|--------------------:|------------------------:|
+| 2015   | 30      | Veracruz       | Libertad personal                | Secuestro         | Secuestro         | Secuestro con calidad de rehén | Total  |          0 |            0.000000 |                      NA |
+| 2024   | 12      | Guerrero       | La vida y la Integridad corporal | Homicidio         | Homicidio culposo | Con arma de fuego              | Mujer  |          0 |            0.000000 |                      NA |
+| 2024   | 10      | Durango        | La sociedad                      | Trata de personas | Trata de personas | Trata de personas              | Total  |          0 |            0.000000 |                      NA |
+| 2015   | 28      | Tamaulipas     | La vida y la Integridad corporal | Lesiones          | Lesiones culposas | En accidente de tránsito       | Hombre |        487 |           13.913666 |                      NA |
+| 2018   | 01      | Aguascalientes | La vida y la Integridad corporal | Homicidio         | Homicidio doloso  | Con otro elemento              | Hombre |         23 |            1.627739 |                      NA |
+
+#### Víctimas de Delitos del Fuero Común anual a nivel estatal: Desagregado por genero y rango de edad
+
+Se guarda bajo el nombre de
+**`db_victimas_delitos_ent_nac_100khab_genero_rango_de_edad.csv.bz2`**
+
+``` r
+db_victimas_delitos_ent_nac_gender_age_100khab %>%
+  write_csv(
+    file = paste0(
+      path2sesnsp,
+      "/db_victimas_delitos_ent_nac_100khab_genero_rango_de_edad.csv.bz2"))
+```
+
+| **Variable**              | **Tipo de dato**            | **Descripción**                                                                                                                                                                                                                                                                                                                                 |
+|---------------------------|-----------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `n_year`                  | Número entero o categeórico | Número del año, puede ser tratado tanto como número entero o como categoria, depende del objetivo del proyecto                                                                                                                                                                                                                                  |
+| `cve_ent`                 | Categórico                  | Clave INEGI del estado                                                                                                                                                                                                                                                                                                                          |
+| `nombre_estado`           | Categórico                  | Nombre del estado                                                                                                                                                                                                                                                                                                                               |
+| `bien_juridico_afectado`  | Categórico                  | …                                                                                                                                                                                                                                                                                                                                               |
+| `tipo_de_delito`          | Categórico                  | …                                                                                                                                                                                                                                                                                                                                               |
+| `subtipo_de_delito`       | Categórico                  | …                                                                                                                                                                                                                                                                                                                                               |
+| `modalidad`               | Categórico                  | …                                                                                                                                                                                                                                                                                                                                               |
+| `genero`                  | Categórico                  | Género asignado a las víctimas. Se encuentran 3: `mujer`, `hombre` o `total_genero`                                                                                                                                                                                                                                                             |
+| `rango_de_edad`           | Categórico                  | Rango de edad asignado a la víctima, se encuentran 3: `nna` (Niñas, Niños y Adolescentes), `adultos` y `total_edad`                                                                                                                                                                                                                             |
+| `n_victimas`              | Número entero               | Número de víctimas                                                                                                                                                                                                                                                                                                                              |
+| `n_victimas_x100khab`     | Número decimal              | Número de víctimas por cada 100 mil habitantes. El número de habitantes es con respecto a toda la población de la entidad de todas las edades y géneros                                                                                                                                                                                         |
+| `n_victimas_x100kmujeres` | Número decimal              | Número de víctimas por cada 100 mil mujeres. El número de habitantes es con respecto a toda la población de mujeres en la entidad de todas las edades. Este dato únicamente existe en las celdas cuyo género sea `mujer`                                                                                                                        |
+| `n_victimas_x100kpar`     | Número decimal              | Número de víctimas por cada 100 mil habitantes. El número de habitantes es con respecto al par de categorias `genero`-`rango_de_edad` y la entidad. Por ejemplo, si la celda tiene valores `nna` y `total_genero`, significa que es el número de víctimas por cada 100 mil habitantes que sean Niñas, Niños y Adolescentes de todos los géneros |
+
+| n_year | cve_ent | nombre_estado  | bien_juridico_afectado           | tipo_de_delito                                                    | subtipo_de_delito                                                 | modalidad                                                         | genero | rango_de_edad | n_victimas | n_victimas_x100khab | n_victimas_x100kmujeres | n_victimas_x100kpar |
+|:-------|:--------|:---------------|:---------------------------------|:------------------------------------------------------------------|:------------------------------------------------------------------|:------------------------------------------------------------------|:-------|:--------------|-----------:|--------------------:|------------------------:|--------------------:|
+| 2020   | 13      | Hidalgo        | La vida y la Integridad corporal | Homicidio                                                         | Homicidio culposo                                                 | Con arma blanca                                                   | hombre | nna           |          0 |           0.0000000 |                      NA |            0.000000 |
+| 2021   | 01      | Aguascalientes | Libertad personal                | Secuestro                                                         | Secuestro                                                         | Secuestro exprés                                                  | hombre | nna           |          0 |           0.0000000 |                      NA |            0.000000 |
+| 2015   | 10      | Durango        | Libertad personal                | Secuestro                                                         | Secuestro                                                         | Secuestro para causar daño                                        | hombre | total_edad    |          0 |           0.0000000 |                      NA |            0.000000 |
+| 2018   | 04      | Campeche       | La vida y la Integridad corporal | Otros delitos que atentan contra la vida y la integridad corporal | Otros delitos que atentan contra la vida y la integridad corporal | Otros delitos que atentan contra la vida y la integridad corporal | hombre | nna           |          1 |           0.1072593 |                      NA |            1.196287 |
+| 2024   | 30      | Veracruz       | La vida y la Integridad corporal | Lesiones                                                          | Lesiones culposas                                                 | Con arma blanca                                                   | mujer  | adultos       |          0 |           0.0000000 |                       0 |            0.000000 |
 
 [^1]: Para mayor información sobre conjunto de datos, visitar:
     [Procesamiento y transformación de datos: Proyecciones de
