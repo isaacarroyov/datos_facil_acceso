@@ -11,6 +11,7 @@
 #'     fig-dpi: 300
 #'     code-annotations: below
 #'     df-print: kable
+#'     wrap: none
 #' 
 #' execute:
 #'   echo: true
