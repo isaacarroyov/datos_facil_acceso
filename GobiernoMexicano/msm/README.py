@@ -13,6 +13,7 @@
 #     fig-asp: 0.75
 #     fig-dpi: 300
 #     code-annotations: below
+#     wrap: none
 # execute:
 #   echo: true
 #   eval: true
