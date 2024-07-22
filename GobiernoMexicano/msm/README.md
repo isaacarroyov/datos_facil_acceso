@@ -1,45 +1,42 @@
 # Procesamiento y transformación de datos: Sequía en México
 Isaac Arroyo
-20 de junio de 2024
+22 de julio de 2024
 
 ## Introducción y objetivos
 
-En este documento se encuentra documentado el código usado para la
-extracción, transformación, estandarización y la creación de nuevos
-conjuntos de datos a partir del registro de sequía en los municipios del
-país del [**Monitor de Sequía de México
-(MSM)**](https://smn.conagua.gob.mx/es/climatologia/monitor-de-sequia/monitor-de-sequia-en-mexico).
+En este documento se encuentra documentado el código usado para la extracción, transformación, estandarización y la creación de nuevos conjuntos de datos a partir del registro de sequía en los municipios del país del [**Monitor de Sequía de México (MSM)**](https://smn.conagua.gob.mx/es/climatologia/monitor-de-sequia/monitor-de-sequia-en-mexico).
 
-A través del registro de sequía en los municipios se espera tener 4
-bases de datos:
+A través del registro de sequía en los municipios se espera tener 4 bases de datos:
 
-1.  El registro mensual o quincenal (depende de la fecha) de sequía en
-    formato *tidy*
+1.  El registro mensual o quincenal (depende de la fecha) de sequía en formato *tidy*
 2.  El registro diario de sequía en formato *tidy*
 3.  El registro del tiempo de duración del tipo de sequía (racha)
-4.  El registro del tiempo de duración máximo del tipo de sequía (racha
-    máxima)
-
-## Descarga y transformación del registro de sequía en los municipios
-
-Como primer paso es modificar la base de datos del MSM para que este en
-formato *tidy*, ya que originalmente las columnas son la fecha del
-registro.
+4.  El registro del tiempo de duración máximo del tipo de sequía (racha máxima)
 
 ``` python
 import pandas as pd
+from janitor import clean_names
+from numpy.random import randint, seed
+from IPython.display import Markdown
+```
 
-msm_og = pd.read_excel(io = "".join(["https://smn.conagua.gob.mx/tools/",
-                            "RESOURCES/Monitor%20de%20Sequia%20en%",
-                            "20Mexico/MunicipiosSequia.xlsx"]),
-                       dtype= 'object')
+## Descarga y transformación del registro de sequía en los municipios
+
+Como primer paso es modificar la base de datos del MSM para que este en formato *tidy*, ya que originalmente las columnas son la fecha del registro.
+
+``` python
+msm_og = pd.read_excel(
+   io = "".join(["https://smn.conagua.gob.mx/tools/RESOURCES/Monitor%20de",
+                 "%20Sequia%20en%20Mexico/MunicipiosSequia.xlsx"]),
+   dtype= 'object')
+
+msm_og = msm_og.clean_names(remove_special = True)
 ```
 
 > \[!NOTE\]  
-> La tabla muestra únicamente una muestra de las columnas de fecha del
-> registro
+> La tabla muestra únicamente una muestra de las columnas de fecha del registro
 
-| CVE_CONCATENADA | CVE_ENT | CVE_MUN | NOMBRE_MUN             | ENTIDAD             | ORG_CUENCA\*            | CLV_OC | CON_CUENCA                 | CVE_CONC | 2016-07-31 00:00:00 | 2009-10-31 00:00:00 | 2010-09-30 00:00:00 | 2019-10-31 00:00:00 |
+| cve_concatenada | cve_ent | cve_mun | nombre_mun             | entidad             | org_cuenca              | clv_oc | con_cuenca                 | cve_conc | 2016_07_31_00_00_00 | 2009_10_31_00_00_00 | 2010_09_30_00_00_00 | 2019_10_31_00_00_00 |
 |----------------:|--------:|--------:|:-----------------------|:--------------------|:------------------------|:-------|:---------------------------|---------:|:--------------------|:--------------------|--------------------:|:--------------------|
 |           21098 |      21 |     098 | Molcaxac               | Puebla              | Balsas                  | IV     | Rio Balsas                 |        9 | nan                 | D0                  |                 nan | nan                 |
 |           27012 |      27 |     012 | Macuspana              | Tabasco             | Frontera Sur            | XI     | Rios Grijalva y Usumacinta |       24 | D1                  | D3                  |                 nan | D3                  |
@@ -49,24 +46,8 @@ msm_og = pd.read_excel(io = "".join(["https://smn.conagua.gob.mx/tools/",
 
 A partir de esta tabla, enlistan los cambios necesarios:
 
-1.  Limpiar los nombres de las columnas
-2.  Hacer el cambio de *wide format* a *long format*
-3.  Eliminar los registros Agosto 2003 y Febrero 2004
-
-### Limpiar los nombres de las columnas
-
-``` python
-from janitor import clean_names
-msm_og = msm_og.clean_names(remove_special = True)
-```
-
-| cve_concatenada | cve_ent | cve_mun | nombre_mun             | entidad             | org_cuenca              | clv_oc | con_cuenca                 | cve_conc | 2016_07_31_00_00_00 | 2009_10_31_00_00_00 | 2010_09_30_00_00_00 | 2019_10_31_00_00_00 |
-|----------------:|--------:|--------:|:-----------------------|:--------------------|:------------------------|:-------|:---------------------------|---------:|:--------------------|:--------------------|--------------------:|:--------------------|
-|           21098 |      21 |     098 | Molcaxac               | Puebla              | Balsas                  | IV     | Rio Balsas                 |        9 | nan                 | D0                  |                 nan | nan                 |
-|           27012 |      27 |     012 | Macuspana              | Tabasco             | Frontera Sur            | XI     | Rios Grijalva y Usumacinta |       24 | D1                  | D3                  |                 nan | D3                  |
-|           20306 |      20 |     306 | San Pedro el Alto      | Oaxaca              | Pacífico Sur            | V      | Costa de Oaxaca            |       11 | D0                  | nan                 |                 nan | nan                 |
-|           16086 |      16 |     086 | Tanhuato               | Michoacán de Ocampo | Lerma-Santiago-Pacífico | VIII   | Lerma - Chapala            |       15 | D1                  | D2                  |                 nan | D1                  |
-|           15004 |      15 |     004 | Almoloya de Alquisiras | Estado de México    | Balsas                  | IV     | Rio Balsas                 |        9 | nan                 | D1                  |                 nan | D0                  |
+1.  Hacer el cambio de *wide format* a *long format*
+2.  Eliminar los registros Agosto 2003 y Febrero 2004 <!-- TODO: ESCRIBIR CORRECTAMENTE LOS PASOS A SEGUIR EN EL TRABAJO -->
 
 ### Hacer el cambio de *wide format* a *long format*
 
@@ -82,22 +63,19 @@ msm_long = pd.melt(
 msm_long['sequia'] = msm_long['sequia'].fillna("Sin sequia")
 ```
 
-| cve_concatenada | cve_ent | cve_mun | nombre_mun               | entidad             | org_cuenca              | clv_oc | con_cuenca      | cve_conc |           full_date | sequia     |
-|----------------:|--------:|--------:|:-------------------------|:--------------------|:------------------------|:-------|:----------------|---------:|--------------------:|:-----------|
-|           16045 |      16 |     045 | Jiquilpan                | Michoacán de Ocampo | Lerma-Santiago-Pacífico | VIII   | Lerma - Chapala |       15 | 2015_02_15_00_00_00 | D0         |
-|           20324 |      20 |     324 | San Pedro Pochutla       | Oaxaca              | Pacífico Sur            | V      | Costa de Oaxaca |       11 | 2024_02_29_00_00_00 | D2         |
-|           08058 |      08 |     058 | San Francisco de Conchos | Chihuahua           | Río Bravo               | VI     | Rio Bravo       |       12 | 2018_10_31_00_00_00 | D0         |
-|           11017 |      11 |     017 | Irapuato                 | Guanajuato          | Lerma-Santiago-Pacífico | VIII   | Lerma - Chapala |       15 | 2020_05_31_00_00_00 | D0         |
-|           32019 |      32 |     019 | Jalpa                    | Zacatecas           | Lerma-Santiago-Pacífico | VIII   | Rio Santiago    |       16 | 2019_02_15_00_00_00 | Sin sequia |
+| cve_concatenada | cve_ent | cve_mun | nombre_mun               | entidad  | org_cuenca                | clv_oc | con_cuenca           | cve_conc |           full_date | sequia     |
+|----------------:|--------:|--------:|:-------------------------|:---------|:--------------------------|:-------|:---------------------|---------:|--------------------:|:-----------|
+|           13030 |      13 |     030 | Ixmiquilpan              | Hidalgo  | Aguas del Valle de México | XIII   | Valle de Mexico      |       26 | 2007_07_31_00_00_00 | Sin sequia |
+|           31086 |      31 |     086 | Tepakán                  | Yucatán  | Península De Yucatán      | XII    | Peninsula de Yucatan |       25 | 2020_02_29_00_00_00 | Sin sequia |
+|           04004 |      04 |     004 | Champotón                | Campeche | Península De Yucatán      | XII    | Peninsula de Yucatan |       25 | 2022_12_31_00_00_00 | D0         |
+|           20047 |      20 |     047 | Santa Magdalena Jicotlán | Oaxaca   | Golfo Centro              | X      | Rio Balsas           |        9 | 2020_11_15_00_00_00 | D0         |
+|           12008 |      12 |     008 | Atenango del Río         | Guerrero | Balsas                    | IV     | Rio Balsas           |        9 | 2014_11_15_00_00_00 | Sin sequia |
 
 ### Asignar unidad de fecha a la columna `full_date`
 
-Tras la transformación *wide2long*, hace falta transformar la columna
-`full_date` a lo que es, una fecha.
+Tras la transformación *wide2long*, hace falta transformar la columna `full_date` a lo que es, una fecha.
 
-Previo transformar los valores a `np.datetime`, se tiene que eliminar
-los caracteres `'_00_00_00'` y sustiuir los guiones bajos (`_`) por
-guiones medios (`-`)
+Previo transformar los valores a `np.datetime`, se tiene que eliminar los caracteres `'_00_00_00'` y sustiuir los guiones bajos (`_`) por guiones medios (`-`)
 
 ``` python
 msm_long['full_date'] = (msm_long['full_date']
@@ -110,33 +88,26 @@ msm_long['full_date'] = pd.to_datetime(arg = msm_long['full_date'],
 
 ## El registro de sequía en formato *tidy* (registro mensual, quincenal y diario)
 
-Para esta ocasión, el registro de sequía se completará con el tipo de
-sequía diaria, esto asumiendo que cuando la publicación era mensual
-representa la sequía del mes del registro, mientras que para las
-publicaciones quincenales es de los últimos 15 días.
+Para esta ocasión, el registro de sequía se completará con el tipo de sequía diaria, esto asumiendo que cuando la publicación era mensual representa la sequía del mes del registro, mientras que para las publicaciones quincenales es de los últimos 15 días.
 
 > *Ejemplo:*
 >
 > • *Fecha publicación y tipo de sequia : Mayo 31 del 2005, D3*
 >
-> Se traduce a que del Mayo 01 - Mayo 31 de 2005, todos los días serán
-> etiquetados con sequía D3
+> Se traduce a que del Mayo 01 - Mayo 31 de 2005, todos los días serán etiquetados con sequía D3
 >
 > • *Fecha publicación y tipo de sequia : Mayo 31 del 2024, D3*
 >
-> Se traduce a que del Mayo 01 - Mayo 14 de 2024, todos los días serán
-> etiquetados con sequía D3
+> Se traduce a que del Mayo 01 - Mayo 14 de 2024, todos los días serán etiquetados con sequía D3
 
 ### Función para completar días
 
-Esta función toma un grupo (un municipios) y completará la serie de
-tiempo por día. Con los valores `NaN` de sequía, se llenarán con el
-registro siguiente al que se tiene (que no sea `NaN`)
+Esta función toma un grupo (un municipios) y completará la serie de tiempo por día. Con los valores `NaN` de sequía, se llenarán con el registro siguiente al que se tiene (que no sea `NaN`)
 
 ``` python
 def func_llenado_dias_sequia(group):
     
-    # La fecha inicia el el inicio del 2003
+    # La fecha inicia en Enero 01, 2003
     min_date = "2003-01-01"
     
     # La fecha final es la última actualización disponible
@@ -163,30 +134,26 @@ Se usarán únicamente las columnas de las claves de los municipios
 
 ``` python
 msm_long_filled = (msm_long[['full_date','cve_concatenada', 'sequia']]
-  .groupby('cve_concatenada')
-  .apply(func_llenado_dias_sequia, include_groups = False)
-  .reset_index(drop = False)
-  .drop(columns = ["level_1"]))
+  .groupby(by = 'cve_concatenada')
+  .apply(lambda x: func_llenado_dias_sequia(group=x))
+  .reset_index(drop = True))
 ```
 
-| cve_concatenada | full_date           | sequia     |
-|----------------:|:--------------------|:-----------|
-|           20549 | 2003-04-08 00:00:00 | D2         |
-|           07062 | 2021-07-07 00:00:00 | Sin sequia |
-|           21032 | 2013-10-31 00:00:00 | Sin sequia |
-|           08044 | 2003-02-24 00:00:00 | D1         |
-|           07053 | 2022-09-14 00:00:00 | D0         |
+| full_date           | cve_concatenada | sequia     |
+|:--------------------|----------------:|:-----------|
+| 2006-04-14 00:00:00 |           20550 | Sin sequia |
+| 2019-09-30 00:00:00 |           20238 | D0         |
+| 2013-02-14 00:00:00 |           20423 | Sin sequia |
+| 2013-03-30 00:00:00 |           18014 | D0         |
+| 2023-05-09 00:00:00 |           20267 | Sin sequia |
 
 ## Cálculo de rachas y rachas máximas
 
-A partir de los datos procesados (**`msm_long_filled`**) se irá iterando
-por cada uno de los municipios para obtener sus rachas de sequía y a
-partir de estas las de mayor duración.
+A partir de los datos procesados (**`msm_long_filled`**) se irá iterando por cada uno de los municipios para obtener sus rachas de sequía y a partir de estas las de mayor duración.
 
 ### Función para conteo de rachas
 
-El resultado de esta función será necesaria para la función de rachas
-máximas
+El resultado de esta función será necesaria para la función de rachas máximas
 
 ``` python
 def func_count_sequia_mun(datframe, clave_mun):
@@ -283,8 +250,7 @@ def func_get_max_rachas(datframe):
 
 ## Aplicar las funciones en la base de datos
 
-Con las funciones listas, se obtienen las bases de datos de rachas de
-sequía junto con las rachas máximas de sequía
+Con las funciones listas, se obtienen las bases de datos de rachas de sequía junto con las rachas máximas de sequía
 
 ``` python
 lista_cve_concatenada = msm_long_filled['cve_concatenada'].unique().tolist()
@@ -310,32 +276,29 @@ db_rachas_max_mun = pd.concat(lista_dfs_rachas_max).reset_index(drop=True)
 
 Muestra de `db_rachas_mun`
 
-| cve_concatenada | sequia | racha | full_date_start_racha | full_date_end_racha | racha_dias |
-|----------------:|:-------|------:|:----------------------|:--------------------|-----------:|
-|           12064 | D2     |    30 | 2021-04-16 00:00:00   | 2021-05-15 00:00:00 |         29 |
-|           29019 | D0     |    61 | 2007-05-01 00:00:00   | 2007-06-30 00:00:00 |         60 |
-|           11039 | D3     |    61 | 2011-06-01 00:00:00   | 2011-07-31 00:00:00 |         60 |
-|           28017 | D1     |    13 | 2023-02-16 00:00:00   | 2023-02-28 00:00:00 |         12 |
-|           28005 | D1     |    62 | 2006-07-01 00:00:00   | 2006-08-31 00:00:00 |         61 |
+| cve_concatenada | sequia     | racha | full_date_start_racha | full_date_end_racha | racha_dias |
+|----------------:|:-----------|------:|:----------------------|:--------------------|-----------:|
+|           22003 | D1         |   137 | 2022-06-01 00:00:00   | 2022-10-15 00:00:00 |        136 |
+|           20196 | Sin sequia |    30 | 2024-06-16 00:00:00   | 2024-07-15 00:00:00 |         29 |
+|           04008 | Sin sequia |   182 | 2011-09-01 00:00:00   | 2012-02-29 00:00:00 |        181 |
+|           31013 | D0         |    44 | 2020-02-01 00:00:00   | 2020-03-15 00:00:00 |         43 |
+|           20427 | D0         |    30 | 2010-06-01 00:00:00   | 2010-06-30 00:00:00 |         29 |
 
 Muestra de `db_rachas_max_mun`
 
 | cve_concatenada | sequia     | racha | full_date_start_racha | full_date_end_racha | racha_dias |
 |----------------:|:-----------|------:|:----------------------|:--------------------|-----------:|
-|           03009 | D1         |   288 | 2021-09-01 00:00:00   | 2022-06-15 00:00:00 |        287 |
-|           30165 | Sin sequia |   486 | 2012-01-01 00:00:00   | 2013-04-30 00:00:00 |        485 |
-|           30210 | D1         |   153 | 2022-08-16 00:00:00   | 2023-01-15 00:00:00 |        152 |
-|           30005 | D2         |   122 | 2010-03-01 00:00:00   | 2010-06-30 00:00:00 |        121 |
-|           18004 | Sin sequia |   486 | 2003-01-01 00:00:00   | 2004-04-30 00:00:00 |        485 |
+|           19046 | D3         |   153 | 2011-08-01 00:00:00   | 2011-12-31 00:00:00 |        152 |
+|           14100 | D0         |   365 | 2004-08-01 00:00:00   | 2005-07-31 00:00:00 |        364 |
+|           17011 | Sin sequia |  1995 | 2011-09-01 00:00:00   | 2017-02-15 00:00:00 |       1994 |
+|           31034 | D3         |   181 | 2009-09-01 00:00:00   | 2010-02-28 00:00:00 |        180 |
+|           25007 | D4         |   182 | 2024-01-16 00:00:00   | 2024-07-15 00:00:00 |        181 |
 
 ## Reasignar nombre de Estados, Municipios y Cuencas
 
-A partir de la creación de `msm_long_filled`, todos los conjuntos de
-datos excluyen las claves y nombres de los Estados, Municipios (este
-únicamente el nombre) y Cuencas.
+A partir de la creación de `msm_long_filled`, todos los conjuntos de datos excluyen las claves y nombres de los Estados, Municipios (este únicamente el nombre) y Cuencas.
 
-Por lo que se completaran a las bases de datos de interés, previo a ser
-guardadas.
+Por lo que se completaran a las bases de datos de interés, previo a ser guardadas.
 
 ``` python
 import os
@@ -454,12 +417,9 @@ db_rachas_max_mun = (pd.merge(
 Se crearán dos bases de datos a partir de este procesamiento de datos:
 
 - **`msm_long`** : Datos de sequía de la CONAGUA en *long format*
-- **`msm_long_filled`** : Datos de sequía diarios en *long format*
-  (Modificado)
+- **`msm_long_filled`** : Datos de sequía diarios en *long format* (Modificado)
 
-Para ambos casos se eliminarán las los registros de Agosto 2003 y
-Febrero 2004. En el documento XLSX, en el apartado de Notas, se comunica
-que por factores externos, el MSM no se elaboró en esas fechas.
+Para ambos casos se eliminarán las los registros de Agosto 2003 y Febrero 2004. En el documento XLSX, en el apartado de Notas, se comunica que por factores externos, el MSM no se elaboró en esas fechas.
 
 Por lo que se crean *máscaras* para filtrar esas fechas
 
@@ -487,10 +447,7 @@ mask_dates_nowork_msm_long_filled = (
 )
 ```
 
-Las máscaras identifican las fechas donde no hubo MSM, sin embargo lo
-que busca es **omitirlas**, no aislarlas, es por eso que para crear la
-base de datos se *niegan* las condiciones, para que se incluya todo lo
-que no cumpla la máscara.
+Las máscaras identifican las fechas donde no hubo MSM, sin embargo lo que busca es **omitirlas**, no aislarlas, es por eso que para crear la base de datos se *niegan* las condiciones, para que se incluya todo lo que no cumpla la máscara.
 
 Para negar las máscaras, se usa **`~`**
 
@@ -513,13 +470,13 @@ db_msm_og.to_csv(
    index = False)
 ```
 
-| nombre_estado | cve_ent | nombre_municipio          | cve_geo | org_cuenca   | clv_oc | con_cuenca                 | cve_conc | full_date           | sequia     |
-|:--------------|--------:|:--------------------------|--------:|:-------------|:-------|:---------------------------|---------:|:--------------------|:-----------|
-| Oaxaca        |      20 | Santo Domingo Tehuantepec |   20515 | Pacífico Sur | V      | Costa de Oaxaca            |       11 | 2021-07-15 00:00:00 | Sin sequia |
-| Morelos       |      17 | Mazatepec                 |   17014 | Balsas       | IV     | Rio Balsas                 |        9 | 2013-08-31 00:00:00 | Sin sequia |
-| Oaxaca        |      20 | San Ildefonso Villa Alta  |   20156 | Golfo Centro | X      | Rio Papaloapan             |       21 | 2013-01-31 00:00:00 | Sin sequia |
-| Oaxaca        |      20 | Mártires de Tacubaya      |   20056 | Pacífico Sur | V      | Costa de Oaxaca            |       11 | 2017-06-30 00:00:00 | Sin sequia |
-| Chiapas       |      07 | Chilón                    |   07031 | Frontera Sur | XI     | Rios Grijalva y Usumacinta |       24 | 2017-08-31 00:00:00 | D0         |
+| nombre_estado | cve_ent | nombre_municipio         | cve_geo | org_cuenca              | clv_oc | con_cuenca      | cve_conc | full_date           | sequia     |
+|:--------------|--------:|:-------------------------|--------:|:------------------------|:-------|:----------------|---------:|:--------------------|:-----------|
+| Michoacán     |      16 | Jiquilpan                |   16045 | Lerma-Santiago-Pacífico | VIII   | Lerma - Chapala |       15 | 2015-03-15 00:00:00 | D0         |
+| Oaxaca        |      20 | San Pedro Pochutla       |   20324 | Pacífico Sur            | V      | Costa de Oaxaca |       11 | 2024-03-31 00:00:00 | D2         |
+| Chihuahua     |      08 | San Francisco de Conchos |   08058 | Río Bravo               | VI     | Rio Bravo       |       12 | 2018-11-30 00:00:00 | D0         |
+| Guanajuato    |      11 | Irapuato                 |   11017 | Lerma-Santiago-Pacífico | VIII   | Lerma - Chapala |       15 | 2020-06-30 00:00:00 | Sin sequia |
+| Zacatecas     |      32 | Jalpa                    |   32019 | Lerma-Santiago-Pacífico | VIII   | Rio Santiago    |       16 | 2019-03-15 00:00:00 | Sin sequia |
 
 Muestra del archivo **`sequia_municipios_days.csv.bz2`**
 
@@ -530,20 +487,19 @@ db_msm_mod.to_csv(
    index = False)
 ```
 
-| nombre_estado | cve_ent | nombre_municipio         | cve_geo | org_cuenca           | clv_oc | con_cuenca                 | cve_conc | full_date           | sequia     |
-|:--------------|--------:|:-------------------------|--------:|:---------------------|:-------|:---------------------------|---------:|:--------------------|:-----------|
-| Hidalgo       |      13 | Molango de Escamilla     |   13042 | Golfo Norte          | IX     | Rio Panuco                 |       19 | 2022-11-18 00:00:00 | D0         |
-| Oaxaca        |      20 | Santo Domingo Tomaltepec |   20519 | Pacífico Sur         | V      | Costa de Oaxaca            |       11 | 2023-03-13 00:00:00 | Sin sequia |
-| Quintana Roo  |      23 | José María Morelos       |   23006 | Península De Yucatán | XII    | Peninsula de Yucatan       |       25 | 2017-09-19 00:00:00 | Sin sequia |
-| Puebla        |      21 | Xicotlán                 |   21198 | Balsas               | IV     | Rio Balsas                 |        9 | 2013-07-01 00:00:00 | Sin sequia |
-| Chiapas       |      07 | Pichucalco               |   07068 | Frontera Sur         | XI     | Rios Grijalva y Usumacinta |       24 | 2004-09-15 00:00:00 | D1         |
+| nombre_estado  | cve_ent | nombre_municipio          | cve_geo | org_cuenca              | clv_oc | con_cuenca                 | cve_conc | full_date           | sequia |
+|:---------------|--------:|:--------------------------|--------:|:------------------------|:-------|:---------------------------|---------:|:--------------------|:-------|
+| Coahuila       |      05 | Villa Unión               |   05037 | Río Bravo               | VI     | Rio Bravo                  |       12 | 2012-06-13 00:00:00 | D1     |
+| Aguascalientes |      01 | El Llano                  |   01010 | Lerma-Santiago-Pacífico | VIII   | Rio Santiago               |       16 | 2021-01-21 00:00:00 | D0     |
+| Oaxaca         |      20 | San Felipe Jalapa de Díaz |   20134 | Golfo Centro            | X      | Rio Papaloapan             |       21 | 2008-04-20 00:00:00 | D0     |
+| Chiapas        |      07 | Huixtán                   |   07038 | Frontera Sur            | XI     | Rios Grijalva y Usumacinta |       24 | 2013-03-18 00:00:00 | D0     |
+| Guerrero       |      12 | Cuautepec                 |   12025 | Pacífico Sur            | V      | Costa de Guerrero          |       10 | 2012-12-17 00:00:00 | D0     |
 
 ### Base de datos de Rachas de Sequía en Municipios
 
 > \[!WARNING\]
 >
-> Tomar en cuenta las fechas (Agosto 2003 y Febrero 2004) que no se
-> publicó el registro del Monitor de Sequía de México
+> Tomar en cuenta las fechas (Agosto 2003 y Febrero 2004) que no se publicó el registro del Monitor de Sequía de México
 
 Muestra del archivo **`rachas_sequia_municipios.csv`**
 
@@ -553,20 +509,19 @@ db_rachas_mun.to_csv(
    index = False)
 ```
 
-| nombre_estado | cve_ent | nombre_municipio         | cve_geo | org_cuenca                | clv_oc | con_cuenca      | cve_conc | sequia     | full_date_start_racha | full_date_end_racha | racha_dias |
-|:--------------|--------:|:-------------------------|--------:|:--------------------------|:-------|:----------------|---------:|:-----------|:----------------------|:--------------------|-----------:|
-| Nuevo León    |      19 | Anáhuac                  |   19005 | Río Bravo                 | VI     | Rio Bravo       |       12 | D1         | 2006-10-01 00:00:00   | 2006-10-31 00:00:00 |         30 |
-| Nuevo León    |      19 | Los Ramones              |   19042 | Río Bravo                 | VI     | Rio Bravo       |       12 | D2         | 2006-06-01 00:00:00   | 2006-06-30 00:00:00 |         29 |
-| Hidalgo       |      13 | Tepeji del Río de Ocampo |   13063 | Aguas del Valle de México | XIII   | Valle de Mexico |       26 | D1         | 2011-07-01 00:00:00   | 2011-08-31 00:00:00 |         61 |
-| Nuevo León    |      19 | Doctor Coss              |   19015 | Río Bravo                 | VI     | Rio Bravo       |       12 | D0         | 2012-07-01 00:00:00   | 2012-08-31 00:00:00 |         61 |
-| Morelos       |      17 | Cuautla                  |   17006 | Balsas                    | IV     | Rio Balsas      |        9 | Sin sequia | 2021-06-01 00:00:00   | 2022-05-15 00:00:00 |        348 |
+| nombre_estado | cve_ent | nombre_municipio   | cve_geo | org_cuenca                | clv_oc | con_cuenca                 | cve_conc | sequia     | full_date_start_racha | full_date_end_racha | racha_dias |
+|:--------------|--------:|:-------------------|--------:|:--------------------------|:-------|:---------------------------|---------:|:-----------|:----------------------|:--------------------|-----------:|
+| Oaxaca        |      20 | San José Chiltepec |   20166 | Golfo Centro              | X      | Rio Papaloapan             |       21 | Sin sequia | 2020-01-01 00:00:00   | 2021-04-15 00:00:00 |        470 |
+| Chiapas       |      07 | Bochil             |   07013 | Frontera Sur              | XI     | Rios Grijalva y Usumacinta |       24 | Sin sequia | 2006-12-01 00:00:00   | 2007-02-28 00:00:00 |         89 |
+| Hidalgo       |      13 | Singuilucan        |   13057 | Aguas del Valle de México | XIII   | Valle de Mexico            |       26 | D0         | 2014-11-01 00:00:00   | 2014-11-15 00:00:00 |         14 |
+| Yucatán       |      31 | Conkal             |   31013 | Península De Yucatán      | XII    | Peninsula de Yucatan       |       25 | Sin sequia | 2012-04-01 00:00:00   | 2015-04-15 00:00:00 |       1109 |
+| Tabasco       |      27 | Tacotalpa          |   27015 | Frontera Sur              | XI     | Rios Grijalva y Usumacinta |       24 | D0         | 2023-05-16 00:00:00   | 2023-06-15 00:00:00 |         30 |
 
 ### Base de datos de Máximas Rachas de Sequía en Municipios
 
 > \[!WARNING\]
 >
-> Tomar en cuenta las fechas (Agosto 2003 y Febrero 2004) que no se
-> publicó el registro del Monitor de Sequía de México
+> Tomar en cuenta las fechas (Agosto 2003 y Febrero 2004) que no se publicó el registro del Monitor de Sequía de México
 
 Muestra del archivo **`max_rachas_sequia_municipios.csv`**
 
@@ -576,10 +531,10 @@ db_rachas_max_mun.to_csv(
    index = False)
 ```
 
-| nombre_estado | cve_ent | nombre_municipio             | cve_geo | org_cuenca                  | clv_oc | con_cuenca           | cve_conc | sequia     | full_date_start_racha | full_date_end_racha | racha_dias |
-|:--------------|--------:|:-----------------------------|--------:|:----------------------------|:-------|:---------------------|---------:|:-----------|:----------------------|:--------------------|-----------:|
-| Oaxaca        |      20 | San Mateo Sindihui           |   20255 | Pacífico Sur                | V      | Costa de Oaxaca      |       11 | Sin sequia | 2011-06-01 00:00:00   | 2014-04-15 00:00:00 |       1049 |
-| Guanajuato    |      11 | Yuriria                      |   11046 | Lerma-Santiago-Pacífico     | VIII   | Lerma - Chapala      |       15 | D3         | 2023-06-16 00:00:00   | 2023-11-30 00:00:00 |        167 |
-| Zacatecas     |      32 | Melchor Ocampo               |   32027 | Cuencas Centrales Del Norte | VII    | Nazas-Aguanaval      |       13 | D0         | 2012-11-01 00:00:00   | 2013-03-31 00:00:00 |        150 |
-| Oaxaca        |      20 | San Juan Bautista Atatlahuca |   20175 | Golfo Centro                | X      | Rio Papaloapan       |       21 | D0         | 2003-01-01 00:00:00   | 2003-07-31 00:00:00 |        211 |
-| Yucatán       |      31 | Cuzamá                       |   31015 | Península De Yucatán        | XII    | Peninsula de Yucatan |       25 | D0         | 2018-09-16 00:00:00   | 2019-05-15 00:00:00 |        241 |
+| nombre_estado | cve_ent | nombre_municipio                | cve_geo | org_cuenca   | clv_oc | con_cuenca        | cve_conc | sequia     | full_date_start_racha | full_date_end_racha | racha_dias |
+|:--------------|--------:|:--------------------------------|--------:|:-------------|:-------|:------------------|---------:|:-----------|:----------------------|:--------------------|-----------:|
+| Hidalgo       |      13 | Mineral del Monte               |   13039 | Golfo Norte  | IX     | Rio Panuco        |       19 | Sin sequia | 2013-06-01 00:00:00   | 2017-05-15 00:00:00 |       1444 |
+| Querétaro     |      22 | Peñamiller                      |   22013 | Golfo Norte  | IX     | Rio Panuco        |       19 | D3         | 2023-09-01 00:00:00   | 2023-12-31 00:00:00 |        121 |
+| Guerrero      |      12 | Alcozauca de Guerrero           |   12004 | Balsas       | IV     | Rio Balsas        |        9 | Sin sequia | 2003-10-01 00:00:00   | 2005-12-31 00:00:00 |        822 |
+| Oaxaca        |      20 | Guevea de Humboldt              |   20036 | Golfo Centro | X      | Rio Coatzacoalcos |       22 | Sin sequia | 2011-06-01 00:00:00   | 2012-11-30 00:00:00 |        548 |
+| Tlaxcala      |      29 | Apetatitlán de Antonio Carvajal |   29002 | Balsas       | IV     | Rio Balsas        |        9 | Sin sequia | 2013-06-01 00:00:00   | 2017-02-15 00:00:00 |       1355 |

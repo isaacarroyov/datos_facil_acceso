@@ -13,6 +13,7 @@
 #     fig-asp: 0.75
 #     fig-dpi: 300
 #     code-annotations: below
+#     wrap: none
 # execute:
 #   echo: true
 #   eval: true
@@ -39,6 +40,14 @@ de datos:
 (racha máxima)
 """
 
+# %% 
+#| label: load-libraries
+
+import pandas as pd
+from janitor import clean_names
+from numpy.random import randint, seed
+from IPython.display import Markdown
+
 # %% [markdown]
 """
 ## Descarga y transformación del registro de sequía en los municipios
@@ -48,13 +57,14 @@ formato _tidy_, ya que originalmente las columnas son la fecha del registro.
 """
 
 # %% 
-#| label: load-msm
-import pandas as pd
+#| label: load_1st_transform-msm_og
 
-msm_og = pd.read_excel(io = "".join(["https://smn.conagua.gob.mx/tools/",
-                            "RESOURCES/Monitor%20de%20Sequia%20en%",
-                            "20Mexico/MunicipiosSequia.xlsx"]),
-                       dtype= 'object')
+msm_og = pd.read_excel(
+   io = "".join(["https://smn.conagua.gob.mx/tools/RESOURCES/Monitor%20de",
+                 "%20Sequia%20en%20Mexico/MunicipiosSequia.xlsx"]),
+   dtype= 'object')
+
+msm_og = msm_og.clean_names(remove_special = True)
 
 # %% [markdown]
 """
@@ -66,8 +76,6 @@ msm_og = pd.read_excel(io = "".join(["https://smn.conagua.gob.mx/tools/",
 # %% 
 #| label: show-msm_og-sample
 #| echo: false
-from numpy.random import randint, seed
-from IPython.display import Markdown
 
 seed(11)
 random_date_cols = randint(10, 300, size = 4).tolist()
@@ -82,34 +90,10 @@ Markdown(
 """
 A partir de esta tabla, enlistan los cambios necesarios:
 
-1. Limpiar los nombres de las columnas
-2. Hacer el cambio de _wide format_ a _long format_
-3. Eliminar los registros Agosto 2003 y Febrero 2004
+1. Hacer el cambio de _wide format_ a _long format_
+2. Eliminar los registros Agosto 2003 y Febrero 2004
+<!-- TODO: ESCRIBIR CORRECTAMENTE LOS PASOS A SEGUIR EN EL TRABAJO -->
 """
-
-# %% [markdown]
-"""
-### Limpiar los nombres de las columnas
-"""
-
-# %%
-#| label: trans-cols_clean_names
-
-from janitor import clean_names
-msm_og = msm_og.clean_names(remove_special = True)
-
-# %%
-#| label: show-msm_og_clean_names-sample
-#| echo: false
-
-seed(11)
-random_date_cols = randint(10, 300, size = 4).tolist()
-
-Markdown(
-  msm_og
-  .sample(n = 5)
-  .iloc[:, list(range(9)) + random_date_cols]
-  .to_markdown(index= False))
 
 # %% [markdown]
 """
@@ -195,7 +179,7 @@ siguiente al que se tiene (que no sea `NaN`)
 #| label: create-func_llenado_dias_sequia
 def func_llenado_dias_sequia(group):
     
-    # La fecha inicia el el inicio del 2003
+    # La fecha inicia en Enero 01, 2003
     min_date = "2003-01-01"
     
     # La fecha final es la última actualización disponible
@@ -225,10 +209,9 @@ Se usarán únicamente las columnas de las claves de los municipios
 #| label: create-msm_long_filled
 
 msm_long_filled = (msm_long[['full_date','cve_concatenada', 'sequia']]
-  .groupby('cve_concatenada')
-  .apply(func_llenado_dias_sequia, include_groups = False)
-  .reset_index(drop = False)
-  .drop(columns = ["level_1"]))
+  .groupby(by = 'cve_concatenada')
+  .apply(lambda x: func_llenado_dias_sequia(group=x))
+  .reset_index(drop = True))
 
 # %%
 #| label: show-msm_long_filled
