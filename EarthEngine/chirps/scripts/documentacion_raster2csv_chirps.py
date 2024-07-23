@@ -22,8 +22,6 @@
 
 # %% [markdown]
 """
-<!-- TODO: Renombrar este documento a documentacion_raster2csv_chirps.py previo a crear el script raster2csv_chirps.py -->
-
 ## Introducción
 
 En este documento se encuentra el código para la extracción de variables 
