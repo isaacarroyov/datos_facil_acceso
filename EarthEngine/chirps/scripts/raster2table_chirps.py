@@ -225,33 +225,40 @@ adaptaciones de las funciones de cálculos
 
 from datetime import datetime
 
-limit_date_str = "2024-06-30"
-limit_date = datetime.strptime(limit_date_str, '%Y-%m-%d')
-limit_date_week = limit_date.isocalendar().week
-limit_date_month = limit_date.month
-limit_date_year = limit_date.year
+limit_date_str = "2024-06-30" # <1>
+limit_date = datetime.strptime(limit_date_str, '%Y-%m-%d') # <1>
+limit_date_week = limit_date.isocalendar().week # <1>
+limit_date_month = limit_date.month # <1>
+limit_date_year = limit_date.year # <1>
 
-if limit_date_year == date_year_interes:
-    dict_nombre_bandas = dict(
-        week = [f"0{i}" if i < 10 else str(i) for i in range(1,53)],
-        month = [f"0{i}" if i < 10 else str(i) for i in range(1,13)],
-        year = [date_year_interes])
+if limit_date_year == date_year_interes: # <2>
+    dict_nombre_bandas = dict( # <3>
+        week = [f"0{i}" if i < 10 else str(i) for i in range(1, limit_date_week + 1)], # <3>
+        month = [f"0{i}" if i < 10 else str(i) for i in range(1, limit_date_month + 1)], # <3> 
+        year = [date_year_interes]) # <3>
 else:
-    dict_nombre_bandas = dict(
-        week = [f"0{i}" if i < 10 else str(i) for i in range(1, limit_date_week + 1)],
-        month = [f"0{i}" if i < 10 else str(i) for i in range(1, limit_date_month + 1)],
-        year = [date_year_interes])
+    dict_nombre_bandas = dict( # <4>
+        week = [f"0{i}" if i < 10 else str(i) for i in range(1,53)], # <4>
+        month = [f"0{i}" if i < 10 else str(i) for i in range(1,13)], # <4>
+        year = [date_year_interes]) # <4>
 
 
-img_coll_tipo_periodo_pr = (img_coll_tipo_periodo_pr
-                            .toBands() # <1>
-                            .rename(dict_nombre_bandas[select_tipo_periodo])) # <2>
+img_coll_tipo_periodo_pr = (img_coll_tipo_periodo_pr # <5>
+                            .toBands() # <5>
+                            .rename(dict_nombre_bandas[select_tipo_periodo])) # <6>
 
 # %% [markdown]
 """
-1. Pasar `ee.ImageCollection` de _**n**_ imágenes 
-a una `ee.Image` de _**n**_ bandas
-2. Renombrar el nombre de las bandas a los números de los meses
+1. Obtener los elementos de semana, mes y año del límite de información 
+próxima del conjunto de datos de CHIRPS Daily
+2. Comprobar si el año de interés es el año del límite de información próxima
+3. Si el año de interés es el año del límite de información próxima, entonces 
+se toman como límites de semanas o meses, los de la fecha límite.
+4. Si el año de interés NO es el año del límite de información próxima, 
+entonces se toman todos los meses y semanas del año.
+5. Pasar `ee.ImageCollection` de _**n**_ imágenes a una `ee.Image` 
+de _**n**_ bandas
+6. Renombrar el nombre de las bandas a los números de los semanas, meses o años
 """
 
 # %% [markdown]
@@ -275,24 +282,39 @@ región en específico con respecto a su promedio histórico o normal. Este
 promedio es usualmente de 30 años.
 
 Para el caso del CHIRPS, es de Enero 1981 hasta Diciembre 2010.
+"""
 
-Esta tarea se tiene que hacer con ayuda de dos funciones. La primera 
-etiquetará por mes, semana y año la colección _base_. La segunda función 
-tendrá que reducir a las _n_ (depende del tipo de periodo de interés) 
-imagenes cada año de esa base.
+# %%
+
+base_period = (chirps
+              .filter(ee.Filter.calendarRange(start = year_base_inicio,
+                                              end = year_base_fin,
+                                              field = "year")))
+
+# %% [markdown]
+"""
+Esta tarea se tiene que hacer con ayuda de dos funciones.
+
+La primera etiquetará por mes, semana y año la colección _base_. Esta 
+función ya fue creada (**`func_tag_date`**)
+"""
+
+# %%
+
+base_period_tagged = base_period.map(func_tag_date)
+
+# %% [markdown]
+"""
+La segunda función tendrá que crear una lista de 30 imágenes de _n_ bandas, 
+estas _n_ bandas dependen del tipo de periodo de interés (semanas, meses o 
+año)
 """
 
 # %% 
-# TODO: Hasta aquí se llegó. Evaluar si se re-usan las funciones de 
-#       periodo de interés
-def func_tag_year_month_base_period(img): # <1>
-    full_date = ee.Date(ee.Number(img.get("system:time_start"))) 
-    n_year = ee.Number(full_date.get("year")) 
-    n_month = ee.Number(full_date.get("month")) 
-    return img.set({"n_month": n_month, "n_year": n_year})
+# TODO: continuar aqui, modificar la función para que regrese una lista de 
+#       30 x n elementos
 
-
-def func_reduce2yearmonths_base_period(n_year): # <2>
+def func_reduce2yearmonths_base_period(n_year):
     imgcoll_year_interes = (base_period_tagged
                             .filter(ee.Filter.eq("n_year", n_year)))
     def func_reduce2months_base_period(n_month): 
@@ -305,22 +327,44 @@ def func_reduce2yearmonths_base_period(n_year): # <2>
     
     return list_monthly_pr_per_year
 
+
+# %%
+
+
+dict_tipo_periodo = dict(
+    week = (ee.List.sequence(1, 52)
+            .map(lambda element: (chirps_year_interes_tagged
+                                  .filter(ee.Filter.eq("n_week", element))
+                                  .sum()
+                                  .set({"n_week": element})))),
+    month = (ee.List.sequence(1, 12)
+            .map(lambda element: (chirps_year_interes_tagged
+                                  .filter(ee.Filter.eq("n_month", element))
+                                  .sum()
+                                  .set({"n_month": element})))),
+    year = (ee.List.sequence(1, 12)
+            .map(lambda element: (chirps_year_interes_tagged
+                                  .filter(ee.Filter.eq("n_year", element))
+                                  .sum()
+                                  .set({"n_year": element})))))
+
+list_tipo_periodo_pr = dict_tipo_periodo[select_tipo_periodo]
+
+img_coll_tipo_periodo_pr = (ee.ImageCollection # <1>
+                            .fromImages(list_tipo_periodo_pr))
+
+
+
+
+
+
 # %% [markdown]
 """
-1. Función para etiquetar año y mes
-2. Función para crear una lista de listas de precipitaciones mensuales para 
-cada año del periodo base
-
-Con estas dos funciones se creará una colección de imagenes 
-de $\approx$ 360 imágenes
+1. 
+2. 
 """
 
 # %% 
-base_period = (chirps # <1>
-  .filter(ee.Filter.calendarRange(start = year_base_inicio, # <1>
-                                  end = year_base_fin, field = "year"))) # <1>
-
-base_period_tagged = base_period.map(func_tag_year_month_base_period) # <2>
 
 base_period_tagged_reduced_year_month = (ee.ImageCollection.fromImages( # <3>
     (ee.List # <4>
