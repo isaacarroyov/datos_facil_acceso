@@ -24,6 +24,11 @@
 """
 ## Introducción
 
+TODO: REVISIÓN EN EL APARTADO DEL CÁLCULO DE LA NORMAL, ESPECIALMENTE EL 
+      APARTADO DE LA ACUMULACIÓN ANUAL DE LLUVIA (PROMEDIO)
+
+      TAMBIEN ACOMODAR LINEAS DE CODIGO DE LOS DICCIONARIOS CON OPERACIONES
+
 En este documento se encuentra el código para la extracción de variables 
 derivadas de la precipitación tales como: 
 
