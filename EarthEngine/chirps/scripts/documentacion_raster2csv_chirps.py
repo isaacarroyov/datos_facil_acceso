@@ -24,11 +24,6 @@
 """
 ## Introducción
 
-TODO: REVISIÓN EN EL APARTADO DEL CÁLCULO DE LA NORMAL, ESPECIALMENTE EL 
-      APARTADO DE LA ACUMULACIÓN ANUAL DE LLUVIA (PROMEDIO)
-
-      TAMBIEN ACOMODAR LINEAS DE CODIGO DE LOS DICCIONARIOS CON OPERACIONES
-
 En este documento se encuentra el código para la extracción de variables 
 derivadas de la precipitación tales como: 
 
@@ -169,8 +164,7 @@ interés: semanal (52), mensual (12) o anual (1).
 # %% 
 dict_list_periodo_interes = dict(
     week = ee.List.sequence(1, 52),
-    month = ee.List.sequence(1, 12),
-    year = ee.List.sequence(n_year_interes, n_year_interes))
+    month = ee.List.sequence(1, 12))
 
 # %% [markdown]
 """
@@ -201,7 +195,7 @@ dict_reducer_periodo_interes = dict(
                                   .filter(ee.Filter.eq("n_month", element))
                                   .sum()
                                   .set({"n_month": element})))),
-    year = (dict_list_periodo_interes["year"]
+    year = (ee.List.sequence(n_year_interes, n_year_interes)
             .map(lambda element: (chirps_year_interes_tagged
                                   .filter(ee.Filter.eq("n_year", element))
                                   .sum()
@@ -267,7 +261,24 @@ de _**n**_ bandas
 
 # %% [markdown]
 """
+---
+
 ## Acumulación normal
+
+> [!WARNING]
+> 
+> Las secciones **Acumulación normal**, **Métricas a extraer: Anomalía en 
+milimetros**, **Métricas a extraer: Anomalía en porcentaje**, así como 
+cualquier operación relacionada al cálculo de la normal y de las 
+anomalías, quedan temporalmente en pausa hasta que se encuentre una manera 
+de mejorar su extracción semananal, mensual y anual. 
+> 
+> Esta decisión se debe al error de tiempo de ejecución en los servidores 
+de Google Earth Engine. 
+> 
+> En lo que se encuentra la solución los valores de las anomalías serán el 
+resultado de CSV exportados de la acumulación de la precipitación (semanal, 
+mensual o anual)
 
 De acuerdo a con el [glosario de la NOAA](https://forecast.weather.gov/glossary.php?word=ANOMALY#:~:text=NOAA's%20National%20Weather%20Service%20%2D%20Glossary,water%20level%20minus%20the%20prediction.) 
 una anomalía es la desviación de una unidad dentro de un periodo en una 
@@ -278,6 +289,7 @@ Para el caso del CHIRPS, es de Enero 1981 hasta Diciembre 2010.
 """
 
 # %%
+#| echo: false
 year_normal_inicio = 1981
 year_normal_fin = 2010
 
@@ -300,6 +312,7 @@ función ya fue creada (**`func_tag_date`**).
 """
 
 # %%
+#| echo: false
 imgcoll_normal_pr_tagged = imgcoll_normal_pr.map(func_tag_date)
 
 # %% [markdown]
@@ -318,6 +331,7 @@ del año de interés
 """
 
 # %% 
+#| echo: false
 def func_reduce2yearnperiods(n_year):
     imgcoll_year_normal = (imgcoll_normal_pr_tagged # <1>
                            .filter(ee.Filter.eq("n_year", n_year))) # <1>
@@ -325,41 +339,40 @@ def func_reduce2yearnperiods(n_year):
     dict_reducer_func_reduce2yearnperiods = dict( # <2>
         week = (dict_list_periodo_interes["week"] # <2>
                 .map(lambda element: (imgcoll_year_normal # <2>
-                                      .filter( # <2>
-                                        ee.Filter.eq("n_week", element)) # <2>
+                                      .filter(ee.Filter.eq("n_week", element)) # <2>
                                       .sum() # <2>
                                       .set({"n_week": element})))), # <2>
         month = (dict_list_periodo_interes["month"] # <2>
                 .map(lambda element: (imgcoll_year_normal # <2>
-                                      .filter( # <2>
-                                        ee.Filter.eq("n_month", element)) # <2>
+                                      .filter(ee.Filter.eq("n_month", element)) # <2>
                                       .sum() # <2>
                                       .set({"n_month": element})))), # <2>
-        year = (dict_list_periodo_interes["year"] # <2>
+        year = (ee.List.sequence(n_year, n_year) # <2>
                 .map(lambda element: (imgcoll_year_normal # <2>
-                                      .filter( # <2>
-                                        ee.Filter.eq("n_year", element)) # <2>
+                                      .filter(ee.Filter.eq("n_year", element)) # <2>
                                       .sum() # <2>
                                       .set({"n_year": element}))))) # <2>
     
     return dict_reducer_func_reduce2yearnperiods[periodo_interes] # <3>
 
 imgcoll_normal_pr_periodo_interes = (ee.ImageCollection # <4>
-  .fromImages((ee.List.sequence(year_normal_inicio, year_normal_fin) # <4>
+  .fromImages((ee.List # <4>
+               .sequence(year_normal_inicio, year_normal_fin) # <4>
                .map(func_reduce2yearnperiods) # <4>
-               .flatten()) # <4>
-              )
-  )
+               .flatten()))) # <4>
 
 # %% [markdown]
 """
 1. Se aisla la `ee.ImageCollection` de un solo año del periodo normal
 2. Diccionario especial con las operaciones de reducción a los periodos de 
-interés dependiendo del periodo que se eligió desde un inicio.
+interés dependiendo del periodo que se eligió desde un inicio. Para el caso 
+de que el periodo de interés sea `'year'`, se hace una lista especial de un 
+solo elemento: el año del periodo normal filtrado (`n_year`). Esto se hace 
+ya que `dict_list_periodo_interes` únicamente cubre el año de interes (`n_year_interes`)
 3. La función regresa una lista de _n_ imágenes
 4. Crear `ee.ImageCollection` de 30 $\times$ _n_ imágenes. Se usa 
 `flatten()` para dejar de tener una lista de 30 elementos, donde cada 
-elemento es una lista de _n_ elementos.
+elemento es una lista de _n_ elementos
 """
 
 # %% [markdown]
@@ -369,42 +382,40 @@ por los periodos y calcular el promedio de la precipitación de ese periodo.
 
 Para este proceso tambien se crea un diccionario especial para la 
 reducción, similar a los anteriores que se han creado. También un 
-diccionario de nombre de las bandas, solo que sin el condicionar `if`
+diccionario de nombre de las bandas, solo que sin el condicional `if`
 """
 
 # %% 
+#| echo: false
 dict_reducer_mean_periodo_interes_normal = dict( 
         week = (dict_list_periodo_interes["week"]
                 .map(lambda element: (imgcoll_normal_pr_periodo_interes
-                                      .filter(
-                                        ee.Filter.eq("n_week", element))
+                                      .filter(ee.Filter.eq("n_week", element))
                                       .mean()
                                       .set({"n_week": element})))),
         month = (dict_list_periodo_interes["month"]
                 .map(lambda element: (imgcoll_normal_pr_periodo_interes
-                                      .filter(
-                                        ee.Filter.eq("n_month", element))
+                                      .filter(ee.Filter.eq("n_month", element))
                                       .mean()
                                       .set({"n_month": element})))),
-        year = (dict_list_periodo_interes["year"]
+        year = (ee.List.sequence(1, 1)
                 .map(lambda element: (imgcoll_normal_pr_periodo_interes
-                                      .filter(
-                                        ee.Filter.eq("n_year", element))
-                                      .mean()
-                                      .set({"n_month": element})))))
+                                      .mean()))))
 
 dict_nombre_bandas_normal = dict(
         week = [f"0{i}" if i < 10 else str(i) for i in range(1,53)],
         month = [f"0{i}" if i < 10 else str(i) for i in range(1,13)],
-        year = [str(i) for i in range(year_normal_inicio, year_normal_fin + 1)])
+        year = ["normal"])
 
-img_periodo_interes_pr_normal = (ee.ImageCollection.fromImages(
-  dict_reducer_mean_periodo_interes_normal[periodo_interes])
+img_periodo_interes_pr_normal = (ee.ImageCollection
+  .fromImages(dict_reducer_mean_periodo_interes_normal[periodo_interes])
   .toBands()
   .rename(dict_nombre_bandas_normal[periodo_interes]))
 
 # %% [markdown]
 """
+---
+
 ## Métricas a extraer
 
 El objetivo es poder extraer información sobre las lluvias de 
@@ -427,7 +438,24 @@ img_periodo_interes_pr
 
 # %% [markdown]
 """
+---
+
 ### Anomalía en milimetros 
+
+> [!WARNING]
+> 
+> Las secciones **Acumulación normal**, **Métricas a extraer: Anomalía en 
+milimetros**, **Métricas a extraer: Anomalía en porcentaje**, así como 
+cualquier operación relacionada al cálculo de la normal y de las 
+anomalías, quedan temporalmente en pausa hasta que se encuentre una manera 
+de mejorar su extracción semananal, mensual y anual. 
+> 
+> Esta decisión se debe al error de tiempo de ejecución en los servidores 
+de Google Earth Engine. 
+> 
+> En lo que se encuentra la solución los valores de las anomalías serán el 
+resultado de CSV exportados de la acumulación de la precipitación (semanal, 
+mensual o anual)
 
 Es la diferencia en milimetros, de la precipitación de un determinado 
 mes $\left( \overline{x}_{i} \right)$ y el promedio histórico o la normal 
@@ -437,6 +465,7 @@ $$\text{anom}_{\text{mm}} = \overline{x}_{i} - \mu_{\text{normal}}$$
 """
 
 # %% 
+#| echo: false
 img_periodo_interes_anomaly_pr_mm = ee.Image((img_periodo_interes_pr
   .subtract(img_periodo_interes_pr_normal) # <1>
   .copyProperties(img_periodo_interes_pr, # <2>
@@ -449,6 +478,21 @@ img_periodo_interes_anomaly_pr_mm = ee.Image((img_periodo_interes_pr
 
 ### Anomalía en porcentaje
 
+> [!WARNING]
+> 
+> Las secciones **Acumulación normal**, **Métricas a extraer: Anomalía en 
+milimetros**, **Métricas a extraer: Anomalía en porcentaje**, así como 
+cualquier operación relacionada al cálculo de la normal y de las 
+anomalías, quedan temporalmente en pausa hasta que se encuentre una manera 
+de mejorar su extracción semananal, mensual y anual. 
+> 
+> Esta decisión se debe al error de tiempo de ejecución en los servidores 
+de Google Earth Engine. 
+> 
+> En lo que se encuentra la solución los valores de las anomalías serán el 
+resultado de CSV exportados de la acumulación de la precipitación (semanal, 
+mensual o anual)
+
 Es el resultado de dividir la diferencia de la precipitación de un 
 determinado mes $\left( \overline{x}_{i} \right)$ y el promedio 
 histórico o la normal $\left( \mu_{\text{normal}} \right)$ entre la normal 
@@ -458,6 +502,7 @@ $$\text{anom}_{\text{\%}} = \frac{\overline{x}_{i} - \mu_{\text{normal}}}{\mu_{\
 """
 
 # %% 
+#| echo: false
 img_periodo_interes_anomaly_pr_prop = ee.Image((img_periodo_interes_pr
   .subtract(img_periodo_interes_pr_normal) # <1>
   .divide(img_periodo_interes_pr_normal) # <2>
@@ -473,6 +518,8 @@ img_periodo_interes_anomaly_pr_prop = ee.Image((img_periodo_interes_pr
 
 # %% [markdown]
 """
+---
+
 ## De raster a CSV
 
 ### Información de `ee.Image` a `ee.FeatureCollection`
@@ -512,6 +559,8 @@ fc_periodo_interes_pr = ee.FeatureCollection( # <3>
    .toList(3000) # <4>
    .flatten())) # <5>
 
+# %% 
+#| echo: false
 # ~ Anomalía de precipitación en milímetros (mm) con respecto a la normal ~ #
 img2fc_periodo_interes_anomaly_pr_mm = (img_periodo_interes_anomaly_pr_mm
   .reduceRegions(
@@ -593,6 +642,8 @@ ee_export_vector_to_drive(
   fileFormat= "CSV",
   folder= "pruebas_ee")
 
+# %%
+#| echo: false
 # ~ Anomalía de precipitación en milímetros (mm) con respecto a la normal ~ #
 description_task_anomaly_pr_mm = f"anomaly_pr_mm_{select_fc_interes}_{periodo_interes}_{n_year_interes}"
 
