@@ -113,12 +113,12 @@ def get_chirps_metrics(
         dict_nombre_bandas = dict(
             week = [f"0{i}" if i < 10 else str(i) for i in range(1, limit_date_week + 1)],
             month = [f"0{i}" if i < 10 else str(i) for i in range(1, limit_date_month + 1)],
-            year = [n_year_interes])
+            year = [str(n_year_interes)])
     else:
         dict_nombre_bandas = dict(
             week = [f"0{i}" if i < 10 else str(i) for i in range(1,53)],
             month = [f"0{i}" if i < 10 else str(i) for i in range(1,13)],
-            year = [n_year_interes])
+            year = [str(n_year_interes)])
 
     img_periodo_interes_pr = (imgcoll_periodo_interes_pr
                             .toBands()
@@ -290,9 +290,9 @@ def get_chirps_metrics(
 # = = Ejecución del código = = #
 
 get_chirps_metrics(
-    n_year_interes= 24,
+    n_year_interes= 2024,
     fc_interes= "ent",
-    periodo_interes= "week",
+    periodo_interes= "year",
     limit_date= "2024-06-30")
 
 print("\nFin")

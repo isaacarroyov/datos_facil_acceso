@@ -234,12 +234,12 @@ if limit_date_year == n_year_interes: # <2>
     dict_nombre_bandas = dict( # <3>
         week = [f"0{i}" if i < 10 else str(i) for i in range(1, limit_date_week + 1)], # <3>
         month = [f"0{i}" if i < 10 else str(i) for i in range(1, limit_date_month + 1)], # <3> 
-        year = [n_year_interes]) # <3>
+        year = [str(n_year_interes)]) # <3>
 else:
     dict_nombre_bandas = dict( # <4>
         week = [f"0{i}" if i < 10 else str(i) for i in range(1,53)], # <4>
         month = [f"0{i}" if i < 10 else str(i) for i in range(1,13)], # <4>
-        year = [n_year_interes]) # <4>
+        year = [str(n_year_interes)]) # <4>
 
 img_periodo_interes_pr = (imgcoll_periodo_interes_pr # <5>
                           .toBands() # <5>
