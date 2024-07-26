@@ -12,10 +12,13 @@
   - [<span class="toc-section-number">5.1</span> Anomalía en milimetros](#anomalía-en-milimetros)
   - [<span class="toc-section-number">5.2</span> Anomalía en porcentaje](#anomalía-en-porcentaje)
   - [<span class="toc-section-number">5.3</span> Función para cálculo de anomalías](#función-para-cálculo-de-anomalías)
-- [<span class="toc-section-number">6</span> Guardar bases de datos de métricas de precipitación](#guardar-bases-de-datos-de-métricas-de-precipitación)
-  - [<span class="toc-section-number">6.1</span> Semanal](#semanal)
-  - [<span class="toc-section-number">6.2</span> Mensual](#mensual)
-  - [<span class="toc-section-number">6.3</span> Anual](#anual)
+- [<span class="toc-section-number">6</span> Detalles finales](#detalles-finales)
+  - [<span class="toc-section-number">6.1</span> Adjuntar nombre de estados y municipios](#adjuntar-nombre-de-estados-y-municipios)
+  - [<span class="toc-section-number">6.2</span> Formato numérico y de fecha para periodos](#formato-numérico-y-de-fecha-para-periodos)
+  - [<span class="toc-section-number">6.3</span> Creación de bases de datos de métricas de precipitación](#creación-de-bases-de-datos-de-métricas-de-precipitación)
+- [<span class="toc-section-number">7</span> Guardar bases de datos de métricas de precipitación](#guardar-bases-de-datos-de-métricas-de-precipitación)
+  - [<span class="toc-section-number">7.1</span> Estados](#estados)
+  - [<span class="toc-section-number">7.2</span> Municipios](#municipios)
 
 > \[!NOTE\]
 >
@@ -232,10 +235,10 @@ func_wide2long <- function(df) {
     
     if(n_cols >= 15) {df_transformed <- rename(
                           .data = df_pivoted,
-                          week = period)
+                          n_week = period)
     } else { df_transformed <- rename(
                .data = df_pivoted,
-               month = period)}
+               n_month = period)}
   
   } else {
     df_transformed <- df %>%
@@ -255,10 +258,10 @@ Líneas 11-13
 Se cambia el valor de la precipitación a numérico y se eliminan las `x` del numero de las semanas y meses.
 
 Líneas 15-17  
-Si `df` es de semanas (+15 columnas), se renombra `period` a `week`
+Si `df` es de semanas (+15 columnas), se renombra `period` a `n_week`
 
 Líneas 18-20  
-Si `df` es de meses, se renombra `period` a `month`
+Si `df` es de meses, se renombra `period` a `n_month`
 
 Líneas 22-25  
 Si `df` no es de más de 4 columnas, es porque el periodo es anual y solamente se renombra la columna `mean` a `pr_mm` y se comvierte a valor numérico
@@ -280,13 +283,13 @@ chirps_mun_year_long <- func_wide2long(df = chirps_mun_year)
 
 **Muestra de datos de `chirps_mun_week_long`**
 
-| cvegeo | n_year | week |     pr_mm |
-|:-------|:-------|:-----|----------:|
-| 28009  | 2000   | 17   |  4.993455 |
-| 14050  | 1998   | 21   |  0.000000 |
-| 21121  | 1987   | 46   |  0.000000 |
-| 20519  | 2010   | 19   |  2.772711 |
-| 20014  | 1991   | 22   | 14.394802 |
+| cvegeo | n_year | n_week |     pr_mm |
+|:-------|:-------|:-------|----------:|
+| 28009  | 2000   | 17     |  4.993455 |
+| 14050  | 1998   | 21     |  0.000000 |
+| 21121  | 1987   | 46     |  0.000000 |
+| 20519  | 2010   | 19     |  2.772711 |
+| 20014  | 1991   | 22     | 14.394802 |
 
 ## Precipitación normal (1981 - 2010)
 
@@ -297,15 +300,15 @@ func_normal_pr_mm <- function(df) {
   
   df_base <- filter(.data = df, n_year %in% 1981:2010)
 
-  if ("week" %in% colnames(df)) {
+  if ("n_week" %in% colnames(df)) {
     df_normal_pr_mm <- df_base %>%
-      group_by(cvegeo, week) %>%
+      group_by(cvegeo, n_week) %>%
       summarise(normal_pr_mm = mean(pr_mm, na.rm = TRUE)) %>%
       ungroup()
 
-  } else if ("month" %in% colnames(df)) {
+  } else if ("n_month" %in% colnames(df)) {
     df_normal_pr_mm <- df_base %>%
-      group_by(cvegeo, month) %>%
+      group_by(cvegeo, n_month) %>%
       summarise(normal_pr_mm = mean(pr_mm, na.rm = TRUE)) %>%
       ungroup()
 
@@ -376,21 +379,21 @@ La función tomará dos `tibble`s, el de la información de precipitación y el 
 ``` r
 func_anomaly_pr <- function(df, df_normal) {
 
-  if ("week" %in% colnames(df)) { 
+  if ("n_week" %in% colnames(df)) { 
     df_anomaly_pr <- left_join(
       x = df,
       y = df_normal,
-      by = join_by(cvegeo, week)) %>%
+      by = join_by(cvegeo, n_week)) %>%
     mutate(
       anomaly_pr_mm = pr_mm - normal_pr_mm,
       anomaly_pr_prop = anomaly_pr_mm / normal_pr_mm) %>%
     select(-normal_pr_mm)
 
-  } else if ("month" %in% colnames(df)) {
+  } else if ("n_month" %in% colnames(df)) {
     df_anomaly_pr <- left_join(
       x = df,
       y = df_normal,
-      by = join_by(cvegeo, month)) %>%
+      by = join_by(cvegeo, n_month)) %>%
     mutate(
       anomaly_pr_mm = pr_mm - normal_pr_mm,
       anomaly_pr_prop = anomaly_pr_mm / normal_pr_mm) %>%
@@ -457,26 +460,237 @@ chirps_mun_year_anomalies <- func_anomaly_pr(
 
 **Muestra de `chirps_mun_month_anomalies`**
 
-| cvegeo | n_year | month |     pr_mm | anomaly_pr_mm | anomaly_pr_prop |
-|:-------|:-------|:------|----------:|--------------:|----------------:|
-| 14112  | 1996   | 01    |  6.872272 |     -9.303316 |      -0.5751455 |
-| 13036  | 1985   | 09    | 89.510192 |    -42.149359 |      -0.3201390 |
-| 28034  | 2009   | 10    | 70.970096 |      4.825792 |       0.0729585 |
-| 29045  | 1981   | 09    | 45.377453 |    -45.511541 |      -0.5007377 |
-| 20349  | 2002   | 11    |  3.142742 |     -2.017031 |      -0.3909147 |
+| cvegeo | n_year | n_month |     pr_mm | anomaly_pr_mm | anomaly_pr_prop |
+|:-------|:-------|:--------|----------:|--------------:|----------------:|
+| 14112  | 1996   | 01      |  6.872272 |     -9.303316 |      -0.5751455 |
+| 13036  | 1985   | 09      | 89.510192 |    -42.149359 |      -0.3201390 |
+| 28034  | 2009   | 10      | 70.970096 |      4.825792 |       0.0729585 |
+| 29045  | 1981   | 09      | 45.377453 |    -45.511541 |      -0.5007377 |
+| 20349  | 2002   | 11      |  3.142742 |     -2.017031 |      -0.3909147 |
+
+## Detalles finales
+
+Como últimos pasos: \* Se agregan los nombres de los estados y municipios \* Para los conjuntos de datos de periodo mensual, se crea una columna en formato de fecha. Para todos los datos, el año, meses y semana se vuelve valor numérico
+
+### Adjuntar nombre de estados y municipios
+
+``` r
+db_cve_nom_ent_mun <- read_csv(
+    file = paste0(path2main, "/GobiernoMexicano/cve_nom_municipios.csv"))
+
+func_adjuntar_cve_nom_ent_mun <- function(df, region) { 
+  
+  if (region == "ent") {
+    df_con_nombres <- left_join(
+        x = df,
+        y = distinct(.data = db_cve_nom_ent_mun, cve_ent, nombre_estado),
+        by = join_by(cvegeo == cve_ent)) %>%
+      rename(cve_ent = cvegeo) %>%
+      relocate(nombre_estado, .after = cve_ent)
+  } else {
+    df_con_nombres <- left_join(
+        x = df,
+        y = db_cve_nom_ent_mun,
+        by = join_by(cvegeo == cve_geo)) %>%
+      select(-cve_mun) %>%
+      rename(cve_geo = cvegeo) %>%
+      relocate(cve_ent, .before = cve_geo) %>%
+      relocate(nombre_estado, .after = cve_ent) %>%
+      relocate(nombre_municipio, .after = cve_geo)}
+  
+  return(df_con_nombres)}
+```
+
+Líneas 1-2  
+Carga de base de datos de nombres y claves de estados y municipios
+
+Líneas 6-12  
+Asignación y orden de nombres para estados
+
+Líneas 13-22  
+Asignación y orden de nombres para municipios
+
+Línea 24  
+Se regresa el conjunto de datos con los nombres de las regiones
+
+### Formato numérico y de fecha para periodos
+
+``` r
+func_string2numberdate <- function(df) {
+  if ("n_week" %in% colnames(df)) {
+    df_detalles_finales <- df %>%
+      mutate(
+        across(
+          .cols = c(n_year, n_week),
+          .fns = as.integer))
+
+  } else if ("n_month" %in% colnames(df)) {
+    df_detalles_finales <- df %>%
+      mutate(date_year_month = paste(n_year, n_month, "15", sep = "-")) %>%
+      relocate(date_year_month, .before = n_year) %>%
+      mutate(across(.cols = c(n_year, n_month), .fns = as.integer))
+  } else {
+    df_detalles_finales <- mutate(.data = df, n_year = as.integer(n_year))}
+  
+  return(df_detalles_finales)}
+```
+
+### Creación de bases de datos de métricas de precipitación
+
+``` r
+# - - Estados - - #
+db_pr_ent_week <- func_adjuntar_cve_nom_ent_mun(
+    df = chirps_ent_week_anomalies,
+    region = "ent") %>%
+  func_string2numberdate()
+
+db_pr_ent_month <- func_adjuntar_cve_nom_ent_mun(
+    df = chirps_ent_month_anomalies,
+    region = "ent") %>%
+  func_string2numberdate()
+
+db_pr_ent_year <- func_adjuntar_cve_nom_ent_mun(
+    df = chirps_ent_year_anomalies,
+    region = "ent") %>%
+  func_string2numberdate()
+
+# - - Municipios - - #
+db_pr_mun_week <- func_adjuntar_cve_nom_ent_mun(
+    df = chirps_mun_week_anomalies,
+    region = "mun") %>%
+  func_string2numberdate()
+
+db_pr_mun_month <- func_adjuntar_cve_nom_ent_mun(
+    df = chirps_mun_month_anomalies,
+    region = "mun") %>%
+  func_string2numberdate()
+
+db_pr_mun_year <- func_adjuntar_cve_nom_ent_mun(
+    df = chirps_mun_year_anomalies,
+    region = "mun") %>%
+  func_string2numberdate()
+```
 
 ## Guardar bases de datos de métricas de precipitación
 
-Duis nulla turpis, elementum eget purus sed, gravida lobortis purus. Sed sem enim, placerat ac neque blandit, viverra hendrerit lacus. Suspendisse dictum odio vitae purus ullamcorper, id facilisis metus ultrices. Morbi leo ipsum, condimentum in consequat et, vestibulum in eros. Sed a sagittis nulla, sed mattis erat. Mauris tempus nibh nisi, et feugiat eros gravida vel. Aenean rutrum vitae nulla a porta. Donec volutpat velit mauris, molestie pretium ex dapibus sed. Sed mattis turpis ut orci hendrerit, a varius metus rhoncus.
+En la carpeta de `data` existen 3 carpetas: \* `ee_imports` \* `estados` \* `municipios`
 
-### Semanal
+La carpeta `ee_imports` son los archivos creados a partir de Google Earth Engine, y los conjuntos de datos creados por este script, se encuentran en las otras dos carpetas, `estados` y `municipios`
 
-Phasellus aliquam erat lacinia enim dapibus, eget mollis justo rutrum. Maecenas ornare laoreet tellus ac iaculis. Etiam aliquam pulvinar nisl, at dignissim dui dictum dignissim. Sed quis odio cursus, viverra quam eu, fringilla ante. Sed sit amet hendrerit libero. Nullam vitae ullamcorper dui. Ut elementum, sapien sed malesuada dictum, dui ante lobortis mauris, eleifend dignissim nibh ex in risus. Vestibulum tempor congue lectus, nec pellentesque leo sodales sed. Sed vitae est id metus rutrum vestibulum sed sed neque. Interdum et malesuada fames ac ante ipsum primis in faucibus. In pharetra varius rutrum. Integer libero eros, imperdiet ut elit sed, accumsan volutpat elit.
+### Estados
 
-### Mensual
+**Base de datos de métrias de precipitación semanal a nivel estatal**
 
-Nulla blandit nibh a egestas efficitur. Morbi pretium mi eget diam posuere tempus. Nam in ex lacinia, tincidunt massa non, malesuada nibh. Aenean faucibus arcu lorem, ut suscipit mauris suscipit ut. Proin dignissim lorem et leo imperdiet, sit amet vulputate turpis semper. Aenean et ante id urna elementum aliquam. Morbi turpis nibh, egestas ac elementum et, viverra at mauris. Phasellus dapibus feugiat erat, non imperdiet urna. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Curabitur non diam sed lectus molestie rhoncus ac ut nisl. Maecenas at dui ut tortor pretium scelerisque finibus et magna. Morbi non libero porta, aliquet erat sit amet, dapibus quam. Ut et consequat massa. Phasellus efficitur tristique sem, eget tristique nisl scelerisque ut. Praesent dapibus, orci et aliquam feugiat, augue nisl interdum tellus, ac vulputate nisi tortor sed lacus. Aenean rhoncus urna et lorem placerat, eu maximus elit volutpat.
+Se guarda bajo el nombre **`db_pr_ent_week.csv`**
 
-### Anual
+``` r
+write_csv(
+    x = db_pr_ent_week,
+    file = paste0(path2data, "/estados/db_pr_ent_week.csv"),
+    na = "")
+```
 
-Integer ultricies placerat nunc in commodo. Aenean scelerisque tristique urna, gravida consectetur nulla commodo eget. Suspendisse orci orci, laoreet sed molestie quis, pellentesque at lorem. Ut suscipit ipsum libero, sit amet ullamcorper libero pellentesque ut. Nam eu iaculis dui. Proin ut ante sit amet ligula porta dignissim. Nullam lobortis massa varius felis lacinia aliquam. Phasellus risus nunc, pharetra a imperdiet eu, euismod ac mauris.
+| cve_ent | nombre_estado  | n_year | n_week |    pr_mm | anomaly_pr_mm | anomaly_pr_prop |
+|:--------|:---------------|-------:|-------:|---------:|--------------:|----------------:|
+| 21      | Puebla         |   1995 |     52 | 27.18696 |    22.0810199 |       4.3245786 |
+| 25      | Sinaloa        |   2016 |     33 | 66.64450 |    23.2708532 |       0.5365206 |
+| 01      | Aguascalientes |   2007 |     43 |  3.34919 |    -1.7033558 |      -0.3371282 |
+| 27      | Tabasco        |   2022 |     10 | 27.10595 |    13.6523176 |       1.0147684 |
+| 31      | Yucatán        |   1987 |     27 | 31.59915 |     0.0490694 |       0.0015553 |
+
+**Base de datos de métrias de precipitación mensual a nivel estatal**
+
+Se guarda bajo el nombre **`db_pr_ent_month.csv`**
+
+``` r
+write_csv(
+    x = db_pr_ent_month,
+    file = paste0(path2data, "/estados/db_pr_ent_month.csv"),
+    na = "")
+```
+
+| cve_ent | nombre_estado    | date_year_month | n_year | n_month |      pr_mm | anomaly_pr_mm | anomaly_pr_prop |
+|:--------|:-----------------|:----------------|-------:|--------:|-----------:|--------------:|----------------:|
+| 14      | Jalisco          | 1993-11-15      |   1993 |      11 |  17.406663 |      4.436529 |       0.3420573 |
+| 14      | Jalisco          | 2015-06-15      |   2015 |       6 | 194.864848 |     41.090921 |       0.2672164 |
+| 15      | Estado de México | 2008-03-15      |   2008 |       3 |   2.426141 |     -5.172940 |      -0.6807323 |
+| 02      | Baja California  | 2003-02-15      |   2003 |       2 |  52.151188 |     24.600239 |       0.8928999 |
+| 18      | Nayarit          | 1991-06-15      |   1991 |       6 |  96.752522 |    -35.131155 |      -0.2663799 |
+
+**Base de datos de métrias de precipitación anual a nivel estatal**
+
+Se guarda bajo el nombre **`db_pr_ent_year.csv`**
+
+``` r
+write_csv(
+    x = db_pr_ent_year,
+    file = paste0(path2data, "/estados/db_pr_ent_year.csv"),
+    na = "")
+```
+
+| cve_ent | nombre_estado   | n_year |     pr_mm | anomaly_pr_mm | anomaly_pr_prop |
+|:--------|:----------------|-------:|----------:|--------------:|----------------:|
+| 25      | Sinaloa         |   2012 |  715.0738 |      21.42257 |       0.0308838 |
+| 07      | Chiapas         |   2002 | 1890.8176 |    -107.02688 |      -0.0535712 |
+| 01      | Aguascalientes  |   1985 |  554.5302 |      25.29634 |       0.0477980 |
+| 02      | Baja California |   2010 |  161.1825 |      14.63347 |       0.0998537 |
+| 23      | Quintana Roo    |   1995 | 1452.6003 |     167.24272 |       0.1301138 |
+
+### Municipios
+
+**Base de datos de métrias de precipitación semanal a nivel municipal**
+
+Se guarda bajo el nombre **`db_pr_mun_week.csv.bz2`**
+
+``` r
+write_csv(
+    x = db_pr_mun_week,
+    file = paste0(path2data, "/municipios/db_pr_mun_week.csv.bz2"),
+    na = "")
+```
+
+| cve_ent | nombre_estado | cve_geo | nombre_municipio                 | n_year | n_week |     pr_mm | anomaly_pr_mm | anomaly_pr_prop |
+|:--------|:--------------|:--------|:---------------------------------|-------:|-------:|----------:|--------------:|----------------:|
+| 28      | Tamaulipas    | 28009   | Ciudad Madero                    |   2000 |     17 |  4.993455 |    -0.1611248 |      -0.0312586 |
+| 14      | Jalisco       | 14050   | Jocotepec                        |   1998 |     21 |  0.000000 |    -8.8062927 |      -1.0000000 |
+| 21      | Puebla        | 21121   | San Diego la Mesa Tochimiltzingo |   1987 |     46 |  0.000000 |    -1.9043364 |      -1.0000000 |
+| 20      | Oaxaca        | 20519   | Santo Domingo Tomaltepec         |   2010 |     19 |  2.772711 |   -12.1593161 |      -0.8143111 |
+| 20      | Oaxaca        | 20014   | Ciudad Ixtepec                   |   1991 |     22 | 14.394802 |   -16.4631020 |      -0.5335133 |
+
+**Base de datos de métrias de precipitación mensual a nivel municipal**
+
+Se guarda bajo el nombre **`db_pr_mun_month.csv.bz2`**
+
+``` r
+write_csv(
+    x = db_pr_mun_month,
+    file = paste0(path2data, "/municipios/db_pr_mun_month.csv.bz2"),
+    na = "")
+```
+
+| cve_ent | nombre_estado | cve_geo | nombre_municipio          | date_year_month | n_year | n_month |     pr_mm | anomaly_pr_mm | anomaly_pr_prop |
+|:--------|:--------------|:--------|:--------------------------|:----------------|-------:|--------:|----------:|--------------:|----------------:|
+| 14      | Jalisco       | 14112   | Valle de Juárez           | 1996-01-15      |   1996 |       1 |  6.872272 |     -9.303316 |      -0.5751455 |
+| 13      | Hidalgo       | 13036   | San Agustín Metzquititlán | 1985-09-15      |   1985 |       9 | 89.510192 |    -42.149359 |      -0.3201390 |
+| 28      | Tamaulipas    | 28034   | San Carlos                | 2009-10-15      |   2009 |      10 | 70.970096 |      4.825792 |       0.0729585 |
+| 29      | Tlaxcala      | 29045   | Benito Juárez             | 1981-09-15      |   1981 |       9 | 45.377453 |    -45.511541 |      -0.5007377 |
+| 20      | Oaxaca        | 20349   | San Sebastián Teitipac    | 2002-11-15      |   2002 |      11 |  3.142742 |     -2.017031 |      -0.3909147 |
+
+**Base de datos de métrias de precipitación anual a nivel municipal**
+
+Se guarda bajo el nombre **`db_pr_mun_year.csv`**
+
+``` r
+write_csv(
+    x = db_pr_ent_year,
+    file = paste0(path2data, "/municipios/db_pr_mun_year.csv"),
+    na = "")
+```
+
+| cve_ent | nombre_estado    | cve_geo | nombre_municipio       | n_year |     pr_mm | anomaly_pr_mm | anomaly_pr_prop |
+|:--------|:-----------------|:--------|:-----------------------|-------:|----------:|--------------:|----------------:|
+| 30      | Veracruz         | 30164   | Teocelo                |   1990 | 1405.2415 |    -441.33105 |      -0.2390001 |
+| 07      | Chiapas          | 07049   | Larráinzar             |   2005 | 1382.0681 |     -12.79656 |      -0.0091741 |
+| 20      | Oaxaca           | 20121   | San Bartolo Soyaltepec |   1998 |  591.4477 |     -72.45555 |      -0.1091357 |
+| 09      | Ciudad de México | 09017   | Venustiano Carranza    |   2009 |  553.4171 |     -82.48956 |      -0.1297196 |
+| 21      | Puebla           | 21043   | Cuetzalan del Progreso |   1985 | 2497.0993 |    -214.96181 |      -0.0792614 |
