@@ -1,4 +1,4 @@
-cve_ent,nombre_estado,date_year_month,n_year,month,pr_mm,anomaly_pr_mm,anomaly_pr_prop
+cve_ent,nombre_estado,date_year_month,n_year,n_month,pr_mm,anomaly_pr_mm,anomaly_pr_prop
 01,Aguascalientes,1981-01-15,1981,1,39.96619622190476,23.07435067902395,1.3660053083275323
 01,Aguascalientes,1981-02-15,1981,2,8.383341943185135,0.798575791706905,0.1052868045973002
 01,Aguascalientes,1981-03-15,1981,3,6.304948298765348,1.8433379911385925,0.41315531031196473
