@@ -6,9 +6,9 @@
   - [<span class="toc-section-number">2.1</span> Ubicación de los archivos](#ubicación-de-los-archivos)
   - [<span class="toc-section-number">2.2</span> Carga de los archivos](#carga-de-los-archivos)
   - [<span class="toc-section-number">2.3</span> Decisiones sobre los datos](#decisiones-sobre-los-datos)
-- [<span class="toc-section-number">3</span> 02](#02)
-- [<span class="toc-section-number">4</span> 03](#03)
-- [<span class="toc-section-number">5</span> 04](#04)
+- [<span class="toc-section-number">3</span> *Wide to Long*](#wide-to-long)
+- [<span class="toc-section-number">4</span> Precipitación normal (1981 - 2010)](#precipitación-normal-1981---2010)
+- [<span class="toc-section-number">5</span> Cálculo de anomalías](#cálculo-de-anomalías)
 - [<span class="toc-section-number">6</span> Guardar bases de datos de métricas de precipitación](#guardar-bases-de-datos-de-métricas-de-precipitación)
   - [<span class="toc-section-number">6.1</span> Semanal](#semanal)
   - [<span class="toc-section-number">6.2</span> Mensual](#mensual)
@@ -208,15 +208,93 @@ Para el caso de la precipitación anual, como el reductor principal fue ‘mean�
 3.  Crear los respectivos `tibble`s de promedio normal de precipitación para cada uno de los archivos.
 4.  Crear las columnas de las anomalías de precipitación en milímetros (`anomaly_pr_mm`) y porcentaje (`anomaly_pr_prop`).
 
-## 02
+## *Wide to Long*
 
-Phasellus aliquam erat lacinia enim dapibus, eget mollis justo rutrum. Maecenas ornare laoreet tellus ac iaculis. Etiam aliquam pulvinar nisl, at dignissim dui dictum dignissim. Sed quis odio cursus, viverra quam eu, fringilla ante. Sed sit amet hendrerit libero. Nullam vitae ullamcorper dui. Ut elementum, sapien sed malesuada dictum, dui ante lobortis mauris, eleifend dignissim nibh ex in risus. Vestibulum tempor congue lectus, nec pellentesque leo sodales sed. Sed vitae est id metus rutrum vestibulum sed sed neque. Interdum et malesuada fames ac ante ipsum primis in faucibus. In pharetra varius rutrum. Integer libero eros, imperdiet ut elit sed, accumsan volutpat elit.
+Para facilitar la trasnformación se va crear una función que haga el pivote dependiendo del número de columnas en el `tibble`.
 
-## 03
+``` r
+func_wide2long <- function(df) {
+  
+  n_cols = ncol(df)
+
+  if (n_cols >= 4) {
+    df_pivoted <- df %>%
+      pivot_longer(
+        cols = starts_with("x"),
+        names_to = "period",
+        values_to = "pr_mm") %>%
+      mutate(
+        pr_mm = as.numeric(pr_mm),
+        period = str_remove(string = period, pattern = "x"))
+    
+    if(n_cols >= 15) {df_transformed <- rename(
+                          .data = df_pivoted,
+                          week = period)
+    } else { df_transformed <- rename(
+               .data = df_pivoted,
+               month = period)}
+  
+  } else {
+    df_transformed <- df %>%
+      rename(pr_mm = mean) %>%
+      mutate(pr_mm = as.numeric(pr_mm))}
+
+  return(df_transformed)}
+```
+
+Línea 3  
+Identificar el número de columnas
+
+Líneas 5-10  
+Si son más de 4 columnas, entonces son los periodos semanales y mensuales y se hace el `pivot_longer`
+
+Líneas 11-13  
+Se cambia el valor de la precipitación a numérico y se eliminan las `x` del numero de las semanas y meses.
+
+Líneas 15-17  
+Si `df` es de semanas (+15 columnas), se renombra `period` a `week`
+
+Líneas 18-20  
+Si `df` es de meses, se renombra `period` a `month`
+
+Líneas 22-25  
+Si `df` no es de más de 4 columnas, es porque el periodo es anual y solamente se renombra la columna `mean` a `pr_mm` y se comvierte a valor numérico
+
+Línea 27  
+Se regresa el conjunto de datos con los cambios
+
+``` r
+# - - Estados - - #
+chirps_ent_week_long <- func_wide2long(df = chirps_ent_week)
+chirps_ent_month_long <- func_wide2long(df = chirps_ent_month)
+chirps_ent_year_long <- func_wide2long(df = chirps_ent_year)
+
+# - - Municipios - - #
+chirps_mun_week_long <- func_wide2long(df = chirps_mun_week)
+chirps_mun_month_long <- func_wide2long(df = chirps_mun_month)
+chirps_mun_year_long <- func_wide2long(df = chirps_mun_year)
+```
+
+**Muestra de datos de `chirps_mun_week_long`**
+
+``` r
+set.seed(1)
+slice_sample(.data = chirps_mun_week_long, n = 5)
+```
+
+| cvegeo | n_year | week |     pr_mm |
+|:-------|:-------|:-----|----------:|
+| 28009  | 2000   | 17   |  4.993455 |
+| 14050  | 1998   | 21   |  0.000000 |
+| 21121  | 1987   | 46   |  0.000000 |
+| 20519  | 2010   | 19   |  2.772711 |
+| 20014  | 1991   | 22   | 14.394802 |
+
+## Precipitación normal (1981 - 2010)
 
 Nulla blandit nibh a egestas efficitur. Morbi pretium mi eget diam posuere tempus. Nam in ex lacinia, tincidunt massa non, malesuada nibh. Aenean faucibus arcu lorem, ut suscipit mauris suscipit ut. Proin dignissim lorem et leo imperdiet, sit amet vulputate turpis semper. Aenean et ante id urna elementum aliquam. Morbi turpis nibh, egestas ac elementum et, viverra at mauris. Phasellus dapibus feugiat erat, non imperdiet urna. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Curabitur non diam sed lectus molestie rhoncus ac ut nisl. Maecenas at dui ut tortor pretium scelerisque finibus et magna. Morbi non libero porta, aliquet erat sit amet, dapibus quam. Ut et consequat massa. Phasellus efficitur tristique sem, eget tristique nisl scelerisque ut. Praesent dapibus, orci et aliquam feugiat, augue nisl interdum tellus, ac vulputate nisi tortor sed lacus. Aenean rhoncus urna et lorem placerat, eu maximus elit volutpat.
 
-## 04
+## Cálculo de anomalías
 
 Integer ultricies placerat nunc in commodo. Aenean scelerisque tristique urna, gravida consectetur nulla commodo eget. Suspendisse orci orci, laoreet sed molestie quis, pellentesque at lorem. Ut suscipit ipsum libero, sit amet ullamcorper libero pellentesque ut. Nam eu iaculis dui. Proin ut ante sit amet ligula porta dignissim. Nullam lobortis massa varius felis lacinia aliquam. Phasellus risus nunc, pharetra a imperdiet eu, euismod ac mauris.
 

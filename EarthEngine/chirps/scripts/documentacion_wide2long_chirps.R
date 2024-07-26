@@ -242,20 +242,70 @@ slice_sample(.data = chirps_ent_year, n = 5)
 #' 4. Crear las columnas de las anomalías de precipitación en milímetros 
 #' (`anomaly_pr_mm`) y porcentaje (`anomaly_pr_prop`).
 #' 
-#' ## 02
+#' ## _Wide to Long_
 #' 
-#' Phasellus aliquam erat lacinia enim dapibus, eget mollis justo 
-#' rutrum. Maecenas ornare laoreet tellus ac iaculis. Etiam aliquam 
-#' pulvinar nisl, at dignissim dui dictum dignissim. Sed quis odio cursus, 
-#' viverra quam eu, fringilla ante. Sed sit amet hendrerit libero. Nullam 
-#' vitae ullamcorper dui. Ut elementum, sapien sed malesuada dictum, dui 
-#' ante lobortis mauris, eleifend dignissim nibh ex in risus. Vestibulum 
-#' tempor congue lectus, nec pellentesque leo sodales sed. Sed vitae est id 
-#' metus rutrum vestibulum sed sed neque. Interdum et malesuada fames ac 
-#' ante ipsum primis in faucibus. In pharetra varius rutrum. Integer libero 
-#' eros, imperdiet ut elit sed, accumsan volutpat elit.
-#' 
-#' ## 03
+#' Para facilitar la trasnformación se va crear una función que haga el 
+#' pivote dependiendo del número de columnas en el `tibble`.
+
+#| label: create-func_wide2long
+func_wide2long <- function(df) {
+  
+  n_cols = ncol(df) # <1>
+
+  if (n_cols >= 4) { # <2>
+    df_pivoted <- df %>% # <2>
+      pivot_longer( # <2>
+        cols = starts_with("x"), # <2>
+        names_to = "period", # <2>
+        values_to = "pr_mm") %>% # <2>
+      mutate( # <3>
+        pr_mm = as.numeric(pr_mm), # <3>
+        period = str_remove(string = period, pattern = "x")) # <3>
+    
+    if(n_cols >= 15) {df_transformed <- rename( # <4>
+                          .data = df_pivoted, # <4>
+                          week = period) # <4>
+    } else { df_transformed <- rename( # <5>
+               .data = df_pivoted, # <5>
+               month = period)} # <5>
+  
+  } else { # <6>
+    df_transformed <- df %>% # <6>
+      rename(pr_mm = mean) %>% # <6>
+      mutate(pr_mm = as.numeric(pr_mm))} # <6>
+
+  return(df_transformed)} # <7>
+
+#' 1. Identificar el número de columnas
+#' 2. Si son más de 4 columnas, entonces son los periodos semanales y 
+#' mensuales y se hace el `pivot_longer`
+#' 3. Se cambia el valor de la precipitación a numérico y se eliminan las 
+#' `x` del numero de las semanas y meses.
+#' 4. Si `df` es de semanas (+15 columnas), se renombra `period` a `week` 
+#' 5. Si `df` es de meses, se renombra `period` a `month`
+#' 6. Si `df` no es de más de 4 columnas, es porque el periodo es anual y 
+#' solamente se renombra la columna `mean` a `pr_mm` y se comvierte a valor 
+#' numérico
+#' 7. Se regresa el conjunto de datos con los cambios
+
+#| label: create-long_chirps
+# - - Estados - - #
+chirps_ent_week_long <- func_wide2long(df = chirps_ent_week)
+chirps_ent_month_long <- func_wide2long(df = chirps_ent_month)
+chirps_ent_year_long <- func_wide2long(df = chirps_ent_year)
+
+# - - Municipios - - #
+chirps_mun_week_long <- func_wide2long(df = chirps_mun_week)
+chirps_mun_month_long <- func_wide2long(df = chirps_mun_month)
+chirps_mun_year_long <- func_wide2long(df = chirps_mun_year)
+
+#' **Muestra de datos de `chirps_mun_week_long`**
+
+#| label: show_sample-chirps_mun_week_long
+set.seed(1)
+slice_sample(.data = chirps_mun_week_long, n = 5)
+
+#' ## Precipitación normal (1981 - 2010)
 #' 
 #' Nulla blandit nibh a egestas efficitur. Morbi pretium mi eget diam 
 #' posuere tempus. Nam in ex lacinia, tincidunt massa non, malesuada 
@@ -273,7 +323,7 @@ slice_sample(.data = chirps_ent_year, n = 5)
 #' tortor sed lacus. Aenean rhoncus urna et lorem placerat, eu maximus elit 
 #' volutpat.
 #' 
-#' ## 04
+#' ## Cálculo de anomalías
 #' 
 #' Integer ultricies placerat nunc in commodo. Aenean scelerisque tristique 
 #' urna, gravida consectetur nulla commodo eget. Suspendisse orci orci, 
