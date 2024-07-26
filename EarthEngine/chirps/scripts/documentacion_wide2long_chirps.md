@@ -20,11 +20,90 @@ library(tidyverse)
 path2main <- paste0(getwd(), "/../../..")
 path2ee <- paste0(path2main, "/EarthEngine")
 path2chirps <- paste0(path2ee, "/chirps")
+path2data <- paste0(path2chirps, "/data")
 ```
 
 ## 01
 
 Duis nulla turpis, elementum eget purus sed, gravida lobortis purus. Sed sem enim, placerat ac neque blandit, viverra hendrerit lacus. Suspendisse dictum odio vitae purus ullamcorper, id facilisis metus ultrices. Morbi leo ipsum, condimentum in consequat et, vestibulum in eros. Sed a sagittis nulla, sed mattis erat. Mauris tempus nibh nisi, et feugiat eros gravida vel. Aenean rutrum vitae nulla a porta. Donec volutpat velit mauris, molestie pretium ex dapibus sed. Sed mattis turpis ut orci hendrerit, a varius metus rhoncus.
+
+``` r
+all_csv_chirps <- list.files(
+    path = paste0(path2data, "/ee_imports"),
+    pattern = "*.csv",
+    full.names = TRUE)
+
+# - - Entidades - - #
+# ~ Semanal ~ #
+idx_ent_week <- str_detect(all_csv_chirps, "pr_ent_week")
+# ~ Mensual ~ #
+idx_ent_month <- str_detect(all_csv_chirps, "pr_ent_month")
+# ~ Anual ~ #
+idx_ent_year <- str_detect(all_csv_chirps, "pr_ent_year")
+
+# - - Municipios - - #
+# ~ Semanal ~ #
+idx_mun_week <- str_detect(all_csv_chirps, "pr_mun_week")
+# ~ Mensual ~ #
+idx_mun_month <- str_detect(all_csv_chirps, "pr_mun_month")
+# ~ Anual ~ #
+idx_mun_year <- str_detect(all_csv_chirps, "pr_mun_year")
+```
+
+Duis nulla turpis, elementum eget purus sed, gravida lobortis purus. Sed sem enim, placerat ac neque blandit, viverra hendrerit lacus. Suspendisse dictum odio vitae purus ullamcorper, id facilisis metus ultrices. Morbi leo ipsum, condimentum in consequat et, vestibulum in eros. Sed a sagittis nulla, sed mattis erat. Mauris tempus nibh nisi, et feugiat eros gravida vel. Aenean rutrum vitae nulla a porta. Donec volutpat velit mauris, molestie pretium ex dapibus sed. Sed mattis turpis ut orci hendrerit, a varius metus rhoncus.
+
+``` r
+# - - Entidades - - #
+# ~ Semanal ~ #
+chirps_ent_week <- map(
+    .x = all_csv_chirps[idx_ent_week],
+    .f = \(x) read_csv(file = x, col_types = cols(.default = "c"))) %>%
+  bind_rows() %>%
+  janitor::clean_names() %>%
+  select(c(cvegeo, n_year, starts_with("x")))
+
+# ~ Mensual ~ #
+chirps_ent_month <- map(
+    .x = all_csv_chirps[idx_ent_month],
+    .f = \(x) read_csv(file = x, col_types = cols(.default = "c"))) %>%
+  bind_rows() %>%
+  janitor::clean_names() %>%
+  select(c(cvegeo, n_year, starts_with("x")))
+
+# ~ Anual ~ #
+chirps_ent_year <- map(
+    .x = all_csv_chirps[idx_ent_year],
+    .f = \(x) read_csv(file = x, col_types = cols(.default = "c"))) %>%
+  bind_rows() %>%
+  janitor::clean_names() %>%
+  select(cvegeo, n_year, mean)
+
+
+# - - Municipios - - #
+# ~ Semanal ~ #
+chirps_mun_week <- map(
+    .x = all_csv_chirps[idx_mun_week],
+    .f = \(x) read_csv(file = x, col_types = cols(.default = "c"))) %>%
+  bind_rows() %>%
+  janitor::clean_names() %>%
+  select(c(cvegeo, n_year, starts_with("x")))
+
+# ~ Mensual ~ #
+chirps_mun_month <- map(
+    .x = all_csv_chirps[idx_mun_month],
+    .f = \(x) read_csv(file = x, col_types = cols(.default = "c"))) %>%
+  bind_rows() %>%
+  janitor::clean_names() %>%
+  select(c(cvegeo, n_year, starts_with("x")))
+
+# ~ Anual ~ #
+chirps_mun_year <- map(
+    .x = all_csv_chirps[idx_mun_year],
+    .f = \(x) read_csv(file = x, col_types = cols(.default = "c"))) %>%
+  bind_rows() %>%
+  janitor::clean_names() %>%
+  select(cvegeo, n_year, mean)
+```
 
 ## 02
 
