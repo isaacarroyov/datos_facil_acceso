@@ -1,9 +1,9 @@
 #' ---
-#' title: 'CHIRPS: Extracción y procesamiento de datos de lluvia'
+#' title: 'CHIRPS: Extracción y procesamiento de datos de lluvia II'
 #' lang: es
 #' format:
 #'   gfm:
-#'     toc: false
+#'     toc: true
 #'     number-sections: true
 #'     papersize: letter
 #'     fig-width: 5
@@ -35,19 +35,39 @@ setwd("./EarthEngine/chirps/scripts")
 
 #' ## Introducción y objetivos
 #' 
-#' Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec lobortis 
-#' porttitor ligula, id consequat tortor aliquet ut. Class aptent taciti 
-#' sociosqu ad litora torquent per conubia nostra, per inceptos 
-#' himenaeos. Maecenas laoreet vehicula turpis et aliquet. Quisque feugiat 
-#' metus ac dui accumsan, in eleifend tellus venenatis. Morbi at enim 
-#' vitae dui fermentum feugiat. Nullam pellentesque orci vel velit euismod 
-#' laoreet. Nulla dolor sapien, fringilla in nisi eu, vestibulum dapibus 
-#' risus. Morbi quis porttitor erat, sed cursus erat. Nulla ut pretium 
-#' est. Suspendisse in ultrices nulla, vitae tempus metus. Nam metus dolor, 
-#' tempor ut libero quis, sagittis hendrerit urna. Phasellus sit amet 
-#' interdum nisi, id mollis nibh. Pellentesque non velit pellentesque, 
-#' iaculis nisl in, dapibus nisl. Curabitur tristique ipsum sit amet 
-#' vulputate venenatis. Morbi a faucibus mauris.
+#' La extracción de la Precipitación en milímetros (mm) través de Google 
+#' Earth Engine se hizo para todos los estados y municipios de manera 
+#' mensual, semanal y anual. Esto quiere decir que se tiene un total 
+#' de 264 CSVs:
+#' 
+#' * Precipitación en milímtros:
+#'   * Semanal en los estados: 44 archivos (1 archivo por cada año, de 1981 a 2024)
+#'   * Mensual en los estados: 44 archivos 
+#'   * Anual en los estados: 44 archivos
+#'   * Semanal en los municipios: 44 archivos
+#'   * Mensual en los municipios: 44 archivos
+#'   * Anual en los municipios: 44 archivos
+#' 
+#' El siguiente paso es poder unir todos en 6 archivos
+#' 
+#' * Precipitación en milímetros, anomalía (de precipitación) en 
+#' milímetros (con respecto de la normal) y anomalía en porcentaje semanal 
+#' de los estados, de 1981 a 2024.
+#' * Precipitación en milímetros, anomalía (de precipitación) en 
+#' milímetros (con respecto de la normal) y anomalía en porcentaje mensual 
+#' de los estados, de 1981 a 2024.
+#' * Precipitación en milímetros, anomalía (de precipitación) en 
+#' milímetros (con respecto de la normal) y anomalía en porcentaje anual 
+#' de los estados, de 1981 a 2024.
+#' * Precipitación en milímetros, anomalía (de precipitación) en 
+#' milímetros (con respecto de la normal) y anomalía en porcentaje semanal 
+#' de los municipios, de 1981 a 2024.
+#' * Precipitación en milímetros, anomalía (de precipitación) en 
+#' milímetros (con respecto de la normal) y anomalía en porcentaje mensual 
+#' de los municipios, de 1981 a 2024.
+#' * Precipitación en milímetros, anomalía (de precipitación) en 
+#' milímetros (con respecto de la normal) y anomalía en porcentaje anual 
+#' de los municipios, de 1981 a 2024.
 
 #| label: load-necesarios
 #| output: false
@@ -59,19 +79,27 @@ path2ee <- paste0(path2main, "/EarthEngine")
 path2chirps <- paste0(path2ee, "/chirps")
 path2data <- paste0(path2chirps, "/data")
 
-#' ## 01
+#' ## Los conjuntos de datos
 #' 
-#' Duis nulla turpis, elementum eget purus sed, gravida lobortis purus. Sed 
-#' sem enim, placerat ac neque blandit, viverra hendrerit 
-#' lacus. Suspendisse dictum odio vitae purus ullamcorper, id facilisis 
-#' metus ultrices. Morbi leo ipsum, condimentum in consequat et, vestibulum 
-#' in eros. Sed a sagittis nulla, sed mattis erat. Mauris tempus nibh nisi, 
-#' et feugiat eros gravida vel. Aenean rutrum vitae nulla a porta. Donec 
-#' volutpat velit mauris, molestie pretium ex dapibus sed. Sed mattis 
-#' turpis ut orci hendrerit, a varius metus rhoncus.
+#' ### Ubicación de los archivos
+#' 
+#' Todos los archivos se encuentran en una misma carpeta, lo que los 
+#' distingue es el nombre del archivo. El nombre tiene la estructura 
+#' de `METRICA_GEOMETRIA_PERIODO_AAAA.csv`, donde:
+#' 
+#' * `METRICA`: El valor `pr` (Precipitación en milímetros)
+#' * `GEOMETRIA`: Indica las geometrías de la información, tales como 
+#' `ent` (Estados) y `mun` (Municipios)
+#' * `PERIODO`: Tiene los valores de los periodos de extracción, tales 
+#' como  `week` (semanala), `month` (mensual) y `year` (anual)
+#' * `AAAA`: Indica el año de la información, de 1981 a 2024
+#' 
+#' Para dividir en 6 grupos a todos los archivos, se usarán las primeras 
+#' 3 partes del nombre: `METRICA_GEOMETRIA_PERIODO`
 
 #| label: load_chirp_files
-
+# Obtener el nombre (path incluido) de todos los archivos que se 
+# importaron de Google Earth Engine 
 all_csv_chirps <- list.files(
     path = paste0(path2data, "/ee_imports"),
     pattern = "*.csv",
@@ -93,25 +121,31 @@ idx_mun_month <- str_detect(all_csv_chirps, "pr_mun_month")
 # ~ Anual ~ #
 idx_mun_year <- str_detect(all_csv_chirps, "pr_mun_year")
 
-#' Duis nulla turpis, elementum eget purus sed, gravida lobortis purus. Sed 
-#' sem enim, placerat ac neque blandit, viverra hendrerit 
-#' lacus. Suspendisse dictum odio vitae purus ullamcorper, id facilisis 
-#' metus ultrices. Morbi leo ipsum, condimentum in consequat et, vestibulum 
-#' in eros. Sed a sagittis nulla, sed mattis erat. Mauris tempus nibh nisi, 
-#' et feugiat eros gravida vel. Aenean rutrum vitae nulla a porta. Donec 
-#' volutpat velit mauris, molestie pretium ex dapibus sed. Sed mattis 
-#' turpis ut orci hendrerit, a varius metus rhoncus.
+#' Las variables `idx_` son vectores booleanos que indican la posición 
+#' en la que se encuentra un archivo que coincide con el patron de 
+#' caracteres deseado. Cada uno de esos vectores tiene 
+#' `{r} length(all_csv_chirps[idx_ent_week])` elementos, los cuales tienen 
+#' que ser leeidos como `tibbles` y concatenados. De esta manera se tiene 
+#' en un `tibble`, la información de 44 años de precipitación (divididos 
+#' semanal, mensual o anualmente).
+#' 
+#' ### Carga de los archivos
+#' 
+#' Para poder leer y unir 44 archivos en uno solo, se usa `purrr::map`. 
+#' `purrr` es una librería que forma parte del `{tidyverse}`, por lo que ya 
+#' se encuentra cargada en el ambiante. Con `map` se leeran los paths de los 
+#' archivos de interés (dados por `idx_`).
 
 #| label: concat_all_files
 
 # - - Entidades - - #
 # ~ Semanal ~ #
 chirps_ent_week <- map(
-    .x = all_csv_chirps[idx_ent_week],
-    .f = \(x) read_csv(file = x, col_types = cols(.default = "c"))) %>%
-  bind_rows() %>%
-  janitor::clean_names() %>%
-  select(c(cvegeo, n_year, starts_with("x")))
+    .x = all_csv_chirps[idx_ent_week], # <1> 
+    .f = \(x) read_csv(file = x, col_types = cols(.default = "c"))) %>% # <2>
+  bind_rows() %>% # <3>
+  janitor::clean_names() %>% # <4>
+  select(c(cvegeo, n_year, starts_with("x"))) # <5>
 
 # ~ Mensual ~ #
 chirps_ent_month <- map(
@@ -127,8 +161,7 @@ chirps_ent_year <- map(
     .f = \(x) read_csv(file = x, col_types = cols(.default = "c"))) %>%
   bind_rows() %>%
   janitor::clean_names() %>%
-  select(cvegeo, n_year, mean)
-
+  select(cvegeo, n_year, mean) # <6>
 
 # - - Municipios - - #
 # ~ Semanal ~ #
@@ -155,6 +188,60 @@ chirps_mun_year <- map(
   janitor::clean_names() %>%
   select(cvegeo, n_year, mean)
 
+#' 1. Seleccionar los paths de los archivos de interes
+#' 2. Usar una función anónima para poder dar valor a más argumentos 
+#' (como que todas las columnas sean leídas como _strings_) de la 
+#' función `read_csv`
+#' 3. Todos los `tibbles` se guardan en una lista, por lo que para unirlos 
+#' en un solo `tibble` se concatenan por las filas
+#' 4. Limpieza de nombres de columnas
+#' 5. Las columnas de interés son las que tienen el código del estado o 
+#' municipio (`cvegeo`), el año de la información (`n_year`) y el número de 
+#' semana o mes (después de usar `janitor::clean_names`, todas inician con 
+#' `x`).
+#' 6. Para el caso de la precipitación anual, como el reductor principal 
+#' fue 'mean', ese es el nombre de la columna de información
+#' 
+#' **Muestra de datos: Precipitación en milímetros semanal a nivel estatal**
+
+#| label: show_sample-chirps_ent_week 
+#| echo: false
+set.seed(1)
+slice_sample(.data = chirps_ent_week, n = 5)
+
+#' **Muestra de datos: Precipitación en milímetros mensual a nivel estatal**
+
+#| label: show_sample-chirps_ent_month
+#| echo: false
+set.seed(1)
+slice_sample(.data = chirps_ent_month, n = 5)
+
+#' **Muestra de datos: Precipitación en milímetros anual a nivel estatal**
+
+#| label: show_sample-chirps_ent_year
+#| echo: false
+set.seed(1)
+slice_sample(.data = chirps_ent_year, n = 5)
+
+#' ### Decisiones sobre los datos
+#' 
+#' > [!NOTE]
+#' > Como lo indican los objetivos, no solo estará la Precipitación en 
+#' milímetros, también se contará con las anomalías, por lo que se tendrá 
+#' que incorporar este cálculo en el flujo de trabajo.
+#' > 
+#' > Esta es una solución temporal, en lo que se arregla el código de la 
+#' extracción de las anomalías directamente de Google Earth Engine. 
+#' 
+#' 1. Transformar el formato _wide_ a _long_, para tener el número de 
+#' semanas y meses como una columna. Para el caso de los datos anuales, 
+#' únicamente renombrar la columna `mean` a `pr`
+#' 2. Cambiar a número el valor de la precipitación.
+#' 3. Crear los respectivos `tibble`s de promedio normal de precipitación 
+#' para cada uno de los archivos.
+#' 4. Crear las columnas de las anomalías de precipitación en milímetros 
+#' (`anomaly_pr_mm`) y porcentaje (`anomaly_pr_prop`).
+#' 
 #' ## 02
 #' 
 #' Phasellus aliquam erat lacinia enim dapibus, eget mollis justo 
@@ -196,7 +283,7 @@ chirps_mun_year <- map(
 #' massa varius felis lacinia aliquam. Phasellus risus nunc, pharetra a 
 #' imperdiet eu, euismod ac mauris.
 #' 
-#' ## Guardar bases de datos de métricas de precitación
+#' ## Guardar bases de datos de métricas de precipitación
 #' 
 #' Duis nulla turpis, elementum eget purus sed, gravida lobortis purus. Sed 
 #' sem enim, placerat ac neque blandit, viverra hendrerit 
@@ -220,7 +307,7 @@ chirps_mun_year <- map(
 #' ante ipsum primis in faucibus. In pharetra varius rutrum. Integer libero 
 #' eros, imperdiet ut elit sed, accumsan volutpat elit.
 #' 
-#' ## Mensual
+#' ### Mensual
 #' 
 #' Nulla blandit nibh a egestas efficitur. Morbi pretium mi eget diam 
 #' posuere tempus. Nam in ex lacinia, tincidunt massa non, malesuada 
@@ -238,7 +325,7 @@ chirps_mun_year <- map(
 #' tortor sed lacus. Aenean rhoncus urna et lorem placerat, eu maximus elit 
 #' volutpat.
 #' 
-#' ## Anual
+#' ### Anual
 #' 
 #' Integer ultricies placerat nunc in commodo. Aenean scelerisque tristique 
 #' urna, gravida consectetur nulla commodo eget. Suspendisse orci orci, 
