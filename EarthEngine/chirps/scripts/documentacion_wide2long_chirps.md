@@ -9,6 +9,9 @@
 - [<span class="toc-section-number">3</span> *Wide to Long*](#wide-to-long)
 - [<span class="toc-section-number">4</span> Precipitación normal (1981 - 2010)](#precipitación-normal-1981---2010)
 - [<span class="toc-section-number">5</span> Cálculo de anomalías](#cálculo-de-anomalías)
+  - [<span class="toc-section-number">5.1</span> Anomalía en milimetros](#anomalía-en-milimetros)
+  - [<span class="toc-section-number">5.2</span> Anomalía en porcentaje](#anomalía-en-porcentaje)
+  - [<span class="toc-section-number">5.3</span> Función para cálculo de anomalías](#función-para-cálculo-de-anomalías)
 - [<span class="toc-section-number">6</span> Guardar bases de datos de métricas de precipitación](#guardar-bases-de-datos-de-métricas-de-precipitación)
   - [<span class="toc-section-number">6.1</span> Semanal](#semanal)
   - [<span class="toc-section-number">6.2</span> Mensual](#mensual)
@@ -210,7 +213,7 @@ Para el caso de la precipitación anual, como el reductor principal fue ‘mean�
 
 ## *Wide to Long*
 
-Para facilitar la trasnformación se va crear una función que haga el pivote dependiendo del número de columnas en el `tibble`.
+Para facilitar la transformación se va crear una función que haga el pivote dependiendo del número de columnas en el `tibble`.
 
 ``` r
 func_wide2long <- function(df) {
@@ -277,11 +280,6 @@ chirps_mun_year_long <- func_wide2long(df = chirps_mun_year)
 
 **Muestra de datos de `chirps_mun_week_long`**
 
-``` r
-set.seed(1)
-slice_sample(.data = chirps_mun_week_long, n = 5)
-```
-
 | cvegeo | n_year | week |     pr_mm |
 |:-------|:-------|:-----|----------:|
 | 28009  | 2000   | 17   |  4.993455 |
@@ -292,11 +290,180 @@ slice_sample(.data = chirps_mun_week_long, n = 5)
 
 ## Precipitación normal (1981 - 2010)
 
-Nulla blandit nibh a egestas efficitur. Morbi pretium mi eget diam posuere tempus. Nam in ex lacinia, tincidunt massa non, malesuada nibh. Aenean faucibus arcu lorem, ut suscipit mauris suscipit ut. Proin dignissim lorem et leo imperdiet, sit amet vulputate turpis semper. Aenean et ante id urna elementum aliquam. Morbi turpis nibh, egestas ac elementum et, viverra at mauris. Phasellus dapibus feugiat erat, non imperdiet urna. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Curabitur non diam sed lectus molestie rhoncus ac ut nisl. Maecenas at dui ut tortor pretium scelerisque finibus et magna. Morbi non libero porta, aliquet erat sit amet, dapibus quam. Ut et consequat massa. Phasellus efficitur tristique sem, eget tristique nisl scelerisque ut. Praesent dapibus, orci et aliquam feugiat, augue nisl interdum tellus, ac vulputate nisi tortor sed lacus. Aenean rhoncus urna et lorem placerat, eu maximus elit volutpat.
+Para facilitar el cálculo se va crear una función que la precipitación normal dependiendo del periodo de la información.
+
+``` r
+func_normal_pr_mm <- function(df) {
+  
+  df_base <- filter(.data = df, n_year %in% 1981:2010)
+
+  if ("week" %in% colnames(df)) {
+    df_normal_pr_mm <- df_base %>%
+      group_by(cvegeo, week) %>%
+      summarise(normal_pr_mm = mean(pr_mm, na.rm = TRUE)) %>%
+      ungroup()
+
+  } else if ("month" %in% colnames(df)) {
+    df_normal_pr_mm <- df_base %>%
+      group_by(cvegeo, month) %>%
+      summarise(normal_pr_mm = mean(pr_mm, na.rm = TRUE)) %>%
+      ungroup()
+
+  } else {
+    df_normal_pr_mm <- df_base %>%
+      group_by(cvegeo) %>%
+      summarise(normal_pr_mm = mean(pr_mm, na.rm = TRUE)) %>%
+      ungroup()}
+  
+  return(df_normal_pr_mm)}
+```
+
+Línea 3  
+Filtro de los 30 años *base*
+
+Líneas 5-9  
+Agrupación si `df` es de periodo semanal
+
+Líneas 11-15,17  
+Agrupación si `df` es de periodo mensual
+
+Líneas 18-21  
+Agrupación si `df` es de periodo anual
+
+Línea 23  
+`tibble` de precipitación normal para cada región
+
+``` r
+# - - Estados - - #
+normal_pr_mm_ent_week <- func_normal_pr_mm(df = chirps_ent_week_long)
+normal_pr_mm_ent_month <- func_normal_pr_mm(df = chirps_ent_month_long)
+normal_pr_mm_ent_year <- func_normal_pr_mm(df = chirps_ent_year_long)
+
+# - - Municipio - - #
+normal_pr_mm_mun_week <- func_normal_pr_mm(df = chirps_mun_week_long)
+normal_pr_mm_mun_month <- func_normal_pr_mm(df = chirps_mun_month_long)
+normal_pr_mm_mun_year <- func_normal_pr_mm(df = chirps_mun_year_long)
+```
+
+**Muestra de `normal_pr_mm_ent_year`**
+
+| cvegeo | normal_pr_mm |
+|:-------|-------------:|
+| 25     |     693.6512 |
+| 04     |    1329.8219 |
+| 07     |    1997.8444 |
+| 01     |     529.2339 |
+| 02     |     146.5491 |
 
 ## Cálculo de anomalías
 
-Integer ultricies placerat nunc in commodo. Aenean scelerisque tristique urna, gravida consectetur nulla commodo eget. Suspendisse orci orci, laoreet sed molestie quis, pellentesque at lorem. Ut suscipit ipsum libero, sit amet ullamcorper libero pellentesque ut. Nam eu iaculis dui. Proin ut ante sit amet ligula porta dignissim. Nullam lobortis massa varius felis lacinia aliquam. Phasellus risus nunc, pharetra a imperdiet eu, euismod ac mauris.
+### Anomalía en milimetros
+
+Es la diferencia en milimetros, de la precipitación de un determinado mes $\left( \overline{x}_{i} \right)$ y el promedio histórico o la normal $\left( \mu_{\text{normal}} \right)$ de ese mes
+
+$$\text{anom}_{\text{mm}} = \overline{x}_{i} - \mu_{\text{normal}}$$
+
+### Anomalía en porcentaje
+
+Es el resultado de dividir la diferencia de la precipitación de un determinado mes $\left( \overline{x}_{i} \right)$ y el promedio histórico o la normal $\left( \mu_{\text{normal}} \right)$ entre la normal de ese mismo mes.
+
+$$\text{anom}_{\text{\%}} = \frac{\overline{x}_{i} - \mu_{\text{normal}}}{\mu_{\text{normal}}}$$
+
+### Función para cálculo de anomalías
+
+La función tomará dos `tibble`s, el de la información de precipitación y el de la precipitación normal.
+
+``` r
+func_anomaly_pr <- function(df, df_normal) {
+
+  if ("week" %in% colnames(df)) { 
+    df_anomaly_pr <- left_join(
+      x = df,
+      y = df_normal,
+      by = join_by(cvegeo, week)) %>%
+    mutate(
+      anomaly_pr_mm = pr_mm - normal_pr_mm,
+      anomaly_pr_prop = anomaly_pr_mm / normal_pr_mm) %>%
+    select(-normal_pr_mm)
+
+  } else if ("month" %in% colnames(df)) {
+    df_anomaly_pr <- left_join(
+      x = df,
+      y = df_normal,
+      by = join_by(cvegeo, month)) %>%
+    mutate(
+      anomaly_pr_mm = pr_mm - normal_pr_mm,
+      anomaly_pr_prop = anomaly_pr_mm / normal_pr_mm) %>%
+    select(-normal_pr_mm)
+
+  } else {
+    df_anomaly_pr <- left_join(
+      x = df,
+      y = df_normal,
+      by = join_by(cvegeo)) %>%
+    mutate(
+      anomaly_pr_mm = pr_mm - normal_pr_mm,
+      anomaly_pr_prop = anomaly_pr_mm / normal_pr_mm) %>%
+    select(-normal_pr_mm)}
+  
+  return(df_anomaly_pr)}
+```
+
+Líneas 4-7  
+Se usa un `lef_join` para unir los datos de precipitación con la precipitación normal. Se unen por región y periodo (este caso, semanal)
+
+Líneas 8-10  
+Se hace el cálculo de las anomalías
+
+Línea 11  
+Se *elimina* la columna que indica el valor de la precipitación normal
+
+Líneas 13-21  
+Proceso 1-3 para periodo mensual
+
+Líneas 23-31  
+Proceso para periodo anual. Para este caso se une por el periodo, únicamente por la región
+
+Línea 33  
+Se regresa el conjunto de datos con las anomalías integradas
+
+``` r
+# - - Estados - - #
+chirps_ent_week_anomalies <- func_anomaly_pr(
+    df = chirps_ent_week_long,
+    df_normal = normal_pr_mm_ent_week)
+
+chirps_ent_month_anomalies <- func_anomaly_pr(
+    df = chirps_ent_month_long,
+    df_normal = normal_pr_mm_ent_month)
+
+chirps_ent_year_anomalies <- func_anomaly_pr(
+    df = chirps_ent_year_long,
+    df_normal = normal_pr_mm_ent_year)
+
+# - - Municipios - - #
+chirps_mun_week_anomalies <- func_anomaly_pr(
+    df = chirps_mun_week_long,
+    df_normal = normal_pr_mm_mun_week)
+
+chirps_mun_month_anomalies <- func_anomaly_pr(
+    df = chirps_mun_month_long,
+    df_normal = normal_pr_mm_mun_month)
+
+chirps_mun_year_anomalies <- func_anomaly_pr(
+    df = chirps_mun_year_long,
+    df_normal = normal_pr_mm_mun_year)
+```
+
+**Muestra de `chirps_mun_month_anomalies`**
+
+| cvegeo | n_year | month |     pr_mm | anomaly_pr_mm | anomaly_pr_prop |
+|:-------|:-------|:------|----------:|--------------:|----------------:|
+| 14112  | 1996   | 01    |  6.872272 |     -9.303316 |      -0.5751455 |
+| 13036  | 1985   | 09    | 89.510192 |    -42.149359 |      -0.3201390 |
+| 28034  | 2009   | 10    | 70.970096 |      4.825792 |       0.0729585 |
+| 29045  | 1981   | 09    | 45.377453 |    -45.511541 |      -0.5007377 |
+| 20349  | 2002   | 11    |  3.142742 |     -2.017031 |      -0.3909147 |
 
 ## Guardar bases de datos de métricas de precipitación
 
