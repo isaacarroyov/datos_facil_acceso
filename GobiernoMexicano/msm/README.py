@@ -42,7 +42,6 @@ de datos:
 
 # %% 
 #| label: load-libraries
-
 import pandas as pd
 from janitor import clean_names
 from numpy.random import randint, seed
@@ -58,7 +57,6 @@ formato _tidy_, ya que originalmente las columnas son la fecha del registro.
 
 # %% 
 #| label: load_1st_transform-msm_og
-
 msm_og = pd.read_excel(
    io = "".join(["https://smn.conagua.gob.mx/tools/RESOURCES/Monitor%20de",
                  "%20Sequia%20en%20Mexico/MunicipiosSequia.xlsx"]),
@@ -76,7 +74,6 @@ msm_og = msm_og.clean_names(remove_special = True)
 # %% 
 #| label: show-msm_og-sample
 #| echo: false
-
 seed(11)
 random_date_cols = randint(10, 300, size = 4).tolist()
 
@@ -102,7 +99,6 @@ A partir de esta tabla, enlistan los cambios necesarios:
 
 # %%
 #| label: trans_df-wide2long
-
 # Wide to Long
 msm_long = pd.melt(
     frame = msm_og,
@@ -686,3 +682,11 @@ Markdown(
    db_rachas_max_mun
    .sample(n = 5, random_state= 13)
    .to_markdown(index = False))
+
+# %% [markdown]
+"""
+> [!NOTE]
+> 
+> Fecha de actualización del Monitor de Sequía de 
+México: `{python} msm_long['full_date'].max().strftime("%B %d, %Y")`
+"""
