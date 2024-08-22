@@ -293,6 +293,6 @@ get_chirps_metrics(
     n_year_interes= 2024,
     fc_interes= "ent",
     periodo_interes= "year",
-    limit_date= "2024-06-30")
+    limit_date= "2024-07-31")
 
 print("\nFin")
