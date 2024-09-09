@@ -66,7 +66,7 @@ Baja California,02,Mexicali,02002,Península De Baja California,I,Baja Californi
 Baja California,02,Mexicali,02002,Península De Baja California,I,Baja California,2,D1,2021-01-16,2021-08-31,227
 Baja California,02,Mexicali,02002,Península De Baja California,I,Baja California,2,D2,2016-01-01,2017-03-31,455
 Baja California,02,Mexicali,02002,Península De Baja California,I,Baja California,2,D3,2018-03-16,2018-11-30,259
-Baja California,02,Mexicali,02002,Península De Baja California,I,Baja California,2,Sin sequia,2005-01-01,2005-12-31,364
+Baja California,02,Mexicali,02002,Península De Baja California,I,Baja California,2,Sin sequia,2023-09-01,2024-08-31,365
 Baja California,02,Tecate,02003,Península De Baja California,I,Baja California,2,D0,2020-08-01,2021-04-30,272
 Baja California,02,Tecate,02003,Península De Baja California,I,Baja California,2,D1,2021-05-01,2022-03-31,334
 Baja California,02,Tecate,02003,Península De Baja California,I,Baja California,2,D2,2014-12-01,2015-12-31,395
@@ -298,7 +298,7 @@ Coahuila,05,Morelos,05019,Río Bravo,VI,Rio Bravo,12,D4,2006-07-01,2006-08-31,61
 Coahuila,05,Morelos,05019,Río Bravo,VI,Rio Bravo,12,Sin sequia,2003-07-01,2005-08-31,792
 Coahuila,05,Múzquiz,05020,Río Bravo,VI,Rio Bravo,12,D0,2009-01-01,2009-10-31,303
 Coahuila,05,Múzquiz,05020,Río Bravo,VI,Rio Bravo,12,D1,2019-09-01,2020-01-31,152
-Coahuila,05,Múzquiz,05020,Río Bravo,VI,Rio Bravo,12,D2,2024-03-01,2024-08-15,167
+Coahuila,05,Múzquiz,05020,Río Bravo,VI,Rio Bravo,12,D2,2024-03-01,2024-08-31,183
 Coahuila,05,Múzquiz,05020,Río Bravo,VI,Rio Bravo,12,D3,2022-02-16,2022-06-30,134
 Coahuila,05,Múzquiz,05020,Río Bravo,VI,Rio Bravo,12,D4,2011-09-01,2011-12-31,121
 Coahuila,05,Múzquiz,05020,Río Bravo,VI,Rio Bravo,12,Sin sequia,2003-07-01,2005-08-31,792
@@ -725,7 +725,7 @@ Chiapas,07,Nicolás Ruíz,07058,Frontera Sur,XI,Rios Grijalva y Usumacinta,24,D2
 Chiapas,07,Nicolás Ruíz,07058,Frontera Sur,XI,Rios Grijalva y Usumacinta,24,Sin sequia,2011-07-01,2013-03-31,639
 Chiapas,07,Ocosingo,07059,Frontera Sur,XI,Rios Grijalva y Usumacinta,24,D0,2017-01-01,2018-01-15,379
 Chiapas,07,Ocosingo,07059,Frontera Sur,XI,Rios Grijalva y Usumacinta,24,D1,2016-04-16,2016-12-31,259
-Chiapas,07,Ocosingo,07059,Frontera Sur,XI,Rios Grijalva y Usumacinta,24,D2,2023-06-16,2024-08-15,426
+Chiapas,07,Ocosingo,07059,Frontera Sur,XI,Rios Grijalva y Usumacinta,24,D2,2023-06-16,2024-08-31,442
 Chiapas,07,Ocosingo,07059,Frontera Sur,XI,Rios Grijalva y Usumacinta,24,D3,2018-10-16,2019-11-30,410
 Chiapas,07,Ocosingo,07059,Frontera Sur,XI,Rios Grijalva y Usumacinta,24,Sin sequia,2011-07-01,2015-07-15,1475
 Chiapas,07,Ocotepec,07060,Frontera Sur,XI,Rios Grijalva y Usumacinta,24,D0,2019-11-01,2020-05-15,196
@@ -977,7 +977,7 @@ Chiapas,07,Aldama,07113,Frontera Sur,XI,Rios Grijalva y Usumacinta,24,D3,2010-04
 Chiapas,07,Aldama,07113,Frontera Sur,XI,Rios Grijalva y Usumacinta,24,Sin sequia,2013-05-01,2015-06-15,775
 Chiapas,07,Benemérito de las Américas,07114,Frontera Sur,XI,Rios Grijalva y Usumacinta,24,D0,2004-08-01,2005-01-31,183
 Chiapas,07,Benemérito de las Américas,07114,Frontera Sur,XI,Rios Grijalva y Usumacinta,24,D1,2009-01-01,2009-05-31,150
-Chiapas,07,Benemérito de las Américas,07114,Frontera Sur,XI,Rios Grijalva y Usumacinta,24,D2,2023-06-16,2024-08-15,426
+Chiapas,07,Benemérito de las Américas,07114,Frontera Sur,XI,Rios Grijalva y Usumacinta,24,D2,2023-06-16,2024-08-31,442
 Chiapas,07,Benemérito de las Américas,07114,Frontera Sur,XI,Rios Grijalva y Usumacinta,24,D3,2018-10-16,2019-11-30,410
 Chiapas,07,Benemérito de las Américas,07114,Frontera Sur,XI,Rios Grijalva y Usumacinta,24,Sin sequia,2011-07-01,2014-08-31,1157
 Chiapas,07,Maravilla Tenejapa,07115,Frontera Sur,XI,Rios Grijalva y Usumacinta,24,D0,2021-09-16,2022-08-31,349
@@ -987,7 +987,7 @@ Chiapas,07,Maravilla Tenejapa,07115,Frontera Sur,XI,Rios Grijalva y Usumacinta,2
 Chiapas,07,Maravilla Tenejapa,07115,Frontera Sur,XI,Rios Grijalva y Usumacinta,24,Sin sequia,2011-07-01,2014-02-28,973
 Chiapas,07,Marqués de Comillas,07116,Frontera Sur,XI,Rios Grijalva y Usumacinta,24,D0,2022-02-01,2022-08-15,195
 Chiapas,07,Marqués de Comillas,07116,Frontera Sur,XI,Rios Grijalva y Usumacinta,24,D1,2009-01-01,2009-05-31,150
-Chiapas,07,Marqués de Comillas,07116,Frontera Sur,XI,Rios Grijalva y Usumacinta,24,D2,2023-06-16,2024-08-15,426
+Chiapas,07,Marqués de Comillas,07116,Frontera Sur,XI,Rios Grijalva y Usumacinta,24,D2,2023-06-16,2024-08-31,442
 Chiapas,07,Marqués de Comillas,07116,Frontera Sur,XI,Rios Grijalva y Usumacinta,24,D3,2018-10-16,2019-05-15,211
 Chiapas,07,Marqués de Comillas,07116,Frontera Sur,XI,Rios Grijalva y Usumacinta,24,Sin sequia,2011-07-01,2014-08-31,1157
 Chiapas,07,Montecristo de Guerrero,07117,Frontera Sur,XI,Rios Grijalva y Usumacinta,24,D0,2023-09-01,2024-03-31,212
@@ -1034,7 +1034,7 @@ Chihuahua,08,Ahumada,08001,Río Bravo,VI,Rio Bravo,12,D0,2019-03-01,2019-09-30,2
 Chihuahua,08,Ahumada,08001,Río Bravo,VI,Rio Bravo,12,D1,2012-05-01,2013-01-31,275
 Chihuahua,08,Ahumada,08001,Río Bravo,VI,Rio Bravo,12,D2,2003-09-01,2004-01-31,152
 Chihuahua,08,Ahumada,08001,Río Bravo,VI,Rio Bravo,12,D3,2011-08-01,2011-11-30,121
-Chihuahua,08,Ahumada,08001,Río Bravo,VI,Rio Bravo,12,D4,2024-01-01,2024-08-15,227
+Chihuahua,08,Ahumada,08001,Río Bravo,VI,Rio Bravo,12,D4,2024-01-01,2024-08-31,243
 Chihuahua,08,Ahumada,08001,Río Bravo,VI,Rio Bravo,12,Sin sequia,2008-07-01,2010-09-30,821
 Chihuahua,08,Aldama,08002,Río Bravo,VI,Rio Bravo,12,D0,2018-08-16,2019-06-15,303
 Chihuahua,08,Aldama,08002,Río Bravo,VI,Rio Bravo,12,D1,2006-01-01,2006-03-31,89
@@ -1057,7 +1057,7 @@ Chihuahua,08,Aquiles Serdán,08004,Río Bravo,VI,Rio Bravo,12,Sin sequia,2008-07
 Chihuahua,08,Ascensión,08005,Río Bravo,VI,Rio Bravo,12,D0,2016-07-16,2017-01-15,183
 Chihuahua,08,Ascensión,08005,Río Bravo,VI,Rio Bravo,12,D1,2022-01-01,2023-03-31,454
 Chihuahua,08,Ascensión,08005,Río Bravo,VI,Rio Bravo,12,D2,2012-03-01,2012-08-31,183
-Chihuahua,08,Ascensión,08005,Río Bravo,VI,Rio Bravo,12,D3,2024-01-16,2024-08-15,212
+Chihuahua,08,Ascensión,08005,Río Bravo,VI,Rio Bravo,12,D3,2024-01-16,2024-08-31,228
 Chihuahua,08,Ascensión,08005,Río Bravo,VI,Rio Bravo,12,D4,2020-11-16,2021-07-31,257
 Chihuahua,08,Ascensión,08005,Río Bravo,VI,Rio Bravo,12,Sin sequia,2006-08-01,2008-01-31,548
 Chihuahua,08,Bachíniva,08006,Río Bravo,VI,Rio Bravo,12,D0,2016-03-01,2016-08-15,167
@@ -1088,7 +1088,7 @@ Chihuahua,08,Buenaventura,08010,Río Bravo,VI,Rio Bravo,12,D0,2019-03-16,2019-09
 Chihuahua,08,Buenaventura,08010,Río Bravo,VI,Rio Bravo,12,D1,2012-09-01,2013-06-30,302
 Chihuahua,08,Buenaventura,08010,Río Bravo,VI,Rio Bravo,12,D2,2011-12-01,2012-08-31,274
 Chihuahua,08,Buenaventura,08010,Río Bravo,VI,Rio Bravo,12,D3,2011-08-01,2011-11-30,121
-Chihuahua,08,Buenaventura,08010,Río Bravo,VI,Rio Bravo,12,D4,2024-01-01,2024-08-15,227
+Chihuahua,08,Buenaventura,08010,Río Bravo,VI,Rio Bravo,12,D4,2024-01-01,2024-08-31,243
 Chihuahua,08,Buenaventura,08010,Río Bravo,VI,Rio Bravo,12,Sin sequia,2008-07-01,2010-09-30,821
 Chihuahua,08,Camargo,08011,Cuencas Centrales Del Norte,VII,Rio Bravo,12,D0,2018-06-01,2019-05-31,364
 Chihuahua,08,Camargo,08011,Cuencas Centrales Del Norte,VII,Rio Bravo,12,D1,2012-09-01,2013-01-31,152
@@ -1142,7 +1142,7 @@ Chihuahua,08,Chihuahua,08019,Río Bravo,VI,Rio Bravo,12,D0,2018-11-16,2019-09-30
 Chihuahua,08,Chihuahua,08019,Río Bravo,VI,Rio Bravo,12,D1,2021-02-01,2021-05-15,103
 Chihuahua,08,Chihuahua,08019,Río Bravo,VI,Rio Bravo,12,D2,2020-08-16,2021-01-31,168
 Chihuahua,08,Chihuahua,08019,Río Bravo,VI,Rio Bravo,12,D3,2011-03-01,2011-05-31,91
-Chihuahua,08,Chihuahua,08019,Río Bravo,VI,Rio Bravo,12,D4,2024-02-01,2024-08-15,196
+Chihuahua,08,Chihuahua,08019,Río Bravo,VI,Rio Bravo,12,D4,2024-02-01,2024-08-31,212
 Chihuahua,08,Chihuahua,08019,Río Bravo,VI,Rio Bravo,12,Sin sequia,2004-02-01,2005-11-30,668
 Chihuahua,08,Chínipas,08020,Pacífico Norte,III,Rios Fuerte y Sinaloa,6,D0,2008-12-01,2009-10-31,334
 Chihuahua,08,Chínipas,08020,Pacífico Norte,III,Rios Fuerte y Sinaloa,6,D1,2010-01-01,2010-08-31,242
@@ -1154,7 +1154,7 @@ Chihuahua,08,Delicias,08021,Río Bravo,VI,Rio Bravo,12,D0,2018-08-16,2019-08-15,
 Chihuahua,08,Delicias,08021,Río Bravo,VI,Rio Bravo,12,D1,2016-04-01,2016-06-30,90
 Chihuahua,08,Delicias,08021,Río Bravo,VI,Rio Bravo,12,D2,2020-09-01,2021-06-15,287
 Chihuahua,08,Delicias,08021,Río Bravo,VI,Rio Bravo,12,D3,2011-12-01,2012-03-31,121
-Chihuahua,08,Delicias,08021,Río Bravo,VI,Rio Bravo,12,D4,2024-01-01,2024-08-15,227
+Chihuahua,08,Delicias,08021,Río Bravo,VI,Rio Bravo,12,D4,2024-01-01,2024-08-31,243
 Chihuahua,08,Delicias,08021,Río Bravo,VI,Rio Bravo,12,Sin sequia,2008-08-01,2010-09-30,790
 Chihuahua,08,Dr. Belisario Domínguez,08022,Río Bravo,VI,Rio Bravo,12,D0,2018-04-01,2018-09-30,182
 Chihuahua,08,Dr. Belisario Domínguez,08022,Río Bravo,VI,Rio Bravo,12,D1,2003-01-01,2003-07-31,211
@@ -1166,7 +1166,7 @@ Chihuahua,08,Galeana,08023,Río Bravo,VI,Rio Bravo,12,D0,2018-02-01,2018-07-15,1
 Chihuahua,08,Galeana,08023,Río Bravo,VI,Rio Bravo,12,D1,2012-09-01,2013-06-30,302
 Chihuahua,08,Galeana,08023,Río Bravo,VI,Rio Bravo,12,D2,2003-01-01,2003-07-31,211
 Chihuahua,08,Galeana,08023,Río Bravo,VI,Rio Bravo,12,D3,2011-08-01,2011-11-30,121
-Chihuahua,08,Galeana,08023,Río Bravo,VI,Rio Bravo,12,D4,2024-01-01,2024-08-15,227
+Chihuahua,08,Galeana,08023,Río Bravo,VI,Rio Bravo,12,D4,2024-01-01,2024-08-31,243
 Chihuahua,08,Galeana,08023,Río Bravo,VI,Rio Bravo,12,Sin sequia,2014-09-16,2016-03-15,546
 Chihuahua,08,Santa Isabel,08024,Río Bravo,VI,Rio Bravo,12,D0,2007-11-01,2008-04-30,181
 Chihuahua,08,Santa Isabel,08024,Río Bravo,VI,Rio Bravo,12,D1,2021-02-01,2021-06-15,134
@@ -1177,7 +1177,7 @@ Chihuahua,08,Santa Isabel,08024,Río Bravo,VI,Rio Bravo,12,Sin sequia,2004-02-01
 Chihuahua,08,Gómez Farías,08025,Río Bravo,VI,Rio Bravo,12,D0,2012-09-01,2013-06-30,302
 Chihuahua,08,Gómez Farías,08025,Río Bravo,VI,Rio Bravo,12,D1,2012-05-01,2012-08-31,122
 Chihuahua,08,Gómez Farías,08025,Río Bravo,VI,Rio Bravo,12,D2,2003-01-01,2003-07-31,211
-Chihuahua,08,Gómez Farías,08025,Río Bravo,VI,Rio Bravo,12,D3,2023-11-16,2024-08-15,273
+Chihuahua,08,Gómez Farías,08025,Río Bravo,VI,Rio Bravo,12,D3,2023-11-16,2024-08-31,289
 Chihuahua,08,Gómez Farías,08025,Río Bravo,VI,Rio Bravo,12,D4,2011-06-01,2011-07-31,60
 Chihuahua,08,Gómez Farías,08025,Río Bravo,VI,Rio Bravo,12,Sin sequia,2014-09-01,2015-12-31,486
 Chihuahua,08,Gran Morelos,08026,Río Bravo,VI,Rio Bravo,12,D0,2007-12-01,2008-04-30,151
@@ -1219,7 +1219,7 @@ Chihuahua,08,Guerrero,08031,Noroeste,II,Rios Yaqui y Matape,4,Sin sequia,2014-08
 Chihuahua,08,Hidalgo del Parral,08032,Río Bravo,VI,Rio Bravo,12,D0,2007-09-01,2008-05-31,273
 Chihuahua,08,Hidalgo del Parral,08032,Río Bravo,VI,Rio Bravo,12,D1,2020-06-01,2020-11-15,167
 Chihuahua,08,Hidalgo del Parral,08032,Río Bravo,VI,Rio Bravo,12,D2,2020-11-16,2021-06-15,211
-Chihuahua,08,Hidalgo del Parral,08032,Río Bravo,VI,Rio Bravo,12,D3,2024-01-01,2024-08-15,227
+Chihuahua,08,Hidalgo del Parral,08032,Río Bravo,VI,Rio Bravo,12,D3,2024-01-01,2024-08-31,243
 Chihuahua,08,Hidalgo del Parral,08032,Río Bravo,VI,Rio Bravo,12,D4,2011-06-01,2011-07-31,60
 Chihuahua,08,Hidalgo del Parral,08032,Río Bravo,VI,Rio Bravo,12,Sin sequia,2008-08-01,2010-11-30,851
 Chihuahua,08,Huejotitán,08033,Río Bravo,VI,Rio Bravo,12,D0,2007-09-01,2008-05-31,273
@@ -1232,24 +1232,24 @@ Chihuahua,08,Ignacio Zaragoza,08034,Río Bravo,VI,Rio Bravo,12,D0,2018-02-01,201
 Chihuahua,08,Ignacio Zaragoza,08034,Río Bravo,VI,Rio Bravo,12,D1,2013-02-01,2013-06-30,149
 Chihuahua,08,Ignacio Zaragoza,08034,Río Bravo,VI,Rio Bravo,12,D2,2003-01-01,2003-07-31,211
 Chihuahua,08,Ignacio Zaragoza,08034,Río Bravo,VI,Rio Bravo,12,D3,2011-08-01,2011-11-30,121
-Chihuahua,08,Ignacio Zaragoza,08034,Río Bravo,VI,Rio Bravo,12,D4,2024-01-01,2024-08-15,227
+Chihuahua,08,Ignacio Zaragoza,08034,Río Bravo,VI,Rio Bravo,12,D4,2024-01-01,2024-08-31,243
 Chihuahua,08,Ignacio Zaragoza,08034,Río Bravo,VI,Rio Bravo,12,Sin sequia,2016-09-01,2018-01-31,517
 Chihuahua,08,Janos,08035,Río Bravo,VI,Rio Bravo,12,D0,2005-07-01,2005-12-31,183
 Chihuahua,08,Janos,08035,Río Bravo,VI,Rio Bravo,12,D1,2017-11-16,2018-11-15,364
 Chihuahua,08,Janos,08035,Río Bravo,VI,Rio Bravo,12,D2,2021-08-01,2022-11-15,471
-Chihuahua,08,Janos,08035,Río Bravo,VI,Rio Bravo,12,D3,2023-09-16,2024-08-15,334
+Chihuahua,08,Janos,08035,Río Bravo,VI,Rio Bravo,12,D3,2023-09-16,2024-08-31,350
 Chihuahua,08,Janos,08035,Río Bravo,VI,Rio Bravo,12,D4,2020-11-16,2021-07-15,241
 Chihuahua,08,Janos,08035,Río Bravo,VI,Rio Bravo,12,Sin sequia,2010-02-01,2010-11-30,302
 Chihuahua,08,Jiménez,08036,Cuencas Centrales Del Norte,VII,Rio Bravo,12,D0,2007-09-01,2008-05-31,273
 Chihuahua,08,Jiménez,08036,Cuencas Centrales Del Norte,VII,Rio Bravo,12,D1,2003-01-01,2003-07-31,211
 Chihuahua,08,Jiménez,08036,Cuencas Centrales Del Norte,VII,Rio Bravo,12,D2,2020-11-16,2022-01-31,441
-Chihuahua,08,Jiménez,08036,Cuencas Centrales Del Norte,VII,Rio Bravo,12,D3,2024-02-16,2024-08-15,181
+Chihuahua,08,Jiménez,08036,Cuencas Centrales Del Norte,VII,Rio Bravo,12,D3,2024-02-16,2024-08-31,197
 Chihuahua,08,Jiménez,08036,Cuencas Centrales Del Norte,VII,Rio Bravo,12,D4,2011-09-01,2012-01-31,152
 Chihuahua,08,Jiménez,08036,Cuencas Centrales Del Norte,VII,Rio Bravo,12,Sin sequia,2008-08-01,2010-09-30,790
 Chihuahua,08,Juárez,08037,Río Bravo,VI,Rio Bravo,12,D0,2013-11-01,2014-05-31,211
 Chihuahua,08,Juárez,08037,Río Bravo,VI,Rio Bravo,12,D1,2003-01-01,2003-07-31,211
 Chihuahua,08,Juárez,08037,Río Bravo,VI,Rio Bravo,12,D2,2013-04-01,2013-06-30,90
-Chihuahua,08,Juárez,08037,Río Bravo,VI,Rio Bravo,12,D3,2023-09-01,2024-08-15,349
+Chihuahua,08,Juárez,08037,Río Bravo,VI,Rio Bravo,12,D3,2023-09-01,2024-08-31,365
 Chihuahua,08,Juárez,08037,Río Bravo,VI,Rio Bravo,12,D4,2021-01-16,2021-06-15,150
 Chihuahua,08,Juárez,08037,Río Bravo,VI,Rio Bravo,12,Sin sequia,2006-11-01,2008-01-31,456
 Chihuahua,08,Julimes,08038,Río Bravo,VI,Rio Bravo,12,D0,2018-08-16,2019-08-15,364
@@ -1261,7 +1261,7 @@ Chihuahua,08,Julimes,08038,Río Bravo,VI,Rio Bravo,12,Sin sequia,2008-08-01,2010
 Chihuahua,08,López,08039,Río Bravo,VI,Rio Bravo,12,D0,2007-09-01,2008-05-31,273
 Chihuahua,08,López,08039,Río Bravo,VI,Rio Bravo,12,D1,2003-04-01,2003-07-31,121
 Chihuahua,08,López,08039,Río Bravo,VI,Rio Bravo,12,D2,2020-11-16,2021-06-15,211
-Chihuahua,08,López,08039,Río Bravo,VI,Rio Bravo,12,D3,2023-09-01,2024-08-15,349
+Chihuahua,08,López,08039,Río Bravo,VI,Rio Bravo,12,D3,2023-09-01,2024-08-31,365
 Chihuahua,08,López,08039,Río Bravo,VI,Rio Bravo,12,D4,2011-06-01,2011-07-31,60
 Chihuahua,08,López,08039,Río Bravo,VI,Rio Bravo,12,Sin sequia,2008-08-01,2010-09-30,790
 Chihuahua,08,Madera,08040,Noroeste,II,Rios Yaqui y Matape,4,D0,2012-08-01,2013-01-31,183
@@ -1274,12 +1274,12 @@ Chihuahua,08,Maguarichi,08041,Pacífico Norte,III,Rios Fuerte y Sinaloa,6,D0,201
 Chihuahua,08,Maguarichi,08041,Pacífico Norte,III,Rios Fuerte y Sinaloa,6,D1,2008-02-01,2008-06-30,150
 Chihuahua,08,Maguarichi,08041,Pacífico Norte,III,Rios Fuerte y Sinaloa,6,D2,2020-10-16,2021-05-31,227
 Chihuahua,08,Maguarichi,08041,Pacífico Norte,III,Rios Fuerte y Sinaloa,6,D3,2023-09-01,2023-12-15,105
-Chihuahua,08,Maguarichi,08041,Pacífico Norte,III,Rios Fuerte y Sinaloa,6,D4,2023-12-16,2024-08-15,243
+Chihuahua,08,Maguarichi,08041,Pacífico Norte,III,Rios Fuerte y Sinaloa,6,D4,2023-12-16,2024-08-31,259
 Chihuahua,08,Maguarichi,08041,Pacífico Norte,III,Rios Fuerte y Sinaloa,6,Sin sequia,2014-07-16,2016-02-29,593
 Chihuahua,08,Manuel Benavides,08042,Río Bravo,VI,Rio Bravo,12,D0,2016-01-01,2016-07-31,212
 Chihuahua,08,Manuel Benavides,08042,Río Bravo,VI,Rio Bravo,12,D1,2022-09-01,2023-05-15,256
 Chihuahua,08,Manuel Benavides,08042,Río Bravo,VI,Rio Bravo,12,D2,2023-09-01,2024-01-31,152
-Chihuahua,08,Manuel Benavides,08042,Río Bravo,VI,Rio Bravo,12,D3,2020-08-16,2020-11-15,91
+Chihuahua,08,Manuel Benavides,08042,Río Bravo,VI,Rio Bravo,12,D3,2024-05-16,2024-08-31,107
 Chihuahua,08,Manuel Benavides,08042,Río Bravo,VI,Rio Bravo,12,D4,2011-04-01,2012-04-30,395
 Chihuahua,08,Manuel Benavides,08042,Río Bravo,VI,Rio Bravo,12,Sin sequia,2004-02-01,2005-08-31,577
 Chihuahua,08,Matachí,08043,Noroeste,II,Rios Yaqui y Matape,4,D0,2016-03-01,2016-08-15,167
@@ -1291,7 +1291,7 @@ Chihuahua,08,Matachí,08043,Noroeste,II,Rios Yaqui y Matape,4,Sin sequia,2014-08
 Chihuahua,08,Matamoros,08044,Río Bravo,VI,Rio Bravo,12,D0,2007-09-01,2008-05-31,273
 Chihuahua,08,Matamoros,08044,Río Bravo,VI,Rio Bravo,12,D1,2003-01-01,2003-07-31,211
 Chihuahua,08,Matamoros,08044,Río Bravo,VI,Rio Bravo,12,D2,2021-01-01,2021-06-15,165
-Chihuahua,08,Matamoros,08044,Río Bravo,VI,Rio Bravo,12,D3,2024-02-16,2024-08-15,181
+Chihuahua,08,Matamoros,08044,Río Bravo,VI,Rio Bravo,12,D3,2024-02-16,2024-08-31,197
 Chihuahua,08,Matamoros,08044,Río Bravo,VI,Rio Bravo,12,D4,2011-06-01,2011-07-31,60
 Chihuahua,08,Matamoros,08044,Río Bravo,VI,Rio Bravo,12,Sin sequia,2008-08-01,2011-02-28,941
 Chihuahua,08,Meoqui,08045,Río Bravo,VI,Rio Bravo,12,D0,2018-08-16,2019-08-15,364
@@ -1304,19 +1304,19 @@ Chihuahua,08,Morelos,08046,Pacífico Norte,III,Rios Fuerte y Sinaloa,6,D0,2008-1
 Chihuahua,08,Morelos,08046,Pacífico Norte,III,Rios Fuerte y Sinaloa,6,D1,2019-03-01,2019-09-30,213
 Chihuahua,08,Morelos,08046,Pacífico Norte,III,Rios Fuerte y Sinaloa,6,D2,2020-09-16,2021-05-15,241
 Chihuahua,08,Morelos,08046,Pacífico Norte,III,Rios Fuerte y Sinaloa,6,D3,2011-10-01,2012-02-29,151
-Chihuahua,08,Morelos,08046,Pacífico Norte,III,Rios Fuerte y Sinaloa,6,D4,2024-01-16,2024-08-15,212
+Chihuahua,08,Morelos,08046,Pacífico Norte,III,Rios Fuerte y Sinaloa,6,D4,2024-01-16,2024-08-31,228
 Chihuahua,08,Morelos,08046,Pacífico Norte,III,Rios Fuerte y Sinaloa,6,Sin sequia,2004-06-01,2005-07-31,425
 Chihuahua,08,Moris,08047,Noroeste,II,Rio Mayo,5,D0,2009-01-01,2009-09-30,272
 Chihuahua,08,Moris,08047,Noroeste,II,Rio Mayo,5,D1,2003-10-01,2004-01-31,122
 Chihuahua,08,Moris,08047,Noroeste,II,Rio Mayo,5,D2,2023-06-16,2023-08-31,76
 Chihuahua,08,Moris,08047,Noroeste,II,Rio Mayo,5,D3,2003-01-01,2003-07-31,211
-Chihuahua,08,Moris,08047,Noroeste,II,Rio Mayo,5,D4,2023-12-16,2024-08-15,243
+Chihuahua,08,Moris,08047,Noroeste,II,Rio Mayo,5,D4,2023-12-16,2024-08-31,259
 Chihuahua,08,Moris,08047,Noroeste,II,Rio Mayo,5,Sin sequia,2014-08-16,2015-12-31,502
 Chihuahua,08,Namiquipa,08048,Río Bravo,VI,Rio Bravo,12,D0,2019-03-16,2019-09-15,183
 Chihuahua,08,Namiquipa,08048,Río Bravo,VI,Rio Bravo,12,D1,2012-04-01,2012-10-31,213
 Chihuahua,08,Namiquipa,08048,Río Bravo,VI,Rio Bravo,12,D2,2011-12-01,2012-03-31,121
 Chihuahua,08,Namiquipa,08048,Río Bravo,VI,Rio Bravo,12,D3,2023-09-01,2023-12-31,121
-Chihuahua,08,Namiquipa,08048,Río Bravo,VI,Rio Bravo,12,D4,2024-01-01,2024-08-15,227
+Chihuahua,08,Namiquipa,08048,Río Bravo,VI,Rio Bravo,12,D4,2024-01-01,2024-08-31,243
 Chihuahua,08,Namiquipa,08048,Río Bravo,VI,Rio Bravo,12,Sin sequia,2008-07-01,2010-09-30,821
 Chihuahua,08,Nonoava,08049,Río Bravo,VI,Rio Bravo,12,D0,2007-12-01,2008-04-30,151
 Chihuahua,08,Nonoava,08049,Río Bravo,VI,Rio Bravo,12,D1,2003-01-01,2003-07-31,211
@@ -1328,13 +1328,13 @@ Chihuahua,08,Nuevo Casas Grandes,08050,Río Bravo,VI,Rio Bravo,12,D0,2021-08-16,
 Chihuahua,08,Nuevo Casas Grandes,08050,Río Bravo,VI,Rio Bravo,12,D1,2012-09-01,2013-06-30,302
 Chihuahua,08,Nuevo Casas Grandes,08050,Río Bravo,VI,Rio Bravo,12,D2,2003-01-01,2003-07-31,211
 Chihuahua,08,Nuevo Casas Grandes,08050,Río Bravo,VI,Rio Bravo,12,D3,2020-10-16,2021-06-30,257
-Chihuahua,08,Nuevo Casas Grandes,08050,Río Bravo,VI,Rio Bravo,12,D4,2024-01-01,2024-08-15,227
+Chihuahua,08,Nuevo Casas Grandes,08050,Río Bravo,VI,Rio Bravo,12,D4,2024-01-01,2024-08-31,243
 Chihuahua,08,Nuevo Casas Grandes,08050,Río Bravo,VI,Rio Bravo,12,Sin sequia,2006-08-01,2008-01-31,548
 Chihuahua,08,Ocampo,08051,Noroeste,II,Rio Mayo,5,D0,2009-01-01,2009-07-31,211
 Chihuahua,08,Ocampo,08051,Noroeste,II,Rio Mayo,5,D1,2003-10-01,2004-01-31,122
 Chihuahua,08,Ocampo,08051,Noroeste,II,Rio Mayo,5,D2,2003-01-01,2003-07-31,211
 Chihuahua,08,Ocampo,08051,Noroeste,II,Rio Mayo,5,D3,2023-09-01,2023-12-15,105
-Chihuahua,08,Ocampo,08051,Noroeste,II,Rio Mayo,5,D4,2023-12-16,2024-08-15,243
+Chihuahua,08,Ocampo,08051,Noroeste,II,Rio Mayo,5,D4,2023-12-16,2024-08-31,259
 Chihuahua,08,Ocampo,08051,Noroeste,II,Rio Mayo,5,Sin sequia,2014-07-16,2016-01-31,564
 Chihuahua,08,Ojinaga,08052,Río Bravo,VI,Rio Bravo,12,D0,2009-01-01,2009-05-31,150
 Chihuahua,08,Ojinaga,08052,Río Bravo,VI,Rio Bravo,12,D1,2013-10-01,2014-09-15,349
@@ -1344,7 +1344,7 @@ Chihuahua,08,Ojinaga,08052,Río Bravo,VI,Rio Bravo,12,D4,2011-05-01,2012-04-30,3
 Chihuahua,08,Ojinaga,08052,Río Bravo,VI,Rio Bravo,12,Sin sequia,2004-04-01,2005-04-30,394
 Chihuahua,08,Praxedis G. Guerrero,08053,Río Bravo,VI,Rio Bravo,12,D0,2013-07-01,2014-02-28,242
 Chihuahua,08,Praxedis G. Guerrero,08053,Río Bravo,VI,Rio Bravo,12,D1,2011-08-01,2012-03-31,243
-Chihuahua,08,Praxedis G. Guerrero,08053,Río Bravo,VI,Rio Bravo,12,D2,2023-08-01,2024-08-15,380
+Chihuahua,08,Praxedis G. Guerrero,08053,Río Bravo,VI,Rio Bravo,12,D2,2023-08-01,2024-08-31,396
 Chihuahua,08,Praxedis G. Guerrero,08053,Río Bravo,VI,Rio Bravo,12,D3,2003-10-01,2004-01-31,122
 Chihuahua,08,Praxedis G. Guerrero,08053,Río Bravo,VI,Rio Bravo,12,Sin sequia,2014-09-01,2016-03-15,561
 Chihuahua,08,Riva Palacio,08054,Río Bravo,VI,Rio Bravo,12,D0,2019-01-01,2019-09-15,257
@@ -1357,7 +1357,7 @@ Chihuahua,08,Rosales,08055,Río Bravo,VI,Rio Bravo,12,D0,2018-08-16,2019-08-15,3
 Chihuahua,08,Rosales,08055,Río Bravo,VI,Rio Bravo,12,D1,2016-04-01,2016-06-30,90
 Chihuahua,08,Rosales,08055,Río Bravo,VI,Rio Bravo,12,D2,2021-02-01,2021-06-15,134
 Chihuahua,08,Rosales,08055,Río Bravo,VI,Rio Bravo,12,D3,2011-12-01,2012-03-31,121
-Chihuahua,08,Rosales,08055,Río Bravo,VI,Rio Bravo,12,D4,2024-01-01,2024-08-15,227
+Chihuahua,08,Rosales,08055,Río Bravo,VI,Rio Bravo,12,D4,2024-01-01,2024-08-31,243
 Chihuahua,08,Rosales,08055,Río Bravo,VI,Rio Bravo,12,Sin sequia,2008-07-01,2010-09-30,821
 Chihuahua,08,Rosario,08056,Río Bravo,VI,Rio Bravo,12,D0,2007-11-01,2008-05-31,212
 Chihuahua,08,Rosario,08056,Río Bravo,VI,Rio Bravo,12,D1,2003-01-01,2003-07-31,211
@@ -1375,7 +1375,7 @@ Chihuahua,08,San Francisco de Conchos,08058,Río Bravo,VI,Rio Bravo,12,D0,2018-0
 Chihuahua,08,San Francisco de Conchos,08058,Río Bravo,VI,Rio Bravo,12,D1,2012-08-01,2012-12-31,152
 Chihuahua,08,San Francisco de Conchos,08058,Río Bravo,VI,Rio Bravo,12,D2,2020-06-16,2021-01-31,229
 Chihuahua,08,San Francisco de Conchos,08058,Río Bravo,VI,Rio Bravo,12,D3,2011-11-01,2012-05-31,212
-Chihuahua,08,San Francisco de Conchos,08058,Río Bravo,VI,Rio Bravo,12,D4,2024-01-01,2024-08-15,227
+Chihuahua,08,San Francisco de Conchos,08058,Río Bravo,VI,Rio Bravo,12,D4,2024-01-01,2024-08-31,243
 Chihuahua,08,San Francisco de Conchos,08058,Río Bravo,VI,Rio Bravo,12,Sin sequia,2003-10-01,2005-11-30,791
 Chihuahua,08,San Francisco del Oro,08059,Río Bravo,VI,Rio Bravo,12,D0,2007-09-01,2008-05-31,273
 Chihuahua,08,San Francisco del Oro,08059,Río Bravo,VI,Rio Bravo,12,D1,2003-01-01,2003-07-31,211
@@ -1393,19 +1393,19 @@ Chihuahua,08,Satevó,08061,Río Bravo,VI,Rio Bravo,12,D0,2007-11-01,2008-05-31,2
 Chihuahua,08,Satevó,08061,Río Bravo,VI,Rio Bravo,12,D1,2003-04-01,2003-07-31,121
 Chihuahua,08,Satevó,08061,Río Bravo,VI,Rio Bravo,12,D2,2020-08-16,2021-06-15,303
 Chihuahua,08,Satevó,08061,Río Bravo,VI,Rio Bravo,12,D3,2011-09-01,2012-02-29,181
-Chihuahua,08,Satevó,08061,Río Bravo,VI,Rio Bravo,12,D4,2024-02-01,2024-08-15,196
+Chihuahua,08,Satevó,08061,Río Bravo,VI,Rio Bravo,12,D4,2024-02-01,2024-08-31,212
 Chihuahua,08,Satevó,08061,Río Bravo,VI,Rio Bravo,12,Sin sequia,2004-02-01,2005-11-30,668
 Chihuahua,08,Saucillo,08062,Río Bravo,VI,Rio Bravo,12,D0,2018-08-16,2019-08-15,364
 Chihuahua,08,Saucillo,08062,Río Bravo,VI,Rio Bravo,12,D1,2016-04-01,2016-07-15,105
 Chihuahua,08,Saucillo,08062,Río Bravo,VI,Rio Bravo,12,D2,2020-09-01,2021-06-15,287
 Chihuahua,08,Saucillo,08062,Río Bravo,VI,Rio Bravo,12,D3,2011-12-01,2012-03-31,121
-Chihuahua,08,Saucillo,08062,Río Bravo,VI,Rio Bravo,12,D4,2024-01-01,2024-08-15,227
+Chihuahua,08,Saucillo,08062,Río Bravo,VI,Rio Bravo,12,D4,2024-01-01,2024-08-31,243
 Chihuahua,08,Saucillo,08062,Río Bravo,VI,Rio Bravo,12,Sin sequia,2008-08-01,2010-09-30,790
 Chihuahua,08,Temósachic,08063,Noroeste,II,Rios Yaqui y Matape,4,D0,2022-11-16,2023-06-15,211
 Chihuahua,08,Temósachic,08063,Noroeste,II,Rios Yaqui y Matape,4,D1,2003-10-01,2004-01-31,122
 Chihuahua,08,Temósachic,08063,Noroeste,II,Rios Yaqui y Matape,4,D2,2003-01-01,2003-07-31,211
 Chihuahua,08,Temósachic,08063,Noroeste,II,Rios Yaqui y Matape,4,D3,2024-01-16,2024-05-15,120
-Chihuahua,08,Temósachic,08063,Noroeste,II,Rios Yaqui y Matape,4,D4,2024-05-16,2024-08-15,91
+Chihuahua,08,Temósachic,08063,Noroeste,II,Rios Yaqui y Matape,4,D4,2024-05-16,2024-08-31,107
 Chihuahua,08,Temósachic,08063,Noroeste,II,Rios Yaqui y Matape,4,Sin sequia,2014-08-01,2015-12-31,517
 Chihuahua,08,El Tule,08064,Río Bravo,VI,Rio Bravo,12,D0,2007-11-01,2008-05-31,212
 Chihuahua,08,El Tule,08064,Río Bravo,VI,Rio Bravo,12,D1,2003-01-01,2003-07-31,211
@@ -1417,19 +1417,19 @@ Chihuahua,08,Urique,08065,Pacífico Norte,III,Rios Fuerte y Sinaloa,6,D0,2008-12
 Chihuahua,08,Urique,08065,Pacífico Norte,III,Rios Fuerte y Sinaloa,6,D1,2010-01-01,2010-07-31,211
 Chihuahua,08,Urique,08065,Pacífico Norte,III,Rios Fuerte y Sinaloa,6,D2,2003-01-01,2003-07-31,211
 Chihuahua,08,Urique,08065,Pacífico Norte,III,Rios Fuerte y Sinaloa,6,D3,2023-09-01,2023-12-15,105
-Chihuahua,08,Urique,08065,Pacífico Norte,III,Rios Fuerte y Sinaloa,6,D4,2023-12-16,2024-08-15,243
+Chihuahua,08,Urique,08065,Pacífico Norte,III,Rios Fuerte y Sinaloa,6,D4,2023-12-16,2024-08-31,259
 Chihuahua,08,Urique,08065,Pacífico Norte,III,Rios Fuerte y Sinaloa,6,Sin sequia,2004-04-01,2005-07-31,486
 Chihuahua,08,Uruachi,08066,Noroeste,II,Rio Mayo,5,D0,2009-01-01,2009-09-30,272
 Chihuahua,08,Uruachi,08066,Noroeste,II,Rio Mayo,5,D1,2008-02-01,2008-06-30,150
 Chihuahua,08,Uruachi,08066,Noroeste,II,Rio Mayo,5,D2,2011-12-01,2012-05-31,182
 Chihuahua,08,Uruachi,08066,Noroeste,II,Rio Mayo,5,D3,2003-01-01,2003-07-31,211
-Chihuahua,08,Uruachi,08066,Noroeste,II,Rio Mayo,5,D4,2023-12-16,2024-08-15,243
+Chihuahua,08,Uruachi,08066,Noroeste,II,Rio Mayo,5,D4,2023-12-16,2024-08-31,259
 Chihuahua,08,Uruachi,08066,Noroeste,II,Rio Mayo,5,Sin sequia,2015-01-01,2015-12-31,364
 Chihuahua,08,Valle de Zaragoza,08067,Río Bravo,VI,Rio Bravo,12,D0,2007-09-01,2008-05-31,273
 Chihuahua,08,Valle de Zaragoza,08067,Río Bravo,VI,Rio Bravo,12,D1,2003-04-01,2003-07-31,121
 Chihuahua,08,Valle de Zaragoza,08067,Río Bravo,VI,Rio Bravo,12,D2,2020-06-16,2021-06-15,364
 Chihuahua,08,Valle de Zaragoza,08067,Río Bravo,VI,Rio Bravo,12,D3,2023-09-01,2023-12-31,121
-Chihuahua,08,Valle de Zaragoza,08067,Río Bravo,VI,Rio Bravo,12,D4,2024-01-01,2024-08-15,227
+Chihuahua,08,Valle de Zaragoza,08067,Río Bravo,VI,Rio Bravo,12,D4,2024-01-01,2024-08-31,243
 Chihuahua,08,Valle de Zaragoza,08067,Río Bravo,VI,Rio Bravo,12,Sin sequia,2008-08-01,2010-09-30,790
 Ciudad de México,09,Azcapotzalco,09002,Aguas del Valle de México,XIII,Valle de Mexico,26,D0,2022-08-01,2023-09-15,410
 Ciudad de México,09,Azcapotzalco,09002,Aguas del Valle de México,XIII,Valle de Mexico,26,D1,2009-09-01,2009-12-31,121
@@ -1510,7 +1510,7 @@ Durango,10,Canelas,10002,Pacífico Norte,III,Rios Mocorito al Quelite,7,D0,2013-
 Durango,10,Canelas,10002,Pacífico Norte,III,Rios Mocorito al Quelite,7,D1,2007-10-01,2008-03-31,182
 Durango,10,Canelas,10002,Pacífico Norte,III,Rios Mocorito al Quelite,7,D2,2020-08-16,2021-02-15,183
 Durango,10,Canelas,10002,Pacífico Norte,III,Rios Mocorito al Quelite,7,D3,2021-02-16,2021-07-31,165
-Durango,10,Canelas,10002,Pacífico Norte,III,Rios Mocorito al Quelite,7,D4,2023-12-16,2024-08-15,243
+Durango,10,Canelas,10002,Pacífico Norte,III,Rios Mocorito al Quelite,7,D4,2023-12-16,2024-08-31,259
 Durango,10,Canelas,10002,Pacífico Norte,III,Rios Mocorito al Quelite,7,Sin sequia,2008-08-01,2010-09-30,790
 Durango,10,Coneto de Comonfort,10003,Cuencas Centrales Del Norte,VII,Nazas-Aguanaval,13,D0,2015-08-16,2016-04-15,243
 Durango,10,Coneto de Comonfort,10003,Cuencas Centrales Del Norte,VII,Nazas-Aguanaval,13,D1,2022-02-01,2022-08-31,211
@@ -1527,7 +1527,7 @@ Durango,10,Durango,10005,Pacífico Norte,III,Rios Presidio al San Pedro,8,D0,201
 Durango,10,Durango,10005,Pacífico Norte,III,Rios Presidio al San Pedro,8,D1,2018-02-16,2018-08-31,196
 Durango,10,Durango,10005,Pacífico Norte,III,Rios Presidio al San Pedro,8,D2,2023-02-16,2023-07-15,149
 Durango,10,Durango,10005,Pacífico Norte,III,Rios Presidio al San Pedro,8,D3,2011-04-01,2011-07-31,121
-Durango,10,Durango,10005,Pacífico Norte,III,Rios Presidio al San Pedro,8,D4,2023-09-16,2023-11-30,75
+Durango,10,Durango,10005,Pacífico Norte,III,Rios Presidio al San Pedro,8,D4,2024-06-01,2024-08-31,91
 Durango,10,Durango,10005,Pacífico Norte,III,Rios Presidio al San Pedro,8,Sin sequia,2003-07-01,2005-08-31,792
 Durango,10,General Simón Bolívar,10006,Cuencas Centrales Del Norte,VII,Nazas-Aguanaval,13,D0,2009-03-01,2009-08-31,183
 Durango,10,General Simón Bolívar,10006,Cuencas Centrales Del Norte,VII,Nazas-Aguanaval,13,D1,2012-12-01,2013-06-30,211
@@ -1549,7 +1549,7 @@ Durango,10,Guanaceví,10009,Cuencas Centrales Del Norte,VII,Nazas-Aguanaval,13,D
 Durango,10,Guanaceví,10009,Cuencas Centrales Del Norte,VII,Nazas-Aguanaval,13,D1,2018-01-16,2018-09-15,242
 Durango,10,Guanaceví,10009,Cuencas Centrales Del Norte,VII,Nazas-Aguanaval,13,D2,2020-06-16,2021-03-15,272
 Durango,10,Guanaceví,10009,Cuencas Centrales Del Norte,VII,Nazas-Aguanaval,13,D3,2011-04-01,2011-08-31,152
-Durango,10,Guanaceví,10009,Cuencas Centrales Del Norte,VII,Nazas-Aguanaval,13,D4,2023-12-16,2024-08-15,243
+Durango,10,Guanaceví,10009,Cuencas Centrales Del Norte,VII,Nazas-Aguanaval,13,D4,2023-12-16,2024-08-31,259
 Durango,10,Guanaceví,10009,Cuencas Centrales Del Norte,VII,Nazas-Aguanaval,13,Sin sequia,2008-08-01,2011-02-28,941
 Durango,10,Hidalgo,10010,Cuencas Centrales Del Norte,VII,Nazas-Aguanaval,13,D0,2007-09-01,2008-05-31,273
 Durango,10,Hidalgo,10010,Cuencas Centrales Del Norte,VII,Nazas-Aguanaval,13,D1,2020-09-01,2020-12-31,121
@@ -1560,7 +1560,7 @@ Durango,10,Hidalgo,10010,Cuencas Centrales Del Norte,VII,Nazas-Aguanaval,13,Sin 
 Durango,10,Indé,10011,Cuencas Centrales Del Norte,VII,Nazas-Aguanaval,13,D0,2003-01-01,2003-06-30,180
 Durango,10,Indé,10011,Cuencas Centrales Del Norte,VII,Nazas-Aguanaval,13,D1,2020-09-16,2020-12-31,106
 Durango,10,Indé,10011,Cuencas Centrales Del Norte,VII,Nazas-Aguanaval,13,D2,2022-03-01,2022-08-15,167
-Durango,10,Indé,10011,Cuencas Centrales Del Norte,VII,Nazas-Aguanaval,13,D3,2024-02-16,2024-08-15,181
+Durango,10,Indé,10011,Cuencas Centrales Del Norte,VII,Nazas-Aguanaval,13,D3,2024-02-16,2024-08-31,197
 Durango,10,Indé,10011,Cuencas Centrales Del Norte,VII,Nazas-Aguanaval,13,D4,2011-06-01,2011-07-31,60
 Durango,10,Indé,10011,Cuencas Centrales Del Norte,VII,Nazas-Aguanaval,13,Sin sequia,2008-08-01,2011-02-28,941
 Durango,10,Lerdo,10012,Cuencas Centrales Del Norte,VII,Nazas-Aguanaval,13,D0,2019-04-16,2019-08-15,121
@@ -1597,19 +1597,19 @@ Durango,10,Ocampo,10017,Río Bravo,VI,Rio Bravo,12,D0,2007-09-01,2008-05-31,273
 Durango,10,Ocampo,10017,Río Bravo,VI,Rio Bravo,12,D1,2003-01-01,2003-06-30,180
 Durango,10,Ocampo,10017,Río Bravo,VI,Rio Bravo,12,D2,2020-11-01,2021-05-15,195
 Durango,10,Ocampo,10017,Río Bravo,VI,Rio Bravo,12,D3,2011-08-01,2012-02-29,212
-Durango,10,Ocampo,10017,Río Bravo,VI,Rio Bravo,12,D4,2024-01-01,2024-08-15,227
+Durango,10,Ocampo,10017,Río Bravo,VI,Rio Bravo,12,D4,2024-01-01,2024-08-31,243
 Durango,10,Ocampo,10017,Río Bravo,VI,Rio Bravo,12,Sin sequia,2008-08-01,2011-02-28,941
 Durango,10,El Oro,10018,Cuencas Centrales Del Norte,VII,Nazas-Aguanaval,13,D0,2003-01-01,2003-06-30,180
 Durango,10,El Oro,10018,Cuencas Centrales Del Norte,VII,Nazas-Aguanaval,13,D1,2016-01-01,2016-06-15,166
 Durango,10,El Oro,10018,Cuencas Centrales Del Norte,VII,Nazas-Aguanaval,13,D2,2022-03-01,2022-08-15,167
 Durango,10,El Oro,10018,Cuencas Centrales Del Norte,VII,Nazas-Aguanaval,13,D3,2011-10-01,2012-02-29,151
-Durango,10,El Oro,10018,Cuencas Centrales Del Norte,VII,Nazas-Aguanaval,13,D4,2024-01-01,2024-08-15,227
+Durango,10,El Oro,10018,Cuencas Centrales Del Norte,VII,Nazas-Aguanaval,13,D4,2024-01-01,2024-08-31,243
 Durango,10,El Oro,10018,Cuencas Centrales Del Norte,VII,Nazas-Aguanaval,13,Sin sequia,2008-08-01,2011-02-28,941
 Durango,10,Otáez,10019,Pacífico Norte,III,Rios Mocorito al Quelite,7,D0,2003-01-01,2003-07-31,211
 Durango,10,Otáez,10019,Pacífico Norte,III,Rios Mocorito al Quelite,7,D1,2020-07-16,2020-12-31,168
 Durango,10,Otáez,10019,Pacífico Norte,III,Rios Mocorito al Quelite,7,D2,2023-01-16,2023-07-15,180
 Durango,10,Otáez,10019,Pacífico Norte,III,Rios Mocorito al Quelite,7,D3,2021-03-16,2021-06-30,106
-Durango,10,Otáez,10019,Pacífico Norte,III,Rios Mocorito al Quelite,7,D4,2023-09-16,2024-08-15,334
+Durango,10,Otáez,10019,Pacífico Norte,III,Rios Mocorito al Quelite,7,D4,2023-09-16,2024-08-31,350
 Durango,10,Otáez,10019,Pacífico Norte,III,Rios Mocorito al Quelite,7,Sin sequia,2008-08-01,2011-02-28,941
 Durango,10,Pánuco de Coronado,10020,Pacífico Norte,III,Rios Presidio al San Pedro,8,D0,2012-10-01,2013-04-30,211
 Durango,10,Pánuco de Coronado,10020,Pacífico Norte,III,Rios Presidio al San Pedro,8,D1,2007-10-01,2008-03-31,182
@@ -1631,7 +1631,7 @@ Durango,10,Pueblo Nuevo,10023,Pacífico Norte,III,Rios Presidio al San Pedro,8,D
 Durango,10,Pueblo Nuevo,10023,Pacífico Norte,III,Rios Presidio al San Pedro,8,D1,2019-03-16,2019-10-31,229
 Durango,10,Pueblo Nuevo,10023,Pacífico Norte,III,Rios Presidio al San Pedro,8,D2,2023-02-01,2023-07-15,164
 Durango,10,Pueblo Nuevo,10023,Pacífico Norte,III,Rios Presidio al San Pedro,8,D3,2024-02-01,2024-05-31,120
-Durango,10,Pueblo Nuevo,10023,Pacífico Norte,III,Rios Presidio al San Pedro,8,D4,2024-06-01,2024-08-15,75
+Durango,10,Pueblo Nuevo,10023,Pacífico Norte,III,Rios Presidio al San Pedro,8,D4,2024-06-01,2024-08-31,91
 Durango,10,Pueblo Nuevo,10023,Pacífico Norte,III,Rios Presidio al San Pedro,8,Sin sequia,2008-09-01,2011-02-28,910
 Durango,10,Rodeo,10024,Cuencas Centrales Del Norte,VII,Nazas-Aguanaval,13,D0,2003-01-01,2003-06-30,180
 Durango,10,Rodeo,10024,Cuencas Centrales Del Norte,VII,Nazas-Aguanaval,13,D1,2007-11-01,2008-03-31,151
@@ -1642,13 +1642,13 @@ Durango,10,San Bernardo,10025,Cuencas Centrales Del Norte,VII,Nazas-Aguanaval,13
 Durango,10,San Bernardo,10025,Cuencas Centrales Del Norte,VII,Nazas-Aguanaval,13,D1,2018-04-16,2018-09-15,152
 Durango,10,San Bernardo,10025,Cuencas Centrales Del Norte,VII,Nazas-Aguanaval,13,D2,2022-03-16,2022-08-15,152
 Durango,10,San Bernardo,10025,Cuencas Centrales Del Norte,VII,Nazas-Aguanaval,13,D3,2011-08-01,2012-02-29,212
-Durango,10,San Bernardo,10025,Cuencas Centrales Del Norte,VII,Nazas-Aguanaval,13,D4,2024-01-01,2024-08-15,227
+Durango,10,San Bernardo,10025,Cuencas Centrales Del Norte,VII,Nazas-Aguanaval,13,D4,2024-01-01,2024-08-31,243
 Durango,10,San Bernardo,10025,Cuencas Centrales Del Norte,VII,Nazas-Aguanaval,13,Sin sequia,2008-08-01,2011-02-28,941
 Durango,10,San Dimas,10026,Pacífico Norte,III,Rios Mocorito al Quelite,7,D0,2022-02-01,2022-10-15,256
 Durango,10,San Dimas,10026,Pacífico Norte,III,Rios Mocorito al Quelite,7,D1,2017-09-16,2018-04-15,211
 Durango,10,San Dimas,10026,Pacífico Norte,III,Rios Mocorito al Quelite,7,D2,2023-01-16,2023-07-15,180
 Durango,10,San Dimas,10026,Pacífico Norte,III,Rios Mocorito al Quelite,7,D3,2021-03-16,2021-06-15,91
-Durango,10,San Dimas,10026,Pacífico Norte,III,Rios Mocorito al Quelite,7,D4,2023-09-16,2024-08-15,334
+Durango,10,San Dimas,10026,Pacífico Norte,III,Rios Mocorito al Quelite,7,D4,2023-09-16,2024-08-31,350
 Durango,10,San Dimas,10026,Pacífico Norte,III,Rios Mocorito al Quelite,7,Sin sequia,2008-08-01,2011-02-28,941
 Durango,10,San Juan de Guadalupe,10027,Cuencas Centrales Del Norte,VII,Nazas-Aguanaval,13,D0,2003-01-01,2003-06-30,180
 Durango,10,San Juan de Guadalupe,10027,Cuencas Centrales Del Norte,VII,Nazas-Aguanaval,13,D1,2023-11-01,2024-05-15,196
@@ -1682,7 +1682,7 @@ Durango,10,Santiago Papasquiaro,10032,Pacífico Norte,III,Nazas-Aguanaval,13,D0,
 Durango,10,Santiago Papasquiaro,10032,Pacífico Norte,III,Nazas-Aguanaval,13,D1,2007-10-01,2008-02-29,151
 Durango,10,Santiago Papasquiaro,10032,Pacífico Norte,III,Nazas-Aguanaval,13,D2,2023-01-01,2023-06-30,180
 Durango,10,Santiago Papasquiaro,10032,Pacífico Norte,III,Nazas-Aguanaval,13,D3,2021-02-16,2021-07-31,165
-Durango,10,Santiago Papasquiaro,10032,Pacífico Norte,III,Nazas-Aguanaval,13,D4,2023-09-16,2024-08-15,334
+Durango,10,Santiago Papasquiaro,10032,Pacífico Norte,III,Nazas-Aguanaval,13,D4,2023-09-16,2024-08-31,350
 Durango,10,Santiago Papasquiaro,10032,Pacífico Norte,III,Nazas-Aguanaval,13,Sin sequia,2003-08-01,2005-11-30,852
 Durango,10,Súchil,10033,Pacífico Norte,III,Rios Presidio al San Pedro,8,D0,2012-07-01,2012-10-31,122
 Durango,10,Súchil,10033,Pacífico Norte,III,Rios Presidio al San Pedro,8,D1,2023-01-16,2023-06-15,150
@@ -1700,7 +1700,7 @@ Durango,10,Tepehuanes,10035,Cuencas Centrales Del Norte,VII,Nazas-Aguanaval,13,D
 Durango,10,Tepehuanes,10035,Cuencas Centrales Del Norte,VII,Nazas-Aguanaval,13,D1,2019-02-16,2019-07-15,149
 Durango,10,Tepehuanes,10035,Cuencas Centrales Del Norte,VII,Nazas-Aguanaval,13,D2,2020-06-16,2021-02-28,257
 Durango,10,Tepehuanes,10035,Cuencas Centrales Del Norte,VII,Nazas-Aguanaval,13,D3,2021-03-01,2021-10-31,244
-Durango,10,Tepehuanes,10035,Cuencas Centrales Del Norte,VII,Nazas-Aguanaval,13,D4,2023-11-01,2024-08-15,288
+Durango,10,Tepehuanes,10035,Cuencas Centrales Del Norte,VII,Nazas-Aguanaval,13,D4,2023-11-01,2024-08-31,304
 Durango,10,Tepehuanes,10035,Cuencas Centrales Del Norte,VII,Nazas-Aguanaval,13,Sin sequia,2003-08-01,2005-09-30,791
 Durango,10,Tlahualilo,10036,Cuencas Centrales Del Norte,VII,Nazas-Aguanaval,13,D0,2019-04-16,2019-12-15,243
 Durango,10,Tlahualilo,10036,Cuencas Centrales Del Norte,VII,Nazas-Aguanaval,13,D1,2020-08-01,2020-11-30,121
@@ -1712,7 +1712,7 @@ Durango,10,Topia,10037,Pacífico Norte,III,Rios Mocorito al Quelite,7,D0,2013-04
 Durango,10,Topia,10037,Pacífico Norte,III,Rios Mocorito al Quelite,7,D1,2019-02-16,2019-08-15,180
 Durango,10,Topia,10037,Pacífico Norte,III,Rios Mocorito al Quelite,7,D2,2020-08-01,2021-02-15,198
 Durango,10,Topia,10037,Pacífico Norte,III,Rios Mocorito al Quelite,7,D3,2021-02-16,2021-07-31,165
-Durango,10,Topia,10037,Pacífico Norte,III,Rios Mocorito al Quelite,7,D4,2023-12-16,2024-08-15,243
+Durango,10,Topia,10037,Pacífico Norte,III,Rios Mocorito al Quelite,7,D4,2023-12-16,2024-08-31,259
 Durango,10,Topia,10037,Pacífico Norte,III,Rios Mocorito al Quelite,7,Sin sequia,2004-01-01,2005-09-30,638
 Durango,10,Vicente Guerrero,10038,Pacífico Norte,III,Rios Presidio al San Pedro,8,D0,2019-02-16,2019-06-15,119
 Durango,10,Vicente Guerrero,10038,Pacífico Norte,III,Rios Presidio al San Pedro,8,D1,2019-06-16,2019-10-31,137
@@ -1807,7 +1807,7 @@ Guanajuato,11,Dolores Hidalgo,11014,Lerma-Santiago-Pacífico,VIII,Lerma - Chapal
 Guanajuato,11,Guanajuato,11015,Lerma-Santiago-Pacífico,VIII,Lerma - Chapala,15,D0,2013-02-01,2013-06-30,149
 Guanajuato,11,Guanajuato,11015,Lerma-Santiago-Pacífico,VIII,Lerma - Chapala,15,D1,2009-07-01,2010-04-30,303
 Guanajuato,11,Guanajuato,11015,Lerma-Santiago-Pacífico,VIII,Lerma - Chapala,15,D2,2018-01-16,2018-05-31,135
-Guanajuato,11,Guanajuato,11015,Lerma-Santiago-Pacífico,VIII,Lerma - Chapala,15,D3,2023-06-16,2024-08-15,426
+Guanajuato,11,Guanajuato,11015,Lerma-Santiago-Pacífico,VIII,Lerma - Chapala,15,D3,2023-06-16,2024-08-31,442
 Guanajuato,11,Guanajuato,11015,Lerma-Santiago-Pacífico,VIII,Lerma - Chapala,15,Sin sequia,2013-07-01,2016-06-15,1080
 Guanajuato,11,Huanímaro,11016,Lerma-Santiago-Pacífico,VIII,Lerma - Chapala,15,D0,2019-08-01,2020-06-15,319
 Guanajuato,11,Huanímaro,11016,Lerma-Santiago-Pacífico,VIII,Lerma - Chapala,15,D1,2009-01-01,2009-06-30,180
@@ -1884,7 +1884,7 @@ Guanajuato,11,San Diego de la Unión,11029,Lerma-Santiago-Pacífico,VIII,Lerma -
 Guanajuato,11,San Felipe,11030,Lerma-Santiago-Pacífico,VIII,Rio Panuco,19,D0,2008-11-01,2009-07-31,272
 Guanajuato,11,San Felipe,11030,Lerma-Santiago-Pacífico,VIII,Rio Panuco,19,D1,2009-08-01,2009-12-31,152
 Guanajuato,11,San Felipe,11030,Lerma-Santiago-Pacífico,VIII,Rio Panuco,19,D2,2022-04-16,2022-08-15,121
-Guanajuato,11,San Felipe,11030,Lerma-Santiago-Pacífico,VIII,Rio Panuco,19,D3,2023-06-16,2024-08-15,426
+Guanajuato,11,San Felipe,11030,Lerma-Santiago-Pacífico,VIII,Rio Panuco,19,D3,2023-06-16,2024-08-31,442
 Guanajuato,11,San Felipe,11030,Lerma-Santiago-Pacífico,VIII,Rio Panuco,19,Sin sequia,2003-01-01,2005-05-31,881
 Guanajuato,11,San Francisco del Rincón,11031,Lerma-Santiago-Pacífico,VIII,Lerma - Chapala,15,D0,2019-02-16,2019-08-31,196
 Guanajuato,11,San Francisco del Rincón,11031,Lerma-Santiago-Pacífico,VIII,Lerma - Chapala,15,D1,2009-08-01,2010-01-31,183
@@ -1923,7 +1923,7 @@ Guanajuato,11,Santiago Maravatío,11036,Lerma-Santiago-Pacífico,VIII,Lerma - Ch
 Guanajuato,11,Silao de la Victoria,11037,Lerma-Santiago-Pacífico,VIII,Lerma - Chapala,15,D0,2013-02-01,2013-06-30,149
 Guanajuato,11,Silao de la Victoria,11037,Lerma-Santiago-Pacífico,VIII,Lerma - Chapala,15,D1,2009-07-01,2010-03-31,273
 Guanajuato,11,Silao de la Victoria,11037,Lerma-Santiago-Pacífico,VIII,Lerma - Chapala,15,D2,2018-01-16,2018-05-31,135
-Guanajuato,11,Silao de la Victoria,11037,Lerma-Santiago-Pacífico,VIII,Lerma - Chapala,15,D3,2024-01-01,2024-08-15,227
+Guanajuato,11,Silao de la Victoria,11037,Lerma-Santiago-Pacífico,VIII,Lerma - Chapala,15,D3,2024-01-01,2024-08-31,243
 Guanajuato,11,Silao de la Victoria,11037,Lerma-Santiago-Pacífico,VIII,Lerma - Chapala,15,Sin sequia,2003-01-01,2005-05-31,881
 Guanajuato,11,Tarandacuao,11038,Lerma-Santiago-Pacífico,VIII,Lerma - Chapala,15,D0,2008-09-01,2009-05-31,272
 Guanajuato,11,Tarandacuao,11038,Lerma-Santiago-Pacífico,VIII,Lerma - Chapala,15,D1,2020-05-16,2020-12-15,213
@@ -6574,7 +6574,7 @@ Oaxaca,20,San Pedro Totolápam,20333,Pacífico Sur,V,Costa de Oaxaca,11,Sin sequ
 Oaxaca,20,Villa de Tututepec,20334,Pacífico Sur,V,Costa de Oaxaca,11,D0,2016-09-01,2017-02-15,167
 Oaxaca,20,Villa de Tututepec,20334,Pacífico Sur,V,Costa de Oaxaca,11,D1,2020-11-01,2021-03-15,134
 Oaxaca,20,Villa de Tututepec,20334,Pacífico Sur,V,Costa de Oaxaca,11,D2,2022-12-01,2023-06-15,196
-Oaxaca,20,Villa de Tututepec,20334,Pacífico Sur,V,Costa de Oaxaca,11,D3,2023-09-16,2024-08-15,334
+Oaxaca,20,Villa de Tututepec,20334,Pacífico Sur,V,Costa de Oaxaca,11,D3,2023-09-16,2024-08-31,350
 Oaxaca,20,Villa de Tututepec,20334,Pacífico Sur,V,Costa de Oaxaca,11,Sin sequia,2009-09-01,2011-02-28,545
 Oaxaca,20,San Pedro Yaneri,20335,Golfo Centro,X,Rio Papaloapan,21,D0,2003-01-01,2003-07-31,211
 Oaxaca,20,San Pedro Yaneri,20335,Golfo Centro,X,Rio Papaloapan,21,D1,2016-10-01,2016-11-30,60
@@ -6908,7 +6908,7 @@ Oaxaca,20,Santa María Huatulco,20413,Pacífico Sur,V,Costa de Oaxaca,11,Sin seq
 Oaxaca,20,Santa María Huazolotitlán,20414,Pacífico Sur,V,Costa de Oaxaca,11,D0,2003-09-01,2004-01-31,152
 Oaxaca,20,Santa María Huazolotitlán,20414,Pacífico Sur,V,Costa de Oaxaca,11,D1,2022-08-01,2023-05-31,303
 Oaxaca,20,Santa María Huazolotitlán,20414,Pacífico Sur,V,Costa de Oaxaca,11,D2,2020-08-01,2021-06-15,318
-Oaxaca,20,Santa María Huazolotitlán,20414,Pacífico Sur,V,Costa de Oaxaca,11,D3,2023-09-16,2024-08-15,334
+Oaxaca,20,Santa María Huazolotitlán,20414,Pacífico Sur,V,Costa de Oaxaca,11,D3,2023-09-16,2024-08-31,350
 Oaxaca,20,Santa María Huazolotitlán,20414,Pacífico Sur,V,Costa de Oaxaca,11,Sin sequia,2009-09-01,2011-02-28,545
 Oaxaca,20,Santa María Ipalapa,20415,Pacífico Sur,V,Costa de Oaxaca,11,D0,2021-07-16,2022-07-31,380
 Oaxaca,20,Santa María Ipalapa,20415,Pacífico Sur,V,Costa de Oaxaca,11,D1,2015-08-16,2016-04-30,258
@@ -7132,7 +7132,7 @@ Oaxaca,20,Santiago Ixtayutla,20466,Pacífico Sur,V,Costa de Oaxaca,11,Sin sequia
 Oaxaca,20,Santiago Jamiltepec,20467,Pacífico Sur,V,Costa de Oaxaca,11,D0,2003-09-01,2004-01-31,152
 Oaxaca,20,Santiago Jamiltepec,20467,Pacífico Sur,V,Costa de Oaxaca,11,D1,2015-08-16,2016-04-15,243
 Oaxaca,20,Santiago Jamiltepec,20467,Pacífico Sur,V,Costa de Oaxaca,11,D2,2020-08-16,2021-06-15,303
-Oaxaca,20,Santiago Jamiltepec,20467,Pacífico Sur,V,Costa de Oaxaca,11,D3,2023-09-16,2024-08-15,334
+Oaxaca,20,Santiago Jamiltepec,20467,Pacífico Sur,V,Costa de Oaxaca,11,D3,2023-09-16,2024-08-31,350
 Oaxaca,20,Santiago Jamiltepec,20467,Pacífico Sur,V,Costa de Oaxaca,11,Sin sequia,2009-09-01,2011-02-28,545
 Oaxaca,20,Santiago Jocotepec,20468,Golfo Centro,X,Rio Papaloapan,21,D0,2003-01-01,2003-07-31,211
 Oaxaca,20,Santiago Jocotepec,20468,Golfo Centro,X,Rio Papaloapan,21,D1,2016-05-16,2016-08-31,107
@@ -7228,7 +7228,7 @@ Oaxaca,20,Santiago Tepetlapa,20488,Golfo Centro,X,Rio Papaloapan,21,Sin sequia,2
 Oaxaca,20,Santiago Tetepec,20489,Pacífico Sur,V,Costa de Oaxaca,11,D0,2021-09-16,2022-02-15,152
 Oaxaca,20,Santiago Tetepec,20489,Pacífico Sur,V,Costa de Oaxaca,11,D1,2016-07-16,2017-04-30,288
 Oaxaca,20,Santiago Tetepec,20489,Pacífico Sur,V,Costa de Oaxaca,11,D2,2020-08-16,2021-06-15,303
-Oaxaca,20,Santiago Tetepec,20489,Pacífico Sur,V,Costa de Oaxaca,11,D3,2023-09-16,2024-08-15,334
+Oaxaca,20,Santiago Tetepec,20489,Pacífico Sur,V,Costa de Oaxaca,11,D3,2023-09-16,2024-08-31,350
 Oaxaca,20,Santiago Tetepec,20489,Pacífico Sur,V,Costa de Oaxaca,11,Sin sequia,2009-09-01,2011-02-28,545
 Oaxaca,20,Santiago Texcalcingo,20490,Golfo Centro,X,Rio Papaloapan,21,D0,2009-09-01,2010-06-30,302
 Oaxaca,20,Santiago Texcalcingo,20490,Golfo Centro,X,Rio Papaloapan,21,D1,2003-01-01,2003-07-31,211
@@ -7459,7 +7459,7 @@ Oaxaca,20,Taniche,20542,Pacífico Sur,V,Costa de Oaxaca,11,Sin sequia,2011-04-01
 Oaxaca,20,Tataltepec de Valdés,20543,Pacífico Sur,V,Costa de Oaxaca,11,D0,2021-09-16,2022-02-15,152
 Oaxaca,20,Tataltepec de Valdés,20543,Pacífico Sur,V,Costa de Oaxaca,11,D1,2016-10-01,2017-04-30,211
 Oaxaca,20,Tataltepec de Valdés,20543,Pacífico Sur,V,Costa de Oaxaca,11,D2,2022-12-01,2023-06-15,196
-Oaxaca,20,Tataltepec de Valdés,20543,Pacífico Sur,V,Costa de Oaxaca,11,D3,2024-01-16,2024-08-15,212
+Oaxaca,20,Tataltepec de Valdés,20543,Pacífico Sur,V,Costa de Oaxaca,11,D3,2024-01-16,2024-08-31,228
 Oaxaca,20,Tataltepec de Valdés,20543,Pacífico Sur,V,Costa de Oaxaca,11,Sin sequia,2009-09-01,2011-02-28,545
 Oaxaca,20,Teococuilco de Marcos Pérez,20544,Golfo Centro,X,Rio Papaloapan,21,D0,2003-01-01,2003-07-31,211
 Oaxaca,20,Teococuilco de Marcos Pérez,20544,Golfo Centro,X,Rio Papaloapan,21,D1,2011-03-01,2011-03-31,30
@@ -8598,7 +8598,7 @@ Querétaro,22,Corregidora,22006,Lerma-Santiago-Pacífico,VIII,Lerma - Chapala,15
 Querétaro,22,Corregidora,22006,Lerma-Santiago-Pacífico,VIII,Lerma - Chapala,15,D1,2022-07-16,2023-05-15,303
 Querétaro,22,Corregidora,22006,Lerma-Santiago-Pacífico,VIII,Lerma - Chapala,15,D2,2020-11-16,2021-05-31,196
 Querétaro,22,Corregidora,22006,Lerma-Santiago-Pacífico,VIII,Lerma - Chapala,15,D3,2024-02-16,2024-05-31,105
-Querétaro,22,Corregidora,22006,Lerma-Santiago-Pacífico,VIII,Lerma - Chapala,15,D4,2024-06-01,2024-08-15,75
+Querétaro,22,Corregidora,22006,Lerma-Santiago-Pacífico,VIII,Lerma - Chapala,15,D4,2024-06-01,2024-08-31,91
 Querétaro,22,Corregidora,22006,Lerma-Santiago-Pacífico,VIII,Lerma - Chapala,15,Sin sequia,2003-01-01,2005-05-31,881
 Querétaro,22,Ezequiel Montes,22007,Golfo Norte,IX,Rio Panuco,19,D0,2018-08-16,2019-04-30,257
 Querétaro,22,Ezequiel Montes,22007,Golfo Norte,IX,Rio Panuco,19,D1,2019-10-01,2020-01-31,122
@@ -8610,7 +8610,7 @@ Querétaro,22,Huimilpan,22008,Lerma-Santiago-Pacífico,VIII,Lerma - Chapala,15,D
 Querétaro,22,Huimilpan,22008,Lerma-Santiago-Pacífico,VIII,Lerma - Chapala,15,D1,2019-04-16,2019-09-15,152
 Querétaro,22,Huimilpan,22008,Lerma-Santiago-Pacífico,VIII,Lerma - Chapala,15,D2,2022-03-16,2023-03-15,364
 Querétaro,22,Huimilpan,22008,Lerma-Santiago-Pacífico,VIII,Lerma - Chapala,15,D3,2024-01-01,2024-04-30,120
-Querétaro,22,Huimilpan,22008,Lerma-Santiago-Pacífico,VIII,Lerma - Chapala,15,D4,2024-05-01,2024-08-15,106
+Querétaro,22,Huimilpan,22008,Lerma-Santiago-Pacífico,VIII,Lerma - Chapala,15,D4,2024-05-01,2024-08-31,122
 Querétaro,22,Huimilpan,22008,Lerma-Santiago-Pacífico,VIII,Lerma - Chapala,15,Sin sequia,2003-01-01,2005-05-31,881
 Querétaro,22,Jalpan de Serra,22009,Golfo Norte,IX,Rio Panuco,19,D0,2015-07-16,2015-12-31,168
 Querétaro,22,Jalpan de Serra,22009,Golfo Norte,IX,Rio Panuco,19,D1,2020-07-01,2021-02-15,229
@@ -8628,13 +8628,13 @@ Querétaro,22,El Marqués,22011,Lerma-Santiago-Pacífico,VIII,Lerma - Chapala,15
 Querétaro,22,El Marqués,22011,Lerma-Santiago-Pacífico,VIII,Lerma - Chapala,15,D1,2022-11-16,2023-05-15,180
 Querétaro,22,El Marqués,22011,Lerma-Santiago-Pacífico,VIII,Lerma - Chapala,15,D2,2022-03-16,2022-11-15,244
 Querétaro,22,El Marqués,22011,Lerma-Santiago-Pacífico,VIII,Lerma - Chapala,15,D3,2011-12-01,2012-02-29,90
-Querétaro,22,El Marqués,22011,Lerma-Santiago-Pacífico,VIII,Lerma - Chapala,15,D4,2024-04-01,2024-08-15,136
+Querétaro,22,El Marqués,22011,Lerma-Santiago-Pacífico,VIII,Lerma - Chapala,15,D4,2024-04-01,2024-08-31,152
 Querétaro,22,El Marqués,22011,Lerma-Santiago-Pacífico,VIII,Lerma - Chapala,15,Sin sequia,2003-01-01,2005-05-31,881
 Querétaro,22,Pedro Escobedo,22012,Golfo Norte,IX,Rio Panuco,19,D0,2008-03-01,2008-08-31,183
 Querétaro,22,Pedro Escobedo,22012,Golfo Norte,IX,Rio Panuco,19,D1,2019-10-01,2020-04-30,212
 Querétaro,22,Pedro Escobedo,22012,Golfo Norte,IX,Rio Panuco,19,D2,2022-03-16,2023-06-30,471
 Querétaro,22,Pedro Escobedo,22012,Golfo Norte,IX,Rio Panuco,19,D3,2023-09-01,2024-04-15,227
-Querétaro,22,Pedro Escobedo,22012,Golfo Norte,IX,Rio Panuco,19,D4,2024-04-16,2024-08-15,121
+Querétaro,22,Pedro Escobedo,22012,Golfo Norte,IX,Rio Panuco,19,D4,2024-04-16,2024-08-31,137
 Querétaro,22,Pedro Escobedo,22012,Golfo Norte,IX,Rio Panuco,19,Sin sequia,2003-01-01,2005-05-31,881
 Querétaro,22,Peñamiller,22013,Golfo Norte,IX,Rio Panuco,19,D0,2019-12-16,2021-02-15,427
 Querétaro,22,Peñamiller,22013,Golfo Norte,IX,Rio Panuco,19,D1,2018-10-16,2019-05-31,227
@@ -8646,7 +8646,7 @@ Querétaro,22,Querétaro,22014,Lerma-Santiago-Pacífico,VIII,Lerma - Chapala,15,
 Querétaro,22,Querétaro,22014,Lerma-Santiago-Pacífico,VIII,Lerma - Chapala,15,D1,2022-07-16,2023-05-15,303
 Querétaro,22,Querétaro,22014,Lerma-Santiago-Pacífico,VIII,Lerma - Chapala,15,D2,2011-08-01,2011-11-30,121
 Querétaro,22,Querétaro,22014,Lerma-Santiago-Pacífico,VIII,Lerma - Chapala,15,D3,2024-01-01,2024-04-30,120
-Querétaro,22,Querétaro,22014,Lerma-Santiago-Pacífico,VIII,Lerma - Chapala,15,D4,2024-05-01,2024-08-15,106
+Querétaro,22,Querétaro,22014,Lerma-Santiago-Pacífico,VIII,Lerma - Chapala,15,D4,2024-05-01,2024-08-31,122
 Querétaro,22,Querétaro,22014,Lerma-Santiago-Pacífico,VIII,Lerma - Chapala,15,Sin sequia,2003-01-01,2005-05-31,881
 Querétaro,22,San Joaquín,22015,Golfo Norte,IX,Rio Panuco,19,D0,2020-06-16,2021-02-15,244
 Querétaro,22,San Joaquín,22015,Golfo Norte,IX,Rio Panuco,19,D1,2018-10-01,2019-05-31,242
@@ -8658,7 +8658,7 @@ Querétaro,22,San Juan del Río,22016,Golfo Norte,IX,Rio Panuco,19,D0,2008-03-01
 Querétaro,22,San Juan del Río,22016,Golfo Norte,IX,Rio Panuco,19,D1,2019-10-01,2020-05-15,227
 Querétaro,22,San Juan del Río,22016,Golfo Norte,IX,Rio Panuco,19,D2,2022-03-16,2023-05-15,425
 Querétaro,22,San Juan del Río,22016,Golfo Norte,IX,Rio Panuco,19,D3,2023-08-01,2024-03-31,243
-Querétaro,22,San Juan del Río,22016,Golfo Norte,IX,Rio Panuco,19,D4,2024-04-01,2024-08-15,136
+Querétaro,22,San Juan del Río,22016,Golfo Norte,IX,Rio Panuco,19,D4,2024-04-01,2024-08-31,152
 Querétaro,22,San Juan del Río,22016,Golfo Norte,IX,Rio Panuco,19,Sin sequia,2003-01-01,2005-05-31,881
 Querétaro,22,Tequisquiapan,22017,Golfo Norte,IX,Rio Panuco,19,D0,2008-03-01,2008-08-31,183
 Querétaro,22,Tequisquiapan,22017,Golfo Norte,IX,Rio Panuco,19,D1,2019-10-01,2020-02-29,151
@@ -9072,7 +9072,7 @@ Sinaloa,25,Badiraguato,25003,Pacífico Norte,III,Rios Mocorito al Quelite,7,Sin 
 Sinaloa,25,Concordia,25004,Pacífico Norte,III,Rios Presidio al San Pedro,8,D0,2013-09-01,2014-07-31,333
 Sinaloa,25,Concordia,25004,Pacífico Norte,III,Rios Presidio al San Pedro,8,D1,2020-06-16,2021-01-15,213
 Sinaloa,25,Concordia,25004,Pacífico Norte,III,Rios Presidio al San Pedro,8,D2,2008-01-01,2008-07-31,212
-Sinaloa,25,Concordia,25004,Pacífico Norte,III,Rios Presidio al San Pedro,8,D3,2024-04-01,2024-08-15,136
+Sinaloa,25,Concordia,25004,Pacífico Norte,III,Rios Presidio al San Pedro,8,D3,2024-04-01,2024-08-31,152
 Sinaloa,25,Concordia,25004,Pacífico Norte,III,Rios Presidio al San Pedro,8,D4,2024-01-01,2024-01-31,30
 Sinaloa,25,Concordia,25004,Pacífico Norte,III,Rios Presidio al San Pedro,8,Sin sequia,2003-08-01,2005-08-31,761
 Sinaloa,25,Cosalá,25005,Pacífico Norte,III,Rios Mocorito al Quelite,7,D0,2016-11-16,2017-06-30,226
@@ -9085,19 +9085,19 @@ Sinaloa,25,Culiacán,25006,Pacífico Norte,III,Rios Mocorito al Quelite,7,D0,201
 Sinaloa,25,Culiacán,25006,Pacífico Norte,III,Rios Mocorito al Quelite,7,D1,2003-01-01,2003-07-31,211
 Sinaloa,25,Culiacán,25006,Pacífico Norte,III,Rios Mocorito al Quelite,7,D2,2023-02-01,2023-08-31,211
 Sinaloa,25,Culiacán,25006,Pacífico Norte,III,Rios Mocorito al Quelite,7,D3,2021-01-16,2021-07-31,196
-Sinaloa,25,Culiacán,25006,Pacífico Norte,III,Rios Mocorito al Quelite,7,D4,2024-02-16,2024-08-15,181
+Sinaloa,25,Culiacán,25006,Pacífico Norte,III,Rios Mocorito al Quelite,7,D4,2024-02-16,2024-08-31,197
 Sinaloa,25,Culiacán,25006,Pacífico Norte,III,Rios Mocorito al Quelite,7,Sin sequia,2004-01-01,2005-09-30,638
 Sinaloa,25,Choix,25007,Pacífico Norte,III,Rios Fuerte y Sinaloa,6,D0,2021-10-01,2022-03-15,165
 Sinaloa,25,Choix,25007,Pacífico Norte,III,Rios Fuerte y Sinaloa,6,D1,2019-03-01,2019-10-15,228
 Sinaloa,25,Choix,25007,Pacífico Norte,III,Rios Fuerte y Sinaloa,6,D2,2009-04-01,2009-09-30,182
 Sinaloa,25,Choix,25007,Pacífico Norte,III,Rios Fuerte y Sinaloa,6,D3,2003-01-01,2003-07-31,211
-Sinaloa,25,Choix,25007,Pacífico Norte,III,Rios Fuerte y Sinaloa,6,D4,2024-01-16,2024-08-15,212
+Sinaloa,25,Choix,25007,Pacífico Norte,III,Rios Fuerte y Sinaloa,6,D4,2024-01-16,2024-08-31,228
 Sinaloa,25,Choix,25007,Pacífico Norte,III,Rios Fuerte y Sinaloa,6,Sin sequia,2004-06-01,2005-07-31,425
 Sinaloa,25,Elota,25008,Pacífico Norte,III,Rios Mocorito al Quelite,7,D0,2016-11-16,2017-07-15,241
 Sinaloa,25,Elota,25008,Pacífico Norte,III,Rios Mocorito al Quelite,7,D1,2011-10-01,2012-04-30,212
 Sinaloa,25,Elota,25008,Pacífico Norte,III,Rios Mocorito al Quelite,7,D2,2023-01-16,2023-10-15,272
 Sinaloa,25,Elota,25008,Pacífico Norte,III,Rios Mocorito al Quelite,7,D3,2021-04-01,2021-06-15,75
-Sinaloa,25,Elota,25008,Pacífico Norte,III,Rios Mocorito al Quelite,7,D4,2024-04-01,2024-08-15,136
+Sinaloa,25,Elota,25008,Pacífico Norte,III,Rios Mocorito al Quelite,7,D4,2024-04-01,2024-08-31,152
 Sinaloa,25,Elota,25008,Pacífico Norte,III,Rios Mocorito al Quelite,7,Sin sequia,2004-01-01,2005-11-30,699
 Sinaloa,25,Escuinapa,25009,Pacífico Norte,III,Rios Presidio al San Pedro,8,D0,2003-01-01,2003-07-31,211
 Sinaloa,25,Escuinapa,25009,Pacífico Norte,III,Rios Presidio al San Pedro,8,D1,2020-08-16,2021-01-15,152
@@ -9227,7 +9227,7 @@ Sonora,26,Bácum,26012,Noroeste,II,Rios Yaqui y Matape,4,D0,2013-01-01,2013-09-3
 Sonora,26,Bácum,26012,Noroeste,II,Rios Yaqui y Matape,4,D1,2023-01-01,2023-06-15,165
 Sonora,26,Bácum,26012,Noroeste,II,Rios Yaqui y Matape,4,D2,2020-10-16,2021-04-30,196
 Sonora,26,Bácum,26012,Noroeste,II,Rios Yaqui y Matape,4,D3,2023-09-16,2023-12-31,106
-Sonora,26,Bácum,26012,Noroeste,II,Rios Yaqui y Matape,4,D4,2024-01-01,2024-08-15,227
+Sonora,26,Bácum,26012,Noroeste,II,Rios Yaqui y Matape,4,D4,2024-01-01,2024-08-31,243
 Sonora,26,Bácum,26012,Noroeste,II,Rios Yaqui y Matape,4,Sin sequia,2003-10-01,2005-08-31,700
 Sonora,26,Banámichi,26013,Noroeste,II,Alto Noroeste,3,D0,2009-01-01,2009-08-31,242
 Sonora,26,Banámichi,26013,Noroeste,II,Alto Noroeste,3,D1,2012-11-01,2013-06-30,241
@@ -9263,7 +9263,7 @@ Sonora,26,Cajeme,26018,Noroeste,II,Rios Yaqui y Matape,4,D0,2013-03-01,2013-09-3
 Sonora,26,Cajeme,26018,Noroeste,II,Rios Yaqui y Matape,4,D1,2023-01-01,2023-06-15,165
 Sonora,26,Cajeme,26018,Noroeste,II,Rios Yaqui y Matape,4,D2,2007-04-01,2007-07-31,121
 Sonora,26,Cajeme,26018,Noroeste,II,Rios Yaqui y Matape,4,D3,2020-11-16,2021-07-31,257
-Sonora,26,Cajeme,26018,Noroeste,II,Rios Yaqui y Matape,4,D4,2023-12-16,2024-08-15,243
+Sonora,26,Cajeme,26018,Noroeste,II,Rios Yaqui y Matape,4,D4,2023-12-16,2024-08-31,259
 Sonora,26,Cajeme,26018,Noroeste,II,Rios Yaqui y Matape,4,Sin sequia,2004-02-01,2005-08-31,577
 Sonora,26,Cananea,26019,Noroeste,II,Alto Noroeste,3,D0,2015-02-16,2015-09-15,211
 Sonora,26,Cananea,26019,Noroeste,II,Alto Noroeste,3,D1,2004-03-01,2004-09-30,213
@@ -9281,7 +9281,7 @@ Sonora,26,La Colorada,26021,Noroeste,II,Rios Yaqui y Matape,4,D0,2003-01-01,2003
 Sonora,26,La Colorada,26021,Noroeste,II,Rios Yaqui y Matape,4,D1,2017-01-16,2017-07-15,180
 Sonora,26,La Colorada,26021,Noroeste,II,Rios Yaqui y Matape,4,D2,2020-09-16,2021-04-30,226
 Sonora,26,La Colorada,26021,Noroeste,II,Rios Yaqui y Matape,4,D3,2023-09-01,2023-12-15,105
-Sonora,26,La Colorada,26021,Noroeste,II,Rios Yaqui y Matape,4,D4,2023-12-16,2024-08-15,243
+Sonora,26,La Colorada,26021,Noroeste,II,Rios Yaqui y Matape,4,D4,2023-12-16,2024-08-31,259
 Sonora,26,La Colorada,26021,Noroeste,II,Rios Yaqui y Matape,4,Sin sequia,2003-10-01,2005-09-30,730
 Sonora,26,Cucurpe,26022,Noroeste,II,Alto Noroeste,3,D0,2009-01-01,2009-09-30,272
 Sonora,26,Cucurpe,26022,Noroeste,II,Alto Noroeste,3,D1,2016-03-16,2016-08-31,168
@@ -9304,7 +9304,7 @@ Sonora,26,Divisaderos,26024,Noroeste,II,Rios Yaqui y Matape,4,Sin sequia,2015-01
 Sonora,26,Empalme,26025,Noroeste,II,Rios Yaqui y Matape,4,D0,2013-02-01,2013-09-30,241
 Sonora,26,Empalme,26025,Noroeste,II,Rios Yaqui y Matape,4,D1,2022-12-16,2023-06-15,181
 Sonora,26,Empalme,26025,Noroeste,II,Rios Yaqui y Matape,4,D2,2020-11-01,2021-04-30,180
-Sonora,26,Empalme,26025,Noroeste,II,Rios Yaqui y Matape,4,D3,2024-03-16,2024-08-15,152
+Sonora,26,Empalme,26025,Noroeste,II,Rios Yaqui y Matape,4,D3,2024-03-16,2024-08-31,168
 Sonora,26,Empalme,26025,Noroeste,II,Rios Yaqui y Matape,4,D4,2024-01-01,2024-03-15,74
 Sonora,26,Empalme,26025,Noroeste,II,Rios Yaqui y Matape,4,Sin sequia,2003-03-01,2005-08-31,914
 Sonora,26,Etchojoa,26026,Noroeste,II,Rios Yaqui y Matape,4,D0,2009-01-01,2009-09-30,272
@@ -9329,13 +9329,13 @@ Sonora,26,Guaymas,26029,Noroeste,II,Rios Yaqui y Matape,4,D0,2013-02-01,2013-09-
 Sonora,26,Guaymas,26029,Noroeste,II,Rios Yaqui y Matape,4,D1,2022-12-16,2023-06-15,181
 Sonora,26,Guaymas,26029,Noroeste,II,Rios Yaqui y Matape,4,D2,2020-09-16,2021-04-30,226
 Sonora,26,Guaymas,26029,Noroeste,II,Rios Yaqui y Matape,4,D3,2023-09-01,2023-12-31,121
-Sonora,26,Guaymas,26029,Noroeste,II,Rios Yaqui y Matape,4,D4,2024-01-01,2024-08-15,227
+Sonora,26,Guaymas,26029,Noroeste,II,Rios Yaqui y Matape,4,D4,2024-01-01,2024-08-31,243
 Sonora,26,Guaymas,26029,Noroeste,II,Rios Yaqui y Matape,4,Sin sequia,2003-04-01,2005-09-30,913
 Sonora,26,Hermosillo,26030,Noroeste,II,Alto Noroeste,3,D0,2014-01-01,2014-08-15,226
 Sonora,26,Hermosillo,26030,Noroeste,II,Alto Noroeste,3,D1,2016-03-16,2016-07-15,121
 Sonora,26,Hermosillo,26030,Noroeste,II,Alto Noroeste,3,D2,2011-03-01,2011-06-30,121
 Sonora,26,Hermosillo,26030,Noroeste,II,Alto Noroeste,3,D3,2023-09-01,2023-12-31,121
-Sonora,26,Hermosillo,26030,Noroeste,II,Alto Noroeste,3,D4,2024-01-01,2024-08-15,227
+Sonora,26,Hermosillo,26030,Noroeste,II,Alto Noroeste,3,D4,2024-01-01,2024-08-31,243
 Sonora,26,Hermosillo,26030,Noroeste,II,Alto Noroeste,3,Sin sequia,2003-01-01,2005-09-30,1003
 Sonora,26,Huachinera,26031,Noroeste,II,Rios Yaqui y Matape,4,D0,2009-02-01,2009-08-31,211
 Sonora,26,Huachinera,26031,Noroeste,II,Rios Yaqui y Matape,4,D1,2012-11-01,2013-07-31,272
@@ -9377,7 +9377,7 @@ Sonora,26,Mazatán,26037,Noroeste,II,Alto Noroeste,3,D0,2016-12-01,2017-07-15,22
 Sonora,26,Mazatán,26037,Noroeste,II,Alto Noroeste,3,D1,2016-03-16,2016-07-15,121
 Sonora,26,Mazatán,26037,Noroeste,II,Alto Noroeste,3,D2,2022-04-01,2022-07-15,105
 Sonora,26,Mazatán,26037,Noroeste,II,Alto Noroeste,3,D3,2023-09-01,2023-12-15,105
-Sonora,26,Mazatán,26037,Noroeste,II,Alto Noroeste,3,D4,2023-12-16,2024-08-15,243
+Sonora,26,Mazatán,26037,Noroeste,II,Alto Noroeste,3,D4,2023-12-16,2024-08-31,259
 Sonora,26,Mazatán,26037,Noroeste,II,Alto Noroeste,3,Sin sequia,2004-02-01,2005-09-30,607
 Sonora,26,Moctezuma,26038,Noroeste,II,Rios Yaqui y Matape,4,D0,2009-01-01,2009-08-31,242
 Sonora,26,Moctezuma,26038,Noroeste,II,Rios Yaqui y Matape,4,D1,2012-11-01,2013-06-30,241
@@ -9483,11 +9483,11 @@ Sonora,26,San Luis Río Colorado,26055,Noroeste,II,Alto Noroeste,3,D0,2010-07-01
 Sonora,26,San Luis Río Colorado,26055,Noroeste,II,Alto Noroeste,3,D1,2021-05-01,2022-03-31,334
 Sonora,26,San Luis Río Colorado,26055,Noroeste,II,Alto Noroeste,3,D2,2016-03-01,2017-02-28,364
 Sonora,26,San Luis Río Colorado,26055,Noroeste,II,Alto Noroeste,3,D3,2007-04-01,2007-10-31,213
-Sonora,26,San Luis Río Colorado,26055,Noroeste,II,Alto Noroeste,3,Sin sequia,2005-01-01,2005-12-31,364
+Sonora,26,San Luis Río Colorado,26055,Noroeste,II,Alto Noroeste,3,Sin sequia,2023-09-01,2024-08-31,365
 Sonora,26,San Miguel de Horcasitas,26056,Noroeste,II,Alto Noroeste,3,D0,2008-12-01,2009-06-30,211
 Sonora,26,San Miguel de Horcasitas,26056,Noroeste,II,Alto Noroeste,3,D1,2014-03-16,2014-07-31,137
 Sonora,26,San Miguel de Horcasitas,26056,Noroeste,II,Alto Noroeste,3,D2,2006-02-01,2006-05-31,119
-Sonora,26,San Miguel de Horcasitas,26056,Noroeste,II,Alto Noroeste,3,D3,2024-03-16,2024-08-15,152
+Sonora,26,San Miguel de Horcasitas,26056,Noroeste,II,Alto Noroeste,3,D3,2024-03-16,2024-08-31,168
 Sonora,26,San Miguel de Horcasitas,26056,Noroeste,II,Alto Noroeste,3,D4,2024-02-01,2024-03-15,43
 Sonora,26,San Miguel de Horcasitas,26056,Noroeste,II,Alto Noroeste,3,Sin sequia,2003-08-01,2005-09-30,791
 Sonora,26,San Pedro de la Cueva,26057,Noroeste,II,Rios Yaqui y Matape,4,D0,2009-01-01,2009-08-31,242
@@ -9524,7 +9524,7 @@ Sonora,26,Suaqui Grande,26062,Noroeste,II,Rios Yaqui y Matape,4,D0,2013-03-01,20
 Sonora,26,Suaqui Grande,26062,Noroeste,II,Rios Yaqui y Matape,4,D1,2003-01-01,2003-05-31,150
 Sonora,26,Suaqui Grande,26062,Noroeste,II,Rios Yaqui y Matape,4,D2,2020-11-01,2021-04-30,180
 Sonora,26,Suaqui Grande,26062,Noroeste,II,Rios Yaqui y Matape,4,D3,2023-09-01,2023-12-15,105
-Sonora,26,Suaqui Grande,26062,Noroeste,II,Rios Yaqui y Matape,4,D4,2023-12-16,2024-08-15,243
+Sonora,26,Suaqui Grande,26062,Noroeste,II,Rios Yaqui y Matape,4,D4,2023-12-16,2024-08-31,259
 Sonora,26,Suaqui Grande,26062,Noroeste,II,Rios Yaqui y Matape,4,Sin sequia,2004-02-01,2005-09-30,607
 Sonora,26,Tepache,26063,Noroeste,II,Rios Yaqui y Matape,4,D0,2009-01-01,2009-08-31,242
 Sonora,26,Tepache,26063,Noroeste,II,Rios Yaqui y Matape,4,D1,2012-03-01,2012-08-31,183
@@ -9548,7 +9548,7 @@ Sonora,26,Ures,26066,Noroeste,II,Alto Noroeste,3,D0,2012-11-01,2013-08-31,303
 Sonora,26,Ures,26066,Noroeste,II,Alto Noroeste,3,D1,2016-03-16,2016-07-15,121
 Sonora,26,Ures,26066,Noroeste,II,Alto Noroeste,3,D2,2011-07-01,2011-10-31,122
 Sonora,26,Ures,26066,Noroeste,II,Alto Noroeste,3,D3,2023-09-01,2023-12-31,121
-Sonora,26,Ures,26066,Noroeste,II,Alto Noroeste,3,D4,2024-01-01,2024-08-15,227
+Sonora,26,Ures,26066,Noroeste,II,Alto Noroeste,3,D4,2024-01-01,2024-08-31,243
 Sonora,26,Ures,26066,Noroeste,II,Alto Noroeste,3,Sin sequia,2004-01-01,2005-09-30,638
 Sonora,26,Villa Hidalgo,26067,Noroeste,II,Rios Yaqui y Matape,4,D0,2009-02-01,2009-08-31,211
 Sonora,26,Villa Hidalgo,26067,Noroeste,II,Rios Yaqui y Matape,4,D1,2011-12-01,2012-08-31,274
