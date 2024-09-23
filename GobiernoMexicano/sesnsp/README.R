@@ -21,7 +21,6 @@
 #| label: setwd-to-path2README_R
 #| eval: false
 #| echo: false
-
 setwd("./GobiernoMexicano/sesnsp/")
 
 #' ## Introducción y objetivos
@@ -35,9 +34,7 @@ setwd("./GobiernoMexicano/sesnsp/")
 #' Generales de las entidades federativas 
 
 #| label: load-libraries-paths
-
 library(tidyverse)
-library(gt)
 
 path2main <- paste0(getwd(), "/../..")
 path2gobmex <- paste0(path2main, "/GobiernoMexicano")
@@ -53,10 +50,8 @@ path2ogdatasesnsp <- paste0(path2sesnsp,
 
 #| label: load-csv_incidencia-victimas_delictiva_nivel_ent-mun
 #| output: false
-
 # TODO: Encontrar la manera de hacer la descarga directa con el URL del 
 #       archivo de Google Drive (INCIDENCIA EN MUNICIPIOS)
-
 # - - Número de delitos - - #
 path2dataincidenciamun <- list.files(
   path = path2ogdatasesnsp,
@@ -70,7 +65,7 @@ db_incidencia_mun <- read_csv(
   janitor::clean_names()
 
 # - - Número de víctimas de delitos - - #
-url_victimas_ent <- "https://drive.google.com/file/d/1B3g8u3qI7l7bw8lTDil417K9ZYYyv3KJ/view"
+url_victimas_ent <- "https://drive.google.com/file/d/1LAGTkmP5YckJSKEMtRaH--n_TXJSHkVM/view"
 id_file_victimas_ent <- str_extract(
     string = url_victimas_ent,
     pattern = "(?<=d/)(.*?)(?=/view)")
@@ -86,7 +81,6 @@ db_victimas_ent <- read_csv(
 
 #| label: sample-db_incidencia_mun
 #| echo: false
-
 set.seed(11)
 db_incidencia_mun %>%
   slice_sample(n = 5)
@@ -95,7 +89,6 @@ db_incidencia_mun %>%
 
 #| label: sample-db_victimas_ent
 #| echo: false
-
 set.seed(11)
 db_victimas_ent %>%
   slice_sample(n = 5)
@@ -179,14 +172,12 @@ db_victimas_ent %>%
 #' facilita el renombramiento.
 
 #| label: load-cve_nom_ent_mun
-
 cve_nom_ent_mun <- read_csv(paste0(path2gobmex, "/cve_nom_municipios.csv"))
 
 #'
 
 #| label: show_sample_cve_nom_ent_mun
 #| echo: false
-
 set.seed(1)
 cve_nom_ent_mun %>%
   slice_sample(n = 5)
@@ -205,7 +196,6 @@ cve_nom_ent_mun %>%
 
 #| label: tbl-otros-municipios
 #| echo: false
-
 db_incidencia_mun %>%
   filter(str_ends(cve_municipio, "998|999")) %>% 
   distinct(entidad, municipio, cve_municipio)
@@ -213,7 +203,6 @@ db_incidencia_mun %>%
 #'
 
 #| label: join-cve_nom_ent_mun-db_incidencia_mun
-
 # - - Incidencia delictiva (municipios) - - #
 db_incidencia_mun_renamed <- db_incidencia_mun %>%
   # Quitar las columnas de clave de entidad y nombres (entidad y municipios)
@@ -246,7 +235,6 @@ db_incidencia_mun_renamed <- db_incidencia_mun %>%
 
 #| label: show_sample-db_incidencia_mun_renamed
 #| echo: false
-
 set.seed(1)
 db_incidencia_mun_renamed %>%
   slice_sample(n = 5)
@@ -254,7 +242,6 @@ db_incidencia_mun_renamed %>%
 #'
 
 #| label: join-cve_nom_ent_mun-db_victimas_ent
-
 # - - Número de víctimas (estados) - - #
 db_victimas_ent_renamed <- db_victimas_ent %>%
   select(!c(entidad))  %>%
@@ -274,7 +261,6 @@ db_victimas_ent_renamed <- db_victimas_ent %>%
 
 #| label: show_sample-db_victimas_ent_renamed
 #| echo: false
-
 set.seed(1)
 db_victimas_ent_renamed %>%
   slice_sample(n = 5)
@@ -288,7 +274,6 @@ db_victimas_ent_renamed %>%
 #' el número de mes para crear la columna de tiempo.
 
 #| label: wide2long-db_incidencia_mun_renamed
-
 db_incidencia_mun_long <- db_incidencia_mun_renamed %>%
   pivot_longer(
     cols = enero:diciembre,
@@ -323,7 +308,6 @@ db_incidencia_mun_long <- db_incidencia_mun_renamed %>%
 
 #| label: show_sample-db_incidencia_mun_long
 #| echo: false
-
 set.seed(1)
 db_incidencia_mun_long %>%
   slice_sample(n = 5)
@@ -331,7 +315,6 @@ db_incidencia_mun_long %>%
 #'
 
 #| label: wide2long-db_victimas_ent_renamed
-
 db_victimas_ent_long <- db_victimas_ent_renamed %>%
   pivot_longer(
     cols = enero:diciembre,
@@ -363,7 +346,6 @@ db_victimas_ent_long <- db_victimas_ent_renamed %>%
 
 #| label: show_sample-db_victimas_ent_long
 #| echo: false
-
 set.seed(1)
 db_victimas_ent_long %>%
   slice_sample(n = 5)
@@ -450,7 +432,6 @@ db_victimas_ent_long %>%
 #' para la agrupación.
 
 #| label: create-df_incidencia_mun_year
-
 df_incidencia_mun_year <- db_incidencia_mun_long %>%
   group_by(across(-c(date_year_month, n_month, n_delitos))) %>%
   summarise(n_delitos = sum(n_delitos, na.rm = TRUE)) %>%
@@ -460,7 +441,6 @@ df_incidencia_mun_year <- db_incidencia_mun_long %>%
 
 #| label: show_sample-df_incidencia_mun_year
 #| echo: false
-
 set.seed(1)
 df_incidencia_mun_year %>%
   slice_sample(n = 5)
@@ -473,7 +453,6 @@ df_incidencia_mun_year %>%
 #' datos: Proyecciones de población](https://github.com/isaacarroyov/datos_facil_acceso/tree/main/GobiernoMexicano/conapo_proyecciones)]
 
 #| label: load-db_pob_mun_conapo
-
 db_pob_mun_conapo <- read_csv(
     file = paste0(path2gobmex,
                   "/conapo_proyecciones",
@@ -485,7 +464,6 @@ db_pob_mun_conapo <- read_csv(
 
 #| label: show_sample-db_pob_mun_conapo
 #| echo: false
-
 n_mun_mg_inegi <- nrow(cve_nom_ent_mun)
 n_mun_sesnsp <- nrow(distinct(.data = df_incidencia_mun_year, cve_geo))
 n_mun_conapo <- nrow(distinct(.data = db_pob_mun_conapo, cve_mun))
@@ -516,7 +494,6 @@ db_pob_mun_conapo %>%
 #' `n_delitos_100kmujeres`
 
 #| label: create-db_incidencia_mun_year_x100khab
-
 db_incidencia_mun_year_x100khab <- df_incidencia_mun_year %>%
   left_join(
     y = db_pob_mun_conapo %>% 
@@ -546,7 +523,6 @@ db_incidencia_mun_year_x100khab <- df_incidencia_mun_year %>%
 
 #| label: show_sample-db_incidencia_mun_year_x100khab
 #| echo: false
-
 set.seed(1)
 db_incidencia_mun_year_x100khab %>%
   slice_sample(n = 3) %>%
@@ -564,7 +540,6 @@ db_incidencia_mun_year_x100khab %>%
 #' que no uso el dato meses por mes solo que no es tan común.
 
 #| label: create-df_incidencia_ent_year
-
 df_incidencia_ent_year <- db_incidencia_mun_long %>%
   group_by(across(-c(date_year_month, n_month, n_delitos,
                      nombre_municipio, cve_geo))) %>%
@@ -575,7 +550,6 @@ df_incidencia_ent_year <- db_incidencia_mun_long %>%
 
 #| label: show_sample-df_incidencia_ent_year
 #| echo: false
-
 set.seed(1)
 df_incidencia_ent_year %>%
   slice_sample(n = 5)
@@ -588,7 +562,6 @@ df_incidencia_ent_year %>%
 #' transformación de datos: Proyecciones de población](https://github.com/isaacarroyov/datos_facil_acceso/tree/main/GobiernoMexicano/conapo_proyecciones)]
 
 #| label: load-db_pob_ent_conapo
-
 db_pob_ent_conapo <- read_csv(
     file = paste0(path2gobmex,
                   "/conapo_proyecciones",
@@ -601,7 +574,6 @@ db_pob_ent_conapo <- read_csv(
 
 #| label: show_sample-db_pob_ent_conapo
 #| echo: false
-
 set.seed(1)
 db_pob_ent_conapo %>%
   slice_sample(n = 5)
@@ -610,7 +582,6 @@ db_pob_ent_conapo %>%
 #' nacional
 
 #| label: create-df_incidencia_nac_year
-
 df_incidencia_nac_year <- df_incidencia_ent_year %>%
   group_by(across(-c(cve_ent, nombre_estado, n_delitos))) %>%
   summarise(n_delitos = sum(n_delitos, na.rm = TRUE)) %>%
@@ -625,7 +596,6 @@ df_incidencia_nac_year <- df_incidencia_ent_year %>%
 
 #| label: show_sample-df_incidencia_nac_year
 #| echo: false
-
 set.seed(3)
 df_incidencia_nac_year %>%
   slice_sample(n = 5)
@@ -635,7 +605,6 @@ df_incidencia_nac_year %>%
 #' tasado del tasado del delito de Feminicidio.
 
 #| label: create-db_incidencia_ent_nac_year_x100khab
-
 db_incidencia_ent_nac_year_x100khab <- bind_rows(
     df_incidencia_ent_year,
     df_incidencia_nac_year) %>%
@@ -664,7 +633,6 @@ db_incidencia_ent_nac_year_x100khab <- bind_rows(
 
 #| label: show_sample-db_incidencia_ent_nac_year_x100khab
 #| echo: false
-
 set.seed(2)
 db_incidencia_ent_nac_year_x100khab %>%
   slice_sample(n = 3) %>%
@@ -686,7 +654,6 @@ db_incidencia_ent_nac_year_x100khab %>%
 #' También es importante agregar el valor nacional para comparaciones.
 
 #| label: create-df_victimas_ent_nac_gender_year
-
 # Víctimas a nivel estatal (divididas por género)
 df_victimas_ent_gender_year <- db_victimas_ent_long %>%
     group_by(across(-c(date_year_month,
@@ -738,7 +705,6 @@ df_victimas_ent_nac_gender_year <- bind_rows(
 
 #| label: show_sample-df_victimas_ent_nac_gender_year
 #| echo: false
-
 set.seed(1)
 df_victimas_ent_nac_gender_year %>%
   group_by(genero) %>%
@@ -751,7 +717,6 @@ df_victimas_ent_nac_gender_year %>%
 #' para el tasado del delito de Feminicidio.
 
 #| label: create-db_victimas_ent_nac_x100khab
-
 db_victimas_ent_nac_x100khab <- df_victimas_ent_nac_gender_year %>%
   left_join(
     y = db_pob_ent_conapo %>%
@@ -779,7 +744,6 @@ db_victimas_ent_nac_x100khab <- df_victimas_ent_nac_gender_year %>%
 
 #| label: show_sample-db_victimas_ent_nac_x100khab
 #| echo: false
-
 set.seed(1)
 db_victimas_ent_nac_x100khab %>%
   slice_sample(n = 3) %>%
@@ -800,7 +764,6 @@ db_victimas_ent_nac_x100khab %>%
 #' finalmente se unen en un solo `DataFrame`
 
 #| label: create-df_victimas_ent_nac_gender_age_year
-
 # - - Conteo de víctimas a nivel estatal - - #
 df_victimas_ent_gender_age <- db_victimas_ent_long %>%
   group_by(across(-c(date_year_month, n_month, n_victimas))) %>%
@@ -863,7 +826,6 @@ df_victimas_ent_gender_age <- db_victimas_ent_long %>%
       (genero %in% c("hombre", "mujer") |
        rango_de_edad %in% c("adultos", "nna"))))
 
-
 # - - Conteo de víctimas a nivel nacional - - #
 df_victimas_nac_gender_age <- df_victimas_ent_gender_age %>%
   group_by(across(-c(cve_ent, nombre_estado, n_victimas))) %>%
@@ -882,7 +844,6 @@ df_victimas_ent_nac_gender_age_year <- bind_rows(
 
 #| label: show_sample-df_victimas_ent_nac_gender_age_year
 #| echo: false
-
 set.seed(2)
 df_victimas_ent_nac_gender_age_year %>%
   slice_sample(n = 5)
@@ -894,7 +855,6 @@ df_victimas_ent_nac_gender_age_year %>%
 
 #| label: show-combinations_genero_edad
 #| echo: false
-
 df_victimas_ent_nac_gender_age_year %>%
   distinct(genero, rango_de_edad) %>%
   bind_cols(
@@ -926,7 +886,6 @@ df_victimas_ent_nac_gender_age_year %>%
 #' `df_victimas_ent_nac_gender_age_year`
 
 #| label: create-db_pob_ent_conapo_gender_age
-
 db_pob_ent_conapo_gender_age <- read_csv(
     file = paste0(path2gobmex,
                   "/conapo_proyecciones",
@@ -967,7 +926,6 @@ db_pob_ent_conapo_gender_age <- read_csv(
 #' llaves (para la unión) la categoría de rango de edad y genero
 
 #| label: create-db_victimas_ent_nac_gender_age_100khab
-
 db_victimas_ent_nac_gender_age_100khab <- df_victimas_ent_nac_gender_age_year %>%
   # ~ Creación 1a columna: Tasado con respecto a la pob total ~ #
   # Unión de información de población total
@@ -1018,7 +976,6 @@ db_victimas_ent_nac_gender_age_100khab <- df_victimas_ent_nac_gender_age_year %>
 #| label: fact-check_db_victimas_ent_nac_gender_age_100khab-vs-db_victimas_ent_nac_x100khab
 #| echo: false
 #| eval: false
-
 db_victimas_ent_nac_gender_age_100khab %>%
   filter(
     genero == "total_genero",
@@ -1047,7 +1004,6 @@ db_victimas_ent_nac_gender_age_100khab %>%
 
 #| label: show_sample-db_victimas_ent_nac_gender_age_100khab
 #| echo: false
-
 set.seed(3)
 db_victimas_ent_nac_gender_age_100khab %>%
   slice_sample(n = 3) %>%
@@ -1072,7 +1028,6 @@ db_victimas_ent_nac_gender_age_100khab %>%
 #' Se guarda bajo el nombre de **`db_incidencia_mun_long.csv.bz2`**
 
 #| label: save-db_incidencia_mun_long
-
 db_incidencia_mun_long %>%
   write_csv(file = paste0(path2sesnsp, "/db_incidencia_mun_long.csv.bz2"))
 
@@ -1093,7 +1048,6 @@ db_incidencia_mun_long %>%
 
 #| label: tabla_final-db_incidencia_mun_long
 #| echo: false
-
 set.seed(123)
 db_incidencia_mun_long %>%
   slice_sample(n = 5)
@@ -1103,7 +1057,6 @@ db_incidencia_mun_long %>%
 #' Se guarda bajo el nombre de **`db_incidencia_ent_long.csv`**
 
 #| label: save-db_incidencia_ent_long
-
 db_incidencia_ent_long <- db_incidencia_mun_long %>%
   group_by(across(-c(date_year_month,
                      n_delitos,
@@ -1132,7 +1085,6 @@ db_incidencia_ent_long %>%
 
 #| label: tabla_final-db_incidencia_ent_long
 #| echo: false
-
 set.seed(123)
 db_incidencia_ent_long %>%
   slice_sample(n = 5)
@@ -1142,7 +1094,6 @@ db_incidencia_ent_long %>%
 #' Se guarda bajo el nombre de **`db_victimas_delitos_ent_long.csv.bz2`**
 
 #| label: save-db_victimas_ent_long
-
 db_victimas_ent_long %>%
   write_csv(file = paste0(path2sesnsp,
                           "/db_victimas_delitos_ent_long.csv.bz2"))
@@ -1164,7 +1115,6 @@ db_victimas_ent_long %>%
 
 #| label: tabla_final-db_victimas_ent_long
 #| echo: false
-
 set.seed(123)
 db_victimas_ent_long %>%
   slice_sample(n = 5)
@@ -1183,7 +1133,6 @@ db_victimas_ent_long %>%
 #' Se guarda bajo el nombre de **`db_incidencia_mun_year_x100khab_mujeres.csv.bz2`**
 
 #| label: save-db_incidencia_mun_year_x100khab
-
 db_incidencia_mun_year_x100khab %>%
   write_csv(file = paste0(
     path2sesnsp, "/db_incidencia_mun_year_x100khab_mujeres.csv.bz2"))
@@ -1205,7 +1154,6 @@ db_incidencia_mun_year_x100khab %>%
 
 #| label: tabla_final-db_incidencia_mun_year_x100khab
 #| echo: false
-
 set.seed(123)
 db_incidencia_mun_year_x100khab %>%
   slice_sample(n = 5)
@@ -1215,7 +1163,6 @@ db_incidencia_mun_year_x100khab %>%
 #' Se guarda bajo el nombre de **`db_incidencia_ent_nac_year_x100khab_mujeres.csv.bz2`**
 
 #| label: save-db_incidencia_ent_nac_year_x100khab
-
 db_incidencia_ent_nac_year_x100khab %>%
   write_csv(
     file = paste0(path2sesnsp,
@@ -1236,7 +1183,6 @@ db_incidencia_ent_nac_year_x100khab %>%
 
 #| label: tabla_final-db_incidencia_ent_nac_year_x100khab
 #| echo: false
-
 set.seed(123)
 db_incidencia_ent_nac_year_x100khab %>%
   slice_sample(n = 5)
@@ -1246,7 +1192,6 @@ db_incidencia_ent_nac_year_x100khab %>%
 #' Se guarda bajo el nombre de **`db_victimas_delitos_ent_nac_x100khab_genero.csv.bz2`**
 
 #| label: save-db_victimas_ent_nac_x100khab
-
 db_victimas_ent_nac_x100khab %>%
   write_csv(
     file = paste0(path2sesnsp,
@@ -1268,7 +1213,6 @@ db_victimas_ent_nac_x100khab %>%
 
 #| label: tabla_final-db_victimas_ent_nac_x100khab
 #| echo: false
-
 set.seed(123)
 db_victimas_ent_nac_x100khab %>%
   slice_sample(n = 5)
@@ -1278,7 +1222,6 @@ db_victimas_ent_nac_x100khab %>%
 #' Se guarda bajo el nombre de **`db_victimas_delitos_ent_nac_100khab_genero_rango_de_edad.csv.bz2`**
 
 #| label: save-db_victimas_ent_nac_gender_age_100khab
-
 db_victimas_ent_nac_gender_age_100khab %>%
   write_csv(
     file = paste0(
@@ -1303,7 +1246,6 @@ db_victimas_ent_nac_gender_age_100khab %>%
 
 #| label: tabla_final-db_victimas_ent_nac_gender_age_100khab
 #| echo: false
-
 set.seed(123)
 db_victimas_ent_nac_gender_age_100khab %>%
   slice_sample(n = 5)
