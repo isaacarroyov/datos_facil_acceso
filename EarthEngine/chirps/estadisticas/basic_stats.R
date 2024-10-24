@@ -21,7 +21,6 @@
  
 #| label: setworkingdir
 #| eval: false
-
 # ~ NOTE ~ #
 # 
 # Se puede observar que se cambia el directorio de trabajo a la carpeta 
@@ -30,7 +29,6 @@
 # código se pueda ejecutar correctamente, ya que el archivo toma como 
 # directorio de trabajo la carpeta en la que se encuentra el script en el 
 # que se esta haciendo el código.
-
 setwd("./EarthEngine/chirps/estadisticas")
 
 #'
@@ -102,43 +100,84 @@ path2ee <- paste0(path2main, "/EarthEngine")
 path2chirps <- paste0(path2ee, "/chirps")
 path2data <- paste0(path2chirps, "/data")
 
-text_source_data_chirps <- paste("Fuente: Climate Hazards Center InfraRed",
-                                 "Precipitation With Station Data (CHIPRS)")
+text_source_chirps <- paste("Climate Hazards Center InfraRed",
+                            "Precipitation With Station Data (CHIPRS)")
 
 # TODO: Agregar en el procesamiento de datos, las estadísticas de la nación
 
 # - - CHIRPS - - #
+# ~ Valores normales ~ #
+# Estados
+normal_ent_year <- read_csv(
+    file = paste0(path2data,
+                  "/normal",
+                  "/db_pr_normal_ent_year.csv"))
+
+normal_ent_month <- read_csv(
+    file = paste0(path2data,
+                  "/normal",
+                  "/db_pr_normal_ent_month.csv"))
+
+normal_ent_week <- read_csv(
+    file = paste0(path2data,
+                  "/normal",
+                  "/db_pr_normal_ent_week.csv"))
+
+# Municipios
+normal_mun_year <- read_csv(
+    file = paste0(path2data,
+                  "/normal",
+                  "/db_pr_normal_mun_year.csv"))
+
+normal_mun_month <- read_csv(
+    file = paste0(path2data,
+                  "/normal",
+                  "/db_pr_normal_mun_month.csv"))
+
+normal_mun_week <- read_csv(
+    file = paste0(path2data,
+                  "/normal",
+                  "/db_pr_normal_mun_week.csv"))
+
 # ~ Estados ~ #
-chirps_ent_week <- read_csv(
+chirps_ent_year <- read_csv(
     file = paste0(path2data,
                   "/estados",
-                  "/db_pr_ent_week.csv"))
+                  "/db_pr_ent_year.csv"))
 
 chirps_ent_month <- read_csv(
     file = paste0(path2data,
                   "/estados",
                   "/db_pr_ent_month.csv"))
 
-chirps_ent_year <- read_csv(
+chirps_ent_week <- read_csv(
     file = paste0(path2data,
                   "/estados",
-                  "/db_pr_ent_year.csv"))
+                  "/db_pr_ent_week.csv"))
 
 # ~ Municipios ~ #
-chirps_mun_week <- read_csv(
+chirps_mun_year <- read_csv(
     file = paste0(path2data,
                   "/municipios",
-                  "/db_pr_mun_week.csv.bz2"))
+                  "/db_pr_mun_year.csv"))
 
 chirps_mun_month <- read_csv(
     file = paste0(path2data,
                   "/municipios",
                   "/db_pr_mun_month.csv.bz2"))
 
-chirps_mun_year <- read_csv(
+chirps_mun_week <- read_csv(
     file = paste0(path2data,
                   "/municipios",
-                  "/db_pr_mun_year.csv"))
+                  "/db_pr_mun_week.csv.bz2"))
+
+text_recent_date <- chirps_ent_month %>%
+  filter(!is.na(pr_mm)) %>%
+  filter(max(date_year_month) == date_year_month) %>%
+  distinct(date_year_month) %>%
+  pull(date_year_month) %>%
+  format(format = "%B %Y") %>%
+  str_to_title()
 
 #' ## 01
 #' 
@@ -156,6 +195,17 @@ chirps_mun_year <- read_csv(
 #' diam mi consectetur metus, eu pulvinar dui nisl nec neque.
 
 #| label: fig-cumsum-pr-nac
+
+chirps_nac_month <- normal_ent_month %>%
+  group_by(n_month) %>%
+  summarise(normal_pr_mm = mean(normal_pr_mm, na.rm = TRUE)) %>%
+  ungroup() %>%
+  arrange(n_month) %>%
+  mutate(
+    n_month = as.integer(n_month),
+    cumsum_normal_pr_mm = cumsum(normal_pr_mm))
+
+
 chirps_ent_month %>%
   group_by(
     n_year,
@@ -182,6 +232,11 @@ chirps_ent_month %>%
       ))) +
   geom_line() +
   #geom_step(direction = "mid") +
+  geom_line(
+    data = chirps_nac_month,
+    mapping = aes(y = cumsum_normal_pr_mm, group = NULL),
+    color = "steelblue",
+    size = 1) +
   scale_color_identity() +
   scale_size_identity() +
   scale_y_continuous(
@@ -192,10 +247,16 @@ chirps_ent_month %>%
     labels = month.abb,
     expand = expansion(mult = c(0, 0.1))) +
   labs(
-    title = paste("</span>2024</span> no ha sido tan seco como <span>2023</span>"),
-    subtitle = paste("Acumulación de la precipitación en <b>México</b>.",
-                     "<br>Periodo: 1981 - Julio 2024"),
-    caption = text_source_data_chirps) +
+    title = paste("<span style='color:red;'>2024</span> no ha sido tan",
+                  "seco como <span style='color:orange;'>2023</span>"),
+    subtitle = paste("Acumulación de la precipitación en",
+                      "<b>México</b>. Periodo: 1981 -",
+                      text_recent_date,".",
+                      "<br>Se resalta la",
+                      "<b style='color:steelblue'>acumulación normal</b>."),
+    caption = paste("Fuente:", text_source_chirps,
+                    "<br>Nota: La <em>normal</em> es el promedio de",
+                    "periodo 1981 - 2010")) +
   theme(
     axis.line.y = element_blank(),
     axis.ticks.y = element_blank(),
@@ -231,7 +292,11 @@ chirps_ent_month %>%
         false = 0.3
       ))) +
   geom_line() +
-  #geom_step(direction = "mid") +
+  geom_line(
+    data = chirps_nac_month,
+    mapping = aes(y = normal_pr_mm, group = NULL),
+    color = "steelblue",
+    size = 1) +
   scale_color_identity() +
   scale_size_identity() +
   scale_y_continuous(
@@ -242,10 +307,15 @@ chirps_ent_month %>%
     labels = month.abb,
     expand = expansion(mult = c(0, 0.03))) +
   labs(
-    title = paste("</span>2024</span> no ha sido tan seco como <span>2023</span>"),
+    title = paste("<span style='color:red;'>2024</span> no ha sido tan",
+                  "seco como <span style='color:orange;'>2023</span>"),
     subtitle = paste("Precipitación mensual en <b>México</b>.",
-                     "<br>Periodo: 1981 - Julio 2024"),
-    caption = text_source_data_chirps) +
+                     "Periodo: 1981 -", text_recent_date,".",
+                     "<br>Se resalta la",
+                     "<b style='color:steelblue'>precipitación normal</b>"),
+    caption = paste("Fuente:", text_source_chirps,
+                    "<br>Nota: La <em>normal</em> es el promedio de",
+                    "periodo 1981 - 2010")) +
   theme(
     axis.line.y = element_blank(),
     axis.ticks.y = element_blank(),

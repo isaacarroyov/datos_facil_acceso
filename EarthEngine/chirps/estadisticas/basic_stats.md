@@ -11,9 +11,22 @@
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean eu purus mattis, ultrices enim eget, efficitur nisl. Nulla ipsum purus, efficitur non dignissim eget, consectetur a erat. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Vivamus feugiat finibus urna, vel fermentum tortor sagittis eu. Vestibulum ultrices, nunc quis mollis fermentum, nibh odio finibus ante, at scelerisque turpis neque sed odio. Praesent ullamcorper velit dui, sed ultricies ex eleifend id. Fusce molestie massa tempus odio ultrices, quis dignissim libero maximus. Proin posuere vestibulum eros, at aliquam tellus convallis in. Nunc a dictum mauris. Proin tincidunt erat erat, vitae vulputate mi placerat vitae. Aenean scelerisque, turpis a varius congue, diam mi consectetur metus, eu pulvinar dui nisl nec neque.
 
+<div id="fig-cumsum-pr-nac">
+
 <img src="basic_stats_files/figure-commonmark/fig-cumsum-pr-nac-1.png" id="fig-cumsum-pr-nac" />
 
+
+Figura 1
+
+</div>
+<div id="fig-pr-nac">
+
 <img src="basic_stats_files/figure-commonmark/fig-pr-nac-1.png" id="fig-pr-nac" />
+
+
+Figura 2
+
+</div>
 
 ## 02
 
