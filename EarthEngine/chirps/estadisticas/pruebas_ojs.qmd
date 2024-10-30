@@ -101,6 +101,19 @@ df2vis_info_ent_nac_year <- db_pr_ent_year %>%
   bind_rows(db_pr_ent_year)
 ```
 
+```{r}
+#| echo: false
+#| label: show_sample-df2vis_info_ent_nac_year
+set.seed(1)
+df2vis_info_ent_nac_year %>%
+  slice_sample(n = 5) %>%
+  select(
+    n_year,
+    cve_ent,
+    nombre_estado,
+    anomaly_pr_prop)
+```
+
 Un ejemplo de la visualización sería la siguiente
 
 ```{r}
@@ -116,8 +129,8 @@ df2vis_info_ent_nac_year %>%
       group = cve_ent,
       color = if_else(
         condition = nombre_estado == "the country",
-        true = "#BE3144",
-        false = "#240750"),
+        true = "#b31515",
+        false = "#38419D"),
       alpha = if_else(
         condition = nombre_estado %in% c(var_ent_name, "the country"),
         true = 1,
@@ -136,11 +149,11 @@ df2vis_info_ent_nac_year %>%
     n.breaks = 6,
     labels = scales::label_percent()) +
   labs(
-    title = paste0("How much rain has <span style='color:#240750;'>",
+    title = paste0("How much rain has <span style='color:#38419D;'>",
                    var_ent_name,"</span> had in recent years?" ),
     subtitle = paste0("Yearly precipitation anomaly in ",
-                      "<b style='color:#BE3144;'>the country</b> compared to ",
-                      "the other <b style='color:#240750;'>states</b>.<br>",
+                      "<b style='color:#b31515;'>the country</b> compared to ",
+                      "the other <b style='color:#38419D;'>states</b>.<br>",
                       "The period used for computing the climatology is ",
                       "1981-2010"),
     caption = paste("Data: Climate Hazards Center InfraRed Precipitation",
@@ -221,6 +234,20 @@ df2vis_info_ent_nac_month <- db_pr_ent_month %>%
   mutate(n_year = as.character(n_year))
 ```
 
+```{r}
+#| echo: false
+#| label: show_sample-df2vis_info_ent_nac_month
+set.seed(1)
+df2vis_info_ent_nac_month %>% 
+  slice_sample(n = 5) %>%
+  select(
+    n_year,
+    n_month,
+    cve_ent,
+    nombre_estado,
+    anomaly_pr_prop)
+```
+
 Un ejemplo de la visualización sería la siguiente
 
 ```{r}
@@ -236,8 +263,8 @@ df2vis_info_ent_nac_month %>%
       group = cve_ent,
       color = if_else(
         condition = nombre_estado == "the country",
-        true = "#BE3144",
-        false = "#240750"),
+        true = "#b31515",
+        false = "#38419D"),
       alpha = if_else(
         condition = nombre_estado %in% c(var_ent_name, "the country"),
         true = 1,
@@ -260,11 +287,11 @@ df2vis_info_ent_nac_month %>%
     labels = scales::label_percent(big.mark = ",")) +
   coord_cartesian(xlim = c(1, 12)) +
   labs(
-    title = paste0("How much rain did <span style='color:#240750;'>",
+    title = paste0("How much rain did <span style='color:#38419D;'>",
                    var_ent_name,"</span> have in ", var_n_year, "?" ),
     subtitle = paste0("Monthly precipitation anomaly in ",
-                      "<b style='color:#BE3144;'>the country</b> compared to ",
-                      "the other <b style='color:#240750;'>states</b>.<br>",
+                      "<b style='color:#b31515;'>the country</b> compared to ",
+                      "the other <b style='color:#38419D;'>states</b>.<br>",
                       "The period used for computing the climatology is ",
                       "1981-2010"),
     caption = paste("Data: Climate Hazards Center InfraRed Precipitation",
@@ -347,6 +374,20 @@ df2vis_info_cumsum_ent_nac_month <- db_pr_normal_ent_month %>%
         n_year, n_month,
         pr_mm,
         cumsum_pr_mm))
+```
+
+```{r}
+#| echo: false
+#| label: show_sample-df2vis_info_cumsum_ent_nac_month
+set.seed(1)
+df2vis_info_cumsum_ent_nac_month %>% 
+  slice_sample(n = 5) %>%
+  select(
+    n_year,
+    n_month,
+    cve_ent,
+    nombre_estado,
+    cumsum_pr_mm)
 ```
 
 Un ejemplo de la visualización sería la siguiente
@@ -478,7 +519,7 @@ viewof select_ent_name = Inputs.select(
 // label: create-select_n_year
 viewof select_n_year = Inputs.select(
     array_n_year,
-    {value: "2023",
+    {value: "2024",
     label: "Year"})
 ```
 
@@ -487,29 +528,15 @@ viewof select_n_year = Inputs.select(
 
 ### Anomalía anual de la precipitación
 
-Los datos a usar son los siguientes:
-
-```{r}
-#| echo: false
-#| label: show_sample-df2vis_info_ent_nac_year
-set.seed(1)
-df2vis_info_ent_nac_year %>%
-  slice_sample(n = 5) %>%
-  select(
-    n_year,
-    cve_ent,
-    nombre_estado,
-    anomaly_pr_prop)
-```
-
 <div>
   <span style='font-size:1.25em;font-weight:600'>
-  How much rain has ${select_ent_name} had in recent years?
+  How much rain has <span style='color:#38419D;'>${select_ent_name}</span> 
+  had in recent years?
   </span>
   <br>
   <span>
-  Yearly precipitation anonmaly <b style='color:#BE3144;'>the country</b> 
-  compared to the other <b style='color:#240750;'>states</b>. The period 
+  Yearly precipitation anonmaly <b style='color:#b31515;'>the country</b> 
+  compared to the other <b style='color:#38419D;'>states</b>. The period 
   used for computing the climatology is 1981-2010
   </span>
 </div>
@@ -520,6 +547,7 @@ Plot.plot({
   /* = = = Main configs = = = */
   /* - - margins - - */
   marginLeft: 0,
+  marginRight: 55,
   /* - - Axis config - - */
   y: {
     grid: true,
@@ -533,7 +561,7 @@ Plot.plot({
   /* ~ Colour encoding ~ */
   color: {
     domain: [true, false],
-    range: ["#BE3144", "#240750"]},
+    range: ["#b31515", "#38419D"]},
   
   /* ~ (stroke)Opacity encoding ~ */
   opacity: {
@@ -548,7 +576,6 @@ Plot.plot({
       labelAnchor: "top",
       textAnchor: "start",
       tickSize: 0,
-      marginRight: 50,
       tickFormat: (d) => d + "%",
       label: null}),
     /* - - base line (0%) - - */
@@ -585,31 +612,16 @@ Plot.plot({
 
 ### Anomalía mensual de la precipitación
 
-Los datos a usar son los siguientes:
-
-```{r}
-#| echo: false
-#| label: show_sample-df2vis_info_ent_nac_month
-set.seed(1)
-df2vis_info_ent_nac_month %>% 
-  slice_sample(n = 5) %>%
-  select(
-    n_year,
-    n_month,
-    cve_ent,
-    nombre_estado,
-    anomaly_pr_prop)
-```
-
 <div>
   <span style='font-size:1.25em;font-weight:600'>
-  How much rain did ${select_ent_name} have during ${select_n_year}?
+  How much rain did <span style='color:#38419D;'>${select_ent_name}</span> 
+  have during ${select_n_year}?
   </span>
   <br>
   <span>
   Monthly precipitation anonmaly in 
-  <b style='color:#BE3144;'>the country</b> compared to the 
-  other <b style='color:#240750;'>states</b>. The period 
+  <b style='color:#b31515;'>the country</b> compared to the 
+  other <b style='color:#38419D;'>states</b>. The period 
   used for computing the climatology is 1981-2010
   </span>
 </div>
@@ -626,6 +638,7 @@ Plot.plot({
   /* = = = Main configs = = = */
   /* - - margins - - */
   marginLeft: 0,
+  marginRight: 55,
   /* - - Axis config - - */
   y: {
     grid: true,
@@ -643,7 +656,7 @@ Plot.plot({
   /* ~ Colour encoding ~ */
   color: {
     domain: [true, false],
-    range: ["#BE3144", "#240750"]},
+    range: ["#b31515", "#38419D"]},
   
   /* ~ (stroke)Opacity encoding ~ */
   opacity: {
@@ -695,22 +708,6 @@ Plot.plot({
 
 ### Acumulación mensual de la precipitación
 
-Los datos a usar son 
-
-```{r}
-#| echo: false
-#| label: show_sample-df2vis_info_cumsum_ent_nac_month
-set.seed(1)
-df2vis_info_cumsum_ent_nac_month %>% 
-  slice_sample(n = 5) %>%
-  select(
-    n_year,
-    n_month,
-    cve_ent,
-    nombre_estado,
-    cumsum_pr_mm)
-```
-
 <div>
   <span style='font-size:1.25em;font-weight:600;'>
   Was there enough rain in ${select_ent_name} during 
@@ -737,6 +734,7 @@ Plot.plot({
   /* = = = Main configs = = = */
   /* - - margins - - */
   marginLeft: 0,
+  marginRight: 55,
   /* - - Axis config - - */
   y: {grid: true},
   x: {
@@ -767,7 +765,6 @@ Plot.plot({
       labelAnchor: "top",
       textAnchor: "start",
       tickSize: 0,
-      marginRight: 50,
       tickFormat: (d) => d + " mm",
       label: null}),
     /* - - base line (0%) - - */
@@ -793,3 +790,11 @@ Plot.plot({
 })
 
 ```
+
+<div style='font-size:0.7em'>
+  <b>Data</b>: Climate Hazards Center InfraRed Precipitation With Station Data (CHIRPS).
+  <br>
+  <b>Latest update</b>: ${string_latest_update}
+  <br>
+  <b>Chart</b>: Isaac Arroyo (@isaacarroyov)
+</div>
