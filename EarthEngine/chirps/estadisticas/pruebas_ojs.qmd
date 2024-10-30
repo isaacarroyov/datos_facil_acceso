@@ -501,32 +501,27 @@ ojs_define(string_latest_update = format(
 ## Creación de menús desplegables
 
 Con las transformaciones hechas, ahora podemos crear los menús 
-desplegables
-
-**Menú de nombre de entidades**
+desplegables de nombres de entidades y año de interés.
 
 ```{ojs}
-// label: create-select_ent_name
+//| label: create-select_ent_name
+//| echo: false
 viewof select_ent_name = Inputs.select(
     array_ent_name,
     {value: 'Yucatán',
-    label: "State"})
+    label: "Select a state"})
 ```
 
-**Menú de años**
-
 ```{ojs}
-// label: create-select_n_year
+//| label: create-select_n_year
+//| echo: false
 viewof select_n_year = Inputs.select(
     array_n_year,
     {value: "2024",
-    label: "Year"})
+    label: "Select a year"})
 ```
 
-
-## Gráficos interactivos
-
-### Anomalía anual de la precipitación
+## Interactive charts
 
 <div>
   <span style='font-size:1.25em;font-weight:600'>
@@ -610,7 +605,7 @@ Plot.plot({
   <b>Chart</b>: Isaac Arroyo (@isaacarroyov)
 </div>
 
-### Anomalía mensual de la precipitación
+---
 
 <div>
   <span style='font-size:1.25em;font-weight:600'>
@@ -706,7 +701,7 @@ Plot.plot({
   <b>Chart</b>: Isaac Arroyo (@isaacarroyov)
 </div>
 
-### Acumulación mensual de la precipitación
+---
 
 <div>
   <span style='font-size:1.25em;font-weight:600;'>
