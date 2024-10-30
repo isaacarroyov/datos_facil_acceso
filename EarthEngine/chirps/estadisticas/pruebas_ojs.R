@@ -97,7 +97,7 @@ df2vis_info_ent_nac_year <- db_pr_ent_year %>%
 #' Un ejemplo de la visualización sería la siguiente
 
 #| label: fig-linechart-example-anomaly-year-ent-nac
-var_ent_name <- "Oaxaca"
+var_ent_name <- "San Luis Potosí"
 var_latest_update_info <- format(max(db_pr_ent_month$date_year_month), format = "%B %Y")
 
 df2vis_info_ent_nac_year %>%
@@ -213,7 +213,7 @@ df2vis_info_ent_nac_month <- db_pr_ent_month %>%
 #' Un ejemplo de la visualización sería la siguiente
 
 #| label: fig-linechart-example-anomaly-pr-prop-month-ent-nac
-var_n_year <- "2016"
+var_n_year <- "2024"
 
 df2vis_info_ent_nac_month %>%
   filter(n_year == var_n_year) %>%
@@ -346,7 +346,7 @@ df2vis_info_cumsum_ent_nac_month %>%
       group = n_year,
       color = if_else(
         condition = n_year == "1980-2010",
-        true = "#27374D",
+        true = "#CD5C08",
         false = "#116D6E"),
       alpha = if_else(
         condition = n_year %in% c(var_n_year, "1980-2010"),
@@ -370,7 +370,7 @@ df2vis_info_cumsum_ent_nac_month %>%
     title = paste0("Was there enough rain in ", var_ent_name, " during ",
                    "<span style='color:#116D6E;'>", var_n_year, "</span>?" ),
     subtitle = paste0("Monthly precipitation accumulation ",
-                      "compared to the <b style='color:#27374D;'>",
+                      "compared to the <b style='color:#CD5C08;'>",
                       "1980-2010 period</b>."),
     caption = paste("Data: Climate Hazards Center InfraRed Precipitation",
                     "With Station Data (CHIRPS).<br>",
@@ -422,7 +422,6 @@ ojs_define(data2vis_cumsum_month = df2vis_info_cumsum_ent_nac_month)
 
 #| code-summary: "Create elements"
 #| label: create-observable-objects-arrays4menus-and-strings
-
 ojs_define(array_ent_name = pull(
     .data = distinct(
       .data = df2vis_info_cumsum_ent_nac_month,
@@ -445,6 +444,7 @@ ojs_define(string_latest_update = format(
 #' **Menú de nombre de entidades**
 
 #' ```{ojs}
+#' // label: create-select_ent_name
 #' viewof select_ent_name = Inputs.select(
 #'     array_ent_name,
 #'     {value: 'Yucatán',
@@ -454,13 +454,12 @@ ojs_define(string_latest_update = format(
 #' **Menú de años**
 #' 
 #' ```{ojs}
+#' // label: create-select_n_year
 #' viewof select_n_year = Inputs.select(
 #'     array_n_year,
 #'     {value: "2023",
 #'     label: "Year"})
 #' ```
-#' 
-#' TODO: Continuar here
 #' 
 #' ```{ojs}
 #' viewof select_n_year = Inputs.select(
