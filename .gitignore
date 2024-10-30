@@ -8,3 +8,5 @@ geom_mexico_mun.cpg
 GobiernoMexicano/sesnsp/og_incidencia_delitos_fuero_comun/IDM_*.csv
 EarthEngine/chirps/data/municipios/db_pr_mun_week*
 EarthEngine/chirps/data/municipios/db_pr_mun_day*
+EarthEngine/chirps/estadisticas/pruebas_*/
+EarthEngine/chirps/estadisticas/*.html
