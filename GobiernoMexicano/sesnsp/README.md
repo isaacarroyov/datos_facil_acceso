@@ -1,7 +1,7 @@
 # Procesamiento de datos: Incidencia Delictiva y Víctimas del Fuero
 Común
 Isaac Arroyo
-23 de septiembre de 2024
+24 de octubre de 2024
 
 ## Introducción y objetivos
 
@@ -45,7 +45,7 @@ db_incidencia_mun <- read_csv(
   janitor::clean_names()
 
 # - - Número de víctimas de delitos - - #
-url_victimas_ent <- "https://drive.google.com/file/d/1LAGTkmP5YckJSKEMtRaH--n_TXJSHkVM/view"
+url_victimas_ent <- "https://drive.google.com/file/d/1To-Ufl7Dj2FMHO8UDROmyaVgPE25aicn/view"
 id_file_victimas_ent <- str_extract(
     string = url_victimas_ent,
     pattern = "(?<=d/)(.*?)(?=/view)")
@@ -60,23 +60,23 @@ db_victimas_ent <- read_csv(
 
 **Muestra de `db_incidencia_mun`**
 
-| ano  | clave_ent | entidad         | cve_municipio | municipio                | bien_juridico_afectado | tipo_de_delito     | subtipo_de_delito                               | modalidad                         | enero | febrero | marzo | abril | mayo | junio | julio | agosto | septiembre | octubre | noviembre | diciembre |
-|:-----|:----------|:----------------|:--------------|:-------------------------|:-----------------------|:-------------------|:------------------------------------------------|:----------------------------------|:------|:--------|:------|:------|:-----|:------|:------|:-------|:-----------|:--------|:----------|:----------|
-| 2019 | 24        | San Luis Potosí | 24048         | Villa de la Paz          | El patrimonio          | Robo               | Robo a transeúnte en espacio abierto al público | Sin violencia                     | 0     | 0       | 0     | 0     | 0    | 0     | 0     | 0      | 0          | 0       | 0         | 0         |
-| 2020 | 31        | Yucatán         | 31093         | Tixkokob                 | El patrimonio          | Robo               | Robo de vehículo automotor                      | Robo de motocicleta Con violencia | 0     | 0       | 0     | 0     | 0    | 0     | 0     | 0      | 0          | 0       | 0         | 0         |
-| 2020 | 31        | Yucatán         | 31019         | Chemax                   | El patrimonio          | Abuso de confianza | Abuso de confianza                              | Abuso de confianza                | 0     | 0       | 1     | 0     | 0    | 0     | 0     | 0      | 0          | 0       | 0         | 0         |
-| 2023 | 11        | Guanajuato      | 11017         | Irapuato                 | El patrimonio          | Robo               | Robo a negocio                                  | Sin violencia                     | 19    | 4       | 8     | 12    | 12   | 15    | 21    | 13     | 25         | 23      | 9         | 20        |
-| 2024 | 20        | Oaxaca          | 20105         | San Antonino Monte Verde | El patrimonio          | Robo               | Robo a transeúnte en vía pública                | Sin violencia                     | 0     | 0       | 0     | 0     | 0    | 0     | 0     | 0      | NA         | NA      | NA        | NA        |
+| ano | clave_ent | entidad | cve_municipio | municipio | bien_juridico_afectado | tipo_de_delito | subtipo_de_delito | modalidad | enero | febrero | marzo | abril | mayo | junio | julio | agosto | septiembre | octubre | noviembre | diciembre |
+|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|
+| 2019 | 24 | San Luis Potosí | 24048 | Villa de la Paz | El patrimonio | Robo | Robo a transeúnte en espacio abierto al público | Sin violencia | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| 2020 | 31 | Yucatán | 31093 | Tixkokob | El patrimonio | Robo | Robo de vehículo automotor | Robo de motocicleta Con violencia | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| 2020 | 31 | Yucatán | 31019 | Chemax | El patrimonio | Abuso de confianza | Abuso de confianza | Abuso de confianza | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| 2023 | 11 | Guanajuato | 11017 | Irapuato | El patrimonio | Robo | Robo a negocio | Sin violencia | 19 | 4 | 8 | 12 | 12 | 15 | 21 | 13 | 25 | 23 | 9 | 20 |
+| 2024 | 20 | Oaxaca | 20105 | San Antonino Monte Verde | El patrimonio | Robo | Robo a transeúnte en vía pública | Sin violencia | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | NA | NA | NA |
 
 **Muestra de `db_victimas_ent`**
 
-| ano  | clave_ent | entidad                         | bien_juridico_afectado           | tipo_de_delito                   | subtipo_de_delito                | modalidad                        | sexo            | rango_de_edad          | enero | febrero | marzo | abril | mayo | junio | julio | agosto | septiembre | octubre | noviembre | diciembre |
-|:-----|:----------|:--------------------------------|:---------------------------------|:---------------------------------|:---------------------------------|:---------------------------------|:----------------|:-----------------------|:------|:--------|:------|:------|:-----|:------|:------|:-------|:-----------|:--------|:----------|:----------|
-| 2023 | 30        | Veracruz de Ignacio de la Llave | La vida y la Integridad corporal | Feminicidio                      | Feminicidio                      | Con arma blanca                  | Mujer           | Menores de edad (0-17) | 0     | 0       | 0     | 1     | 0    | 0     | 0     | 0      | 0          | 0       | 0         | 0         |
-| 2024 | 1         | Aguascalientes                  | La vida y la Integridad corporal | Aborto                           | Aborto                           | Aborto                           | No identificado | No identificado        | 0     | 1       | 1     | 0     | 0    | 1     | 0     | 0      | NA         | NA      | NA        | NA        |
-| 2017 | 19        | Nuevo León                      | La vida y la Integridad corporal | Homicidio                        | Homicidio culposo                | Con otro elemento                | Hombre          | Adultos (18 y más)     | 6     | 2       | 4     | 0     | 2    | 4     | 3     | 3      | 0          | 5       | 0         | 1         |
-| 2018 | 30        | Veracruz de Ignacio de la Llave | La sociedad                      | Otros delitos contra la sociedad | Otros delitos contra la sociedad | Otros delitos contra la sociedad | Hombre          | Menores de edad (0-17) | 0     | 0       | 0     | 0     | 0    | 0     | 0     | 0      | 0          | 0       | 0         | 0         |
-| 2020 | 4         | Campeche                        | La vida y la Integridad corporal | Homicidio                        | Homicidio doloso                 | Con otro elemento                | Hombre          | Menores de edad (0-17) | 0     | 0       | 0     | 0     | 0    | 0     | 0     | 0      | 0          | 0       | 0         | 0         |
+| ano | clave_ent | entidad | bien_juridico_afectado | tipo_de_delito | subtipo_de_delito | modalidad | sexo | rango_de_edad | enero | febrero | marzo | abril | mayo | junio | julio | agosto | septiembre | octubre | noviembre | diciembre |
+|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|
+| 2023 | 30 | Veracruz de Ignacio de la Llave | La vida y la Integridad corporal | Feminicidio | Feminicidio | Con arma blanca | Mujer | Menores de edad (0-17) | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| 2024 | 1 | Aguascalientes | La vida y la Integridad corporal | Aborto | Aborto | Aborto | No identificado | No identificado | 0 | 1 | 1 | 0 | 0 | 1 | 0 | 0 | 1 | NA | NA | NA |
+| 2017 | 19 | Nuevo León | La vida y la Integridad corporal | Homicidio | Homicidio culposo | Con otro elemento | Hombre | Adultos (18 y más) | 6 | 2 | 4 | 0 | 2 | 4 | 3 | 3 | 0 | 5 | 0 | 1 |
+| 2018 | 30 | Veracruz de Ignacio de la Llave | La sociedad | Otros delitos contra la sociedad | Otros delitos contra la sociedad | Otros delitos contra la sociedad | Hombre | Menores de edad (0-17) | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| 2020 | 4 | Campeche | La vida y la Integridad corporal | Homicidio | Homicidio doloso | Con otro elemento | Hombre | Menores de edad (0-17) | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 
 ## Objetivos
 
@@ -225,13 +225,13 @@ db_incidencia_mun_renamed <- db_incidencia_mun %>%
   rename(n_year = ano)
 ```
 
-| n_year | cve_ent | nombre_estado | cve_geo | nombre_municipio    | bien_juridico_afectado            | tipo_de_delito        | subtipo_de_delito                | modalidad                | enero | febrero | marzo | abril | mayo | junio | julio | agosto | septiembre | octubre | noviembre | diciembre |
-|:-------|:--------|:--------------|:--------|:--------------------|:----------------------------------|:----------------------|:---------------------------------|:-------------------------|:------|:--------|:------|:------|:-----|:------|:------|:-------|:-----------|:--------|:----------|:----------|
-| 2024   | 20      | Oaxaca        | 20472   | Santiago Laollaga   | La vida y la Integridad corporal  | Homicidio             | Homicidio doloso                 | Con otro elemento        | 0     | 0       | 0     | 0     | 0    | 0     | 0     | 0      | NA         | NA      | NA        | NA        |
-| 2021   | 20      | Oaxaca        | 20402   | Santa María Cortijo | La vida y la Integridad corporal  | Homicidio             | Homicidio culposo                | En accidente de tránsito | 0     | 0       | 0     | 0     | 0    | 0     | 0     | 0      | 0          | 0       | 0         | 0         |
-| 2018   | 31      | Yucatán       | 31100   | Ucú                 | La sociedad                       | Corrupción de menores | Corrupción de menores            | Corrupción de menores    | 0     | 0       | 0     | 0     | 0    | 0     | 0     | 0      | 0          | 0       | 0         | 0         |
-| 2024   | 13      | Hidalgo       | 13014   | Calnali             | La libertad y la seguridad sexual | Violación equiparada  | Violación equiparada             | Violación equiparada     | 0     | 0       | 0     | 0     | 0    | 0     | 0     | 0      | NA         | NA      | NA        | NA        |
-| 2020   | 32      | Zacatecas     | 32025   | Luis Moya           | El patrimonio                     | Robo                  | Robo a transeúnte en vía pública | Con violencia            | 0     | 0       | 0     | 0     | 0    | 0     | 0     | 0      | 0          | 0       | 0         | 0         |
+| n_year | cve_ent | nombre_estado | cve_geo | nombre_municipio | bien_juridico_afectado | tipo_de_delito | subtipo_de_delito | modalidad | enero | febrero | marzo | abril | mayo | junio | julio | agosto | septiembre | octubre | noviembre | diciembre |
+|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|
+| 2024 | 20 | Oaxaca | 20472 | Santiago Laollaga | La vida y la Integridad corporal | Homicidio | Homicidio doloso | Con otro elemento | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | NA | NA | NA |
+| 2021 | 20 | Oaxaca | 20402 | Santa María Cortijo | La vida y la Integridad corporal | Homicidio | Homicidio culposo | En accidente de tránsito | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| 2018 | 31 | Yucatán | 31100 | Ucú | La sociedad | Corrupción de menores | Corrupción de menores | Corrupción de menores | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| 2024 | 13 | Hidalgo | 13014 | Calnali | La libertad y la seguridad sexual | Violación equiparada | Violación equiparada | Violación equiparada | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | NA | NA | NA |
+| 2020 | 32 | Zacatecas | 32025 | Luis Moya | El patrimonio | Robo | Robo a transeúnte en vía pública | Con violencia | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 
 ``` r
 # - - Número de víctimas (estados) - - #
@@ -250,13 +250,13 @@ db_victimas_ent_renamed <- db_victimas_ent %>%
   rename(n_year = ano)
 ```
 
-| n_year | cve_ent | nombre_estado       | bien_juridico_afectado           | tipo_de_delito | subtipo_de_delito | modalidad                      | sexo   | rango_de_edad          | enero | febrero | marzo | abril | mayo | junio | julio | agosto | septiembre | octubre | noviembre | diciembre |
-|:-------|:--------|:--------------------|:---------------------------------|:---------------|:------------------|:-------------------------------|:-------|:-----------------------|:------|:--------|:------|:------|:-----|:------|:------|:-------|:-----------|:--------|:----------|:----------|
-| 2018   | 11      | Guanajuato          | La vida y la Integridad corporal | Homicidio      | Homicidio culposo | Con otro elemento              | Mujer  | Menores de edad (0-17) | 8     | 7       | 7     | 6     | 8    | 2     | 6     | 3      | 2          | 3       | 0         | 4         |
-| 2023   | 03      | Baja California Sur | La vida y la Integridad corporal | Lesiones       | Lesiones culposas | Con arma de fuego              | Hombre | No especificado        | 0     | 0       | 0     | 0     | 0    | 0     | 0     | 0      | 0          | 0       | 0         | 0         |
-| 2020   | 29      | Tlaxcala            | El patrimonio                    | Extorsión      | Extorsión         | Extorsión                      | Mujer  | Adultos (18 y más)     | 0     | 0       | 0     | 0     | 0    | 0     | 0     | 0      | 0          | 0       | 0         | 0         |
-| 2024   | 15      | Estado de México    | Libertad personal                | Secuestro      | Secuestro         | Secuestro con calidad de rehén | Hombre | Menores de edad (0-17) | 0     | 0       | 0     | 0     | 0    | 0     | 0     | 0      | NA         | NA      | NA        | NA        |
-| 2016   | 19      | Nuevo León          | La vida y la Integridad corporal | Homicidio      | Homicidio doloso  | Con arma de fuego              | Mujer  | No especificado        | 1     | 1       | 0     | 0     | 1    | 0     | 0     | 0      | 0          | 0       | 0         | 0         |
+| n_year | cve_ent | nombre_estado | bien_juridico_afectado | tipo_de_delito | subtipo_de_delito | modalidad | sexo | rango_de_edad | enero | febrero | marzo | abril | mayo | junio | julio | agosto | septiembre | octubre | noviembre | diciembre |
+|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|
+| 2018 | 11 | Guanajuato | La vida y la Integridad corporal | Homicidio | Homicidio culposo | Con otro elemento | Mujer | Menores de edad (0-17) | 8 | 7 | 7 | 6 | 8 | 2 | 6 | 3 | 2 | 3 | 0 | 4 |
+| 2023 | 03 | Baja California Sur | La vida y la Integridad corporal | Lesiones | Lesiones culposas | Con arma de fuego | Hombre | No especificado | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| 2020 | 29 | Tlaxcala | El patrimonio | Extorsión | Extorsión | Extorsión | Mujer | Adultos (18 y más) | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| 2024 | 15 | Estado de México | Libertad personal | Secuestro | Secuestro | Secuestro con calidad de rehén | Hombre | Menores de edad (0-17) | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | NA | NA | NA |
+| 2016 | 19 | Nuevo León | La vida y la Integridad corporal | Homicidio | Homicidio doloso | Con arma de fuego | Mujer | No especificado | 1 | 1 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 
 ### Transformación de *wide format* a *long format*
 
@@ -298,13 +298,13 @@ db_incidencia_mun_long <- db_incidencia_mun_renamed %>%
   filter(!is.na(n_delitos))
 ```
 
-| date_year_month | n_year | n_month | cve_ent | nombre_estado | cve_geo | nombre_municipio    | bien_juridico_afectado           | tipo_de_delito      | subtipo_de_delito           | modalidad                         | n_delitos |
-|:----------------|:-------|:--------|:--------|:--------------|:--------|:--------------------|:---------------------------------|:--------------------|:----------------------------|:----------------------------------|----------:|
-| 2019-05-15      | 2019   | 05      | 13      | Hidalgo       | 13050   | Progreso de Obregón | El patrimonio                    | Robo                | Robo de vehículo automotor  | Robo de motocicleta Con violencia |         0 |
-| 2021-02-15      | 2021   | 02      | 20      | Oaxaca        | 20242   | San Martín Peras    | Libertad personal                | Secuestro           | Secuestro                   | Secuestro extorsivo               |         0 |
-| 2019-03-15      | 2019   | 03      | 21      | Puebla        | 21001   | Acajete             | La vida y la Integridad corporal | Aborto              | Aborto                      | Aborto                            |         0 |
-| 2021-02-15      | 2021   | 02      | 21      | Puebla        | 21085   | Izúcar de Matamoros | El patrimonio                    | Robo                | Robo a institución bancaria | Sin violencia                     |         0 |
-| 2022-07-15      | 2022   | 07      | 30      | Veracruz      | 30058   | Chicontepec         | El patrimonio                    | Daño a la propiedad | Daño a la propiedad         | Daño a la propiedad               |         2 |
+| date_year_month | n_year | n_month | cve_ent | nombre_estado | cve_geo | nombre_municipio | bien_juridico_afectado | tipo_de_delito | subtipo_de_delito | modalidad | n_delitos |
+|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|---:|
+| 2019-05-15 | 2019 | 05 | 13 | Hidalgo | 13050 | Progreso de Obregón | El patrimonio | Robo | Robo de vehículo automotor | Robo de motocicleta Con violencia | 0 |
+| 2021-02-15 | 2021 | 02 | 20 | Oaxaca | 20242 | San Martín Peras | Libertad personal | Secuestro | Secuestro | Secuestro extorsivo | 0 |
+| 2019-03-15 | 2019 | 03 | 21 | Puebla | 21001 | Acajete | La vida y la Integridad corporal | Aborto | Aborto | Aborto | 0 |
+| 2021-02-15 | 2021 | 02 | 21 | Puebla | 21085 | Izúcar de Matamoros | El patrimonio | Robo | Robo a institución bancaria | Sin violencia | 0 |
+| 2022-07-15 | 2022 | 07 | 30 | Veracruz | 30058 | Chicontepec | El patrimonio | Daño a la propiedad | Daño a la propiedad | Daño a la propiedad | 2 |
 
 ``` r
 db_victimas_ent_long <- db_victimas_ent_renamed %>%
@@ -335,13 +335,13 @@ db_victimas_ent_long <- db_victimas_ent_renamed %>%
   filter(!is.na(n_victimas))
 ```
 
-| date_year_month | n_year | n_month | cve_ent | nombre_estado | bien_juridico_afectado           | tipo_de_delito | subtipo_de_delito | modalidad                | genero | rango_de_edad          | n_victimas |
-|:----------------|:-------|:--------|:--------|:--------------|:---------------------------------|:---------------|:------------------|:-------------------------|:-------|:-----------------------|-----------:|
-| 2021-12-15      | 2021   | 12      | 07      | Chiapas       | La vida y la Integridad corporal | Lesiones       | Lesiones culposas | En accidente de tránsito | Hombre | No especificado        |          0 |
-| 2020-01-15      | 2020   | 01      | 05      | Coahuila      | La vida y la Integridad corporal | Homicidio      | Homicidio culposo | No especificado          | Mujer  | Menores de edad (0-17) |          0 |
-| 2016-09-15      | 2016   | 09      | 14      | Jalisco       | La vida y la Integridad corporal | Lesiones       | Lesiones culposas | No especificado          | Mujer  | Menores de edad (0-17) |          1 |
-| 2019-11-15      | 2019   | 11      | 31      | Yucatán       | La vida y la Integridad corporal | Homicidio      | Homicidio doloso  | Con arma blanca          | Mujer  | Adultos (18 y más)     |          0 |
-| 2022-07-15      | 2022   | 07      | 18      | Nayarit       | La vida y la Integridad corporal | Lesiones       | Lesiones dolosas  | Con otro elemento        | Hombre | Adultos (18 y más)     |          4 |
+| date_year_month | n_year | n_month | cve_ent | nombre_estado | bien_juridico_afectado | tipo_de_delito | subtipo_de_delito | modalidad | genero | rango_de_edad | n_victimas |
+|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|---:|
+| 2021-12-15 | 2021 | 12 | 07 | Chiapas | La vida y la Integridad corporal | Lesiones | Lesiones culposas | En accidente de tránsito | Hombre | No especificado | 0 |
+| 2020-01-15 | 2020 | 01 | 05 | Coahuila | La vida y la Integridad corporal | Homicidio | Homicidio culposo | No especificado | Mujer | Menores de edad (0-17) | 0 |
+| 2016-09-15 | 2016 | 09 | 14 | Jalisco | La vida y la Integridad corporal | Lesiones | Lesiones culposas | No especificado | Mujer | Menores de edad (0-17) | 1 |
+| 2019-11-15 | 2019 | 11 | 31 | Yucatán | La vida y la Integridad corporal | Homicidio | Homicidio doloso | Con arma blanca | Mujer | Adultos (18 y más) | 0 |
+| 2024-01-15 | 2024 | 01 | 30 | Veracruz | La vida y la Integridad corporal | Otros delitos que atentan contra la vida y la integridad corporal | Otros delitos que atentan contra la vida y la integridad corporal | Otros delitos que atentan contra la vida y la integridad corporal | Hombre | Menores de edad (0-17) | 0 |
 
 ### Cambios específicos
 
@@ -430,13 +430,13 @@ df_incidencia_mun_year <- db_incidencia_mun_long %>%
   ungroup()
 ```
 
-| n_year | cve_ent | nombre_estado | cve_geo | nombre_municipio    | bien_juridico_afectado            | tipo_de_delito       | subtipo_de_delito             | modalidad            | n_delitos |
-|:-------|:--------|:--------------|:--------|:--------------------|:----------------------------------|:---------------------|:------------------------------|:---------------------|----------:|
-| 2024   | 20      | Oaxaca        | 20472   | Santiago Laollaga   | El patrimonio                     | Despojo              | Despojo                       | Despojo              |         0 |
-| 2021   | 20      | Oaxaca        | 20402   | Santa María Cortijo | El patrimonio                     | Robo                 | Otros robos                   | Con violencia        |         0 |
-| 2018   | 31      | Yucatán       | 31100   | Ucú                 | Libertad personal                 | Secuestro            | Secuestro                     | Secuestro extorsivo  |         0 |
-| 2024   | 13      | Hidalgo       | 13014   | Calnali             | El patrimonio                     | Robo                 | Robo en transporte individual | Con violencia        |         0 |
-| 2020   | 32      | Zacatecas     | 32025   | Luis Moya           | La libertad y la seguridad sexual | Violación equiparada | Violación equiparada          | Violación equiparada |         0 |
+| n_year | cve_ent | nombre_estado | cve_geo | nombre_municipio | bien_juridico_afectado | tipo_de_delito | subtipo_de_delito | modalidad | n_delitos |
+|:---|:---|:---|:---|:---|:---|:---|:---|:---|---:|
+| 2024 | 20 | Oaxaca | 20472 | Santiago Laollaga | El patrimonio | Despojo | Despojo | Despojo | 0 |
+| 2021 | 20 | Oaxaca | 20402 | Santa María Cortijo | El patrimonio | Robo | Otros robos | Con violencia | 0 |
+| 2018 | 31 | Yucatán | 31100 | Ucú | Libertad personal | Secuestro | Secuestro | Secuestro extorsivo | 0 |
+| 2024 | 13 | Hidalgo | 13014 | Calnali | El patrimonio | Robo | Robo en transporte individual | Con violencia | 0 |
+| 2020 | 32 | Zacatecas | 32025 | Luis Moya | La libertad y la seguridad sexual | Violación equiparada | Violación equiparada | Violación equiparada | 0 |
 
 #### Adjuntar el valor de la población del municipio para el tasado de delitos por 100 mil habitantes.
 
@@ -506,13 +506,13 @@ db_incidencia_mun_year_x100khab <- df_incidencia_mun_year %>%
   select(!c(pob_mid_year, pob_mid_year_mujeres))
 ```
 
-| n_year | cve_ent | nombre_estado | cve_geo | nombre_municipio    | bien_juridico_afectado           | tipo_de_delito | subtipo_de_delito | modalidad           | n_delitos | n_delitos_x100khab | n_delitos_x100kmujeres |
-|:-------|:--------|:--------------|:--------|:--------------------|:---------------------------------|:---------------|:------------------|:--------------------|----------:|-------------------:|-----------------------:|
-| 2024   | 20      | Oaxaca        | 20472   | Santiago Laollaga   | El patrimonio                    | Despojo        | Despojo           | Despojo             |         0 |          0.0000000 |                     NA |
-| 2021   | 20      | Oaxaca        | 20402   | Santa María Cortijo | El patrimonio                    | Robo           | Otros robos       | Con violencia       |         0 |          0.0000000 |                     NA |
-| 2018   | 31      | Yucatán       | 31100   | Ucú                 | Libertad personal                | Secuestro      | Secuestro         | Secuestro extorsivo |         0 |          0.0000000 |                     NA |
-| 2021   | 27      | Tabasco       | 27017   | Tenosique           | La vida y la Integridad corporal | Feminicidio    | Feminicidio       | Con arma de fuego   |         1 |          1.5550165 |              3.0270925 |
-| 2022   | 32      | Zacatecas     | 32017   | Guadalupe           | La vida y la Integridad corporal | Feminicidio    | Feminicidio       | Con arma blanca     |         1 |          0.4899895 |              0.9580288 |
+| n_year | cve_ent | nombre_estado | cve_geo | nombre_municipio | bien_juridico_afectado | tipo_de_delito | subtipo_de_delito | modalidad | n_delitos | n_delitos_x100khab | n_delitos_x100kmujeres |
+|:---|:---|:---|:---|:---|:---|:---|:---|:---|---:|---:|---:|
+| 2024 | 20 | Oaxaca | 20472 | Santiago Laollaga | El patrimonio | Despojo | Despojo | Despojo | 0 | 0.0000000 | NA |
+| 2021 | 20 | Oaxaca | 20402 | Santa María Cortijo | El patrimonio | Robo | Otros robos | Con violencia | 0 | 0.0000000 | NA |
+| 2018 | 31 | Yucatán | 31100 | Ucú | Libertad personal | Secuestro | Secuestro | Secuestro extorsivo | 0 | 0.0000000 | NA |
+| 2021 | 27 | Tabasco | 27017 | Tenosique | La vida y la Integridad corporal | Feminicidio | Feminicidio | Con arma de fuego | 1 | 1.5550165 | 3.0270925 |
+| 2022 | 32 | Zacatecas | 32017 | Guadalupe | La vida y la Integridad corporal | Feminicidio | Feminicidio | Con arma blanca | 1 | 0.4899895 | 0.9580288 |
 
 ### Número anual de delitos a nivel estatal
 
@@ -530,13 +530,13 @@ df_incidencia_ent_year <- db_incidencia_mun_long %>%
   ungroup()
 ```
 
-| n_year | cve_ent | nombre_estado | bien_juridico_afectado                             | tipo_de_delito                   | subtipo_de_delito                | modalidad                        | n_delitos |
-|:-------|:--------|:--------------|:---------------------------------------------------|:---------------------------------|:---------------------------------|:---------------------------------|----------:|
-| 2020   | 18      | Nayarit       | La sociedad                                        | Otros delitos contra la sociedad | Otros delitos contra la sociedad | Otros delitos contra la sociedad |         5 |
-| 2022   | 25      | Sinaloa       | Libertad personal                                  | Secuestro                        | Secuestro                        | Secuestro con calidad de rehén   |         0 |
-| 2016   | 17      | Morelos       | La vida y la Integridad corporal                   | Lesiones                         | Lesiones culposas                | Con arma blanca                  |         0 |
-| 2023   | 17      | Morelos       | Otros bienes jurídicos afectados (del fuero común) | Narcomenudeo                     | Narcomenudeo                     | Narcomenudeo                     |       531 |
-| 2019   | 07      | Chiapas       | Libertad personal                                  | Secuestro                        | Secuestro                        | Secuestro extorsivo              |        16 |
+| n_year | cve_ent | nombre_estado | bien_juridico_afectado | tipo_de_delito | subtipo_de_delito | modalidad | n_delitos |
+|:---|:---|:---|:---|:---|:---|:---|---:|
+| 2020 | 18 | Nayarit | La sociedad | Otros delitos contra la sociedad | Otros delitos contra la sociedad | Otros delitos contra la sociedad | 5 |
+| 2022 | 25 | Sinaloa | Libertad personal | Secuestro | Secuestro | Secuestro con calidad de rehén | 0 |
+| 2016 | 17 | Morelos | La vida y la Integridad corporal | Lesiones | Lesiones culposas | Con arma blanca | 0 |
+| 2023 | 17 | Morelos | Otros bienes jurídicos afectados (del fuero común) | Narcomenudeo | Narcomenudeo | Narcomenudeo | 531 |
+| 2019 | 07 | Chiapas | Libertad personal | Secuestro | Secuestro | Secuestro extorsivo | 16 |
 
 #### Adjuntar el valor de la población del estado para el tasado de delitos por 100 mil habitantes.
 
@@ -577,13 +577,13 @@ df_incidencia_nac_year <- df_incidencia_ent_year %>%
   relocate(nombre_estado, .after = cve_ent)
 ```
 
-| n_year | cve_ent | nombre_estado | bien_juridico_afectado                             | tipo_de_delito | subtipo_de_delito           | modalidad                  | n_delitos |
-|:-------|:--------|:--------------|:---------------------------------------------------|:---------------|:----------------------------|:---------------------------|----------:|
-| 2022   | 00      | Nacional      | Libertad personal                                  | Secuestro      | Secuestro                   | Secuestro para causar daño |        27 |
-| 2022   | 00      | Nacional      | El patrimonio                                      | Robo           | Robo a institución bancaria | Sin violencia              |        70 |
-| 2021   | 00      | Nacional      | La vida y la Integridad corporal                   | Homicidio      | Homicidio culposo           | Con otro elemento          |      1755 |
-| 2020   | 00      | Nacional      | La vida y la Integridad corporal                   | Feminicidio    | Feminicidio                 | Con arma blanca            |       229 |
-| 2024   | 00      | Nacional      | Otros bienes jurídicos afectados (del fuero común) | Narcomenudeo   | Narcomenudeo                | Narcomenudeo               |     62232 |
+| n_year | cve_ent | nombre_estado | bien_juridico_afectado | tipo_de_delito | subtipo_de_delito | modalidad | n_delitos |
+|:---|:---|:---|:---|:---|:---|:---|---:|
+| 2022 | 00 | Nacional | Libertad personal | Secuestro | Secuestro | Secuestro para causar daño | 27 |
+| 2022 | 00 | Nacional | El patrimonio | Robo | Robo a institución bancaria | Sin violencia | 70 |
+| 2021 | 00 | Nacional | La vida y la Integridad corporal | Homicidio | Homicidio culposo | Con otro elemento | 1755 |
+| 2020 | 00 | Nacional | La vida y la Integridad corporal | Feminicidio | Feminicidio | Con arma blanca | 229 |
+| 2024 | 00 | Nacional | Otros bienes jurídicos afectados (del fuero común) | Narcomenudeo | Narcomenudeo | Narcomenudeo | 69706 |
 
 Similar al caso del tasado de delitos a nivel municipal, se tiene que
 agregar información específica de la población de mujeres para el tasado
@@ -615,13 +615,13 @@ db_incidencia_ent_nac_year_x100khab <- bind_rows(
   select(!c(pob_mid_year, pob_mid_year_mujeres))
 ```
 
-| n_year | cve_ent | nombre_estado | bien_juridico_afectado           | tipo_de_delito | subtipo_de_delito          | modalidad                                              | n_delitos | n_delitos_x100khab | n_delitos_x100kmujeres |
-|:-------|:--------|:--------------|:---------------------------------|:---------------|:---------------------------|:-------------------------------------------------------|----------:|-------------------:|-----------------------:|
-| 2018   | 28      | Tamaulipas    | La vida y la Integridad corporal | Homicidio      | Homicidio culposo          | Con arma de fuego                                      |         0 |          0.0000000 |                     NA |
-| 2019   | 08      | Chihuahua     | El patrimonio                    | Robo           | Robo de vehículo automotor | Robo de embarcaciones pequeñas y grandes Con violencia |         0 |          0.0000000 |                     NA |
-| 2016   | 18      | Nayarit       | El patrimonio                    | Extorsión      | Extorsión                  | Extorsión                                              |         5 |          0.4132959 |                     NA |
-| 2023   | 19      | Nuevo León    | La vida y la Integridad corporal | Feminicidio    | Feminicidio                | Con arma blanca                                        |        19 |          0.3063452 |              0.6149405 |
-| 2019   | 32      | Zacatecas     | La vida y la Integridad corporal | Feminicidio    | Feminicidio                | Con arma blanca                                        |         2 |          0.1219533 |              0.2391578 |
+| n_year | cve_ent | nombre_estado | bien_juridico_afectado | tipo_de_delito | subtipo_de_delito | modalidad | n_delitos | n_delitos_x100khab | n_delitos_x100kmujeres |
+|:---|:---|:---|:---|:---|:---|:---|---:|---:|---:|
+| 2018 | 28 | Tamaulipas | La vida y la Integridad corporal | Homicidio | Homicidio culposo | Con arma de fuego | 0 | 0.0000000 | NA |
+| 2019 | 08 | Chihuahua | El patrimonio | Robo | Robo de vehículo automotor | Robo de embarcaciones pequeñas y grandes Con violencia | 0 | 0.0000000 | NA |
+| 2016 | 18 | Nayarit | El patrimonio | Extorsión | Extorsión | Extorsión | 5 | 0.4132959 | NA |
+| 2023 | 19 | Nuevo León | La vida y la Integridad corporal | Feminicidio | Feminicidio | Con arma blanca | 19 | 0.3063452 | 0.6149405 |
+| 2019 | 32 | Zacatecas | La vida y la Integridad corporal | Feminicidio | Feminicidio | Con arma blanca | 2 | 0.1219533 | 0.2391578 |
 
 ## Bases de datos con `db_victimas_ent_long`
 
@@ -684,14 +684,14 @@ df_victimas_ent_nac_gender_year <- bind_rows(
            modalidad == "Aborto"))
 ```
 
-| n_year | cve_ent | nombre_estado       | bien_juridico_afectado           | tipo_de_delito | subtipo_de_delito | modalidad         | genero | n_victimas |
-|:-------|:--------|:--------------------|:---------------------------------|:---------------|:------------------|:------------------|:-------|-----------:|
-| 2016   | 01      | Aguascalientes      | Libertad personal                | Rapto          | Rapto             | Rapto             | Hombre |          0 |
-| 2023   | 03      | Baja California Sur | La vida y la Integridad corporal | Homicidio      | Homicidio culposo | Con arma de fuego | Hombre |          0 |
-| 2019   | 09      | Ciudad de México    | La vida y la Integridad corporal | Homicidio      | Homicidio doloso  | Con arma de fuego | Mujer  |         85 |
-| 2024   | 09      | Ciudad de México    | La vida y la Integridad corporal | Homicidio      | Homicidio culposo | Con arma blanca   | Mujer  |          0 |
-| 2024   | 16      | Michoacán           | Libertad personal                | Secuestro      | Secuestro         | Secuestro exprés  | Total  |          0 |
-| 2024   | 00      | Nacional            | La vida y la Integridad corporal | Homicidio      | Homicidio doloso  | Con arma blanca   | Total  |       1410 |
+| n_year | cve_ent | nombre_estado | bien_juridico_afectado | tipo_de_delito | subtipo_de_delito | modalidad | genero | n_victimas |
+|:---|:---|:---|:---|:---|:---|:---|:---|---:|
+| 2016 | 01 | Aguascalientes | Libertad personal | Rapto | Rapto | Rapto | Hombre | 0 |
+| 2023 | 03 | Baja California Sur | La vida y la Integridad corporal | Homicidio | Homicidio culposo | Con arma de fuego | Hombre | 0 |
+| 2019 | 09 | Ciudad de México | La vida y la Integridad corporal | Homicidio | Homicidio doloso | Con arma de fuego | Mujer | 85 |
+| 2024 | 09 | Ciudad de México | La vida y la Integridad corporal | Homicidio | Homicidio culposo | Con arma blanca | Mujer | 0 |
+| 2024 | 16 | Michoacán | Libertad personal | Secuestro | Secuestro | Secuestro exprés | Total | 0 |
+| 2024 | 00 | Nacional | La vida y la Integridad corporal | Homicidio | Homicidio doloso | Con arma blanca | Total | 1608 |
 
 #### Adjuntar el valor de la población del estado para el tasado de víctimas por 100 mil habitantes.
 
@@ -724,13 +724,13 @@ db_victimas_ent_nac_x100khab <- df_victimas_ent_nac_gender_year %>%
   select(!c(pob_mid_year, pob_mid_year_mujeres))
 ```
 
-| n_year | cve_ent | nombre_estado | bien_juridico_afectado           | tipo_de_delito | subtipo_de_delito | modalidad                      | genero | n_victimas | n_victimas_x100khab | n_victimas_x100kmujeres |
-|:-------|:--------|:--------------|:---------------------------------|:---------------|:------------------|:-------------------------------|:-------|-----------:|--------------------:|------------------------:|
-| 2020   | 18      | Nayarit       | La vida y la Integridad corporal | Lesiones       | Lesiones culposas | En accidente de tránsito       | Hombre |          0 |           0.0000000 |                      NA |
-| 2022   | 25      | Sinaloa       | Libertad personal                | Secuestro      | Secuestro         | Secuestro con calidad de rehén | Total  |          0 |           0.0000000 |                      NA |
-| 2016   | 17      | Morelos       | La vida y la Integridad corporal | Lesiones       | Lesiones dolosas  | No especificado                | Mujer  |        939 |          48.0188271 |              93.0809805 |
-| 2016   | 31      | Yucatán       | La vida y la Integridad corporal | Feminicidio    | Feminicidio       | Con arma blanca                | Mujer  |          1 |           0.0455400 |               0.0899220 |
-| 2018   | 00      | Nacional      | La vida y la Integridad corporal | Feminicidio    | Feminicidio       | Con arma blanca                | Mujer  |        175 |           0.1388935 |               0.2722194 |
+| n_year | cve_ent | nombre_estado | bien_juridico_afectado | tipo_de_delito | subtipo_de_delito | modalidad | genero | n_victimas | n_victimas_x100khab | n_victimas_x100kmujeres |
+|:---|:---|:---|:---|:---|:---|:---|:---|---:|---:|---:|
+| 2020 | 18 | Nayarit | La vida y la Integridad corporal | Lesiones | Lesiones culposas | En accidente de tránsito | Hombre | 0 | 0.0000000 | NA |
+| 2022 | 25 | Sinaloa | Libertad personal | Secuestro | Secuestro | Secuestro con calidad de rehén | Total | 0 | 0.0000000 | NA |
+| 2016 | 17 | Morelos | La vida y la Integridad corporal | Lesiones | Lesiones dolosas | No especificado | Mujer | 939 | 48.0188271 | 93.0809805 |
+| 2016 | 31 | Yucatán | La vida y la Integridad corporal | Feminicidio | Feminicidio | Con arma blanca | Mujer | 1 | 0.0455400 | 0.0899220 |
+| 2017 | 00 | Nacional | La vida y la Integridad corporal | Feminicidio | Feminicidio | No especificado | Mujer | 38 | 0.0304543 | 0.0596785 |
 
 ### Número anual de víctimas de delitos por género y rango de edad
 
@@ -821,30 +821,30 @@ df_victimas_ent_nac_gender_age_year <- bind_rows(
   df_victimas_nac_gender_age)
 ```
 
-| n_year | cve_ent | nombre_estado | bien_juridico_afectado           | tipo_de_delito        | subtipo_de_delito     | modalidad             | genero       | rango_de_edad | n_victimas |
-|:-------|:--------|:--------------|:---------------------------------|:----------------------|:----------------------|:----------------------|:-------------|:--------------|-----------:|
-| 2019   | 30      | Veracruz      | La vida y la Integridad corporal | Lesiones              | Lesiones dolosas      | Con arma de fuego     | total_genero | nna           |         19 |
-| 2023   | 07      | Chiapas       | La vida y la Integridad corporal | Feminicidio           | Feminicidio           | Con otro elemento     | mujer        | nna           |          3 |
-| 2020   | 28      | Tamaulipas    | La sociedad                      | Corrupción de menores | Corrupción de menores | Corrupción de menores | mujer        | adultos       |          0 |
-| 2018   | 28      | Tamaulipas    | La vida y la Integridad corporal | Homicidio             | Homicidio doloso      | No especificado       | mujer        | total_edad    |          0 |
-| 2016   | 22      | Querétaro     | La vida y la Integridad corporal | Lesiones              | Lesiones dolosas      | Con arma blanca       | hombre       | nna           |          4 |
+| n_year | cve_ent | nombre_estado | bien_juridico_afectado | tipo_de_delito | subtipo_de_delito | modalidad | genero | rango_de_edad | n_victimas |
+|:---|:---|:---|:---|:---|:---|:---|:---|:---|---:|
+| 2019 | 30 | Veracruz | La vida y la Integridad corporal | Lesiones | Lesiones dolosas | Con arma de fuego | total_genero | nna | 19 |
+| 2023 | 07 | Chiapas | La vida y la Integridad corporal | Feminicidio | Feminicidio | Con otro elemento | mujer | nna | 3 |
+| 2020 | 28 | Tamaulipas | La sociedad | Corrupción de menores | Corrupción de menores | Corrupción de menores | mujer | adultos | 0 |
+| 2018 | 28 | Tamaulipas | La vida y la Integridad corporal | Homicidio | Homicidio doloso | No especificado | mujer | total_edad | 0 |
+| 2016 | 22 | Querétaro | La vida y la Integridad corporal | Lesiones | Lesiones dolosas | Con arma blanca | hombre | nna | 4 |
 
 Como resultado se tienen 9 diferentes combinaciones de
 `genero`-`rango_de_edad`
 
 > **NNA** = **N**iñas, **N**iños y **A**dolescentes
 
-| genero       | rango_de_edad | descripcion                                               |
-|:-------------|:--------------|:----------------------------------------------------------|
-| total_genero | total_edad    | Total de víctimas de todos los géneros y todas las edades |
-| total_genero | adultos       | Total de víctimas de todos los géneros, adultas           |
-| total_genero | nna           | Total de víctimas de todos los géneros, NNA               |
-| hombre       | total_edad    | Total de víctimas hombres de todas las edades             |
-| hombre       | adultos       | Total de víctimas hombres adultos                         |
-| hombre       | nna           | Total de víctimas hombres NNA                             |
-| mujer        | total_edad    | Total de víctimas mujeres de todas las edades             |
-| mujer        | adultos       | Total de víctimas mujeres adultas                         |
-| mujer        | nna           | Total de víctimas mujeres NNA                             |
+| genero | rango_de_edad | descripcion |
+|:---|:---|:---|
+| total_genero | total_edad | Total de víctimas de todos los géneros y todas las edades |
+| total_genero | adultos | Total de víctimas de todos los géneros, adultas |
+| total_genero | nna | Total de víctimas de todos los géneros, NNA |
+| hombre | total_edad | Total de víctimas hombres de todas las edades |
+| hombre | adultos | Total de víctimas hombres adultos |
+| hombre | nna | Total de víctimas hombres NNA |
+| mujer | total_edad | Total de víctimas mujeres de todas las edades |
+| mujer | adultos | Total de víctimas mujeres adultas |
+| mujer | nna | Total de víctimas mujeres NNA |
 
 #### Adjuntar el valor de la población estatal correspondiente a la combinación de género y rango de edad para el tasado de víctimas por 100 mil habitantes.
 
@@ -949,13 +949,13 @@ db_victimas_ent_nac_gender_age_100khab <- df_victimas_ent_nac_gender_age_year %>
       false = NA_real_))
 ```
 
-| n_year | cve_ent | nombre_estado       | bien_juridico_afectado           | tipo_de_delito     | subtipo_de_delito  | modalidad                | genero       | rango_de_edad | n_victimas | n_victimas_x100khab | n_victimas_x100kmujeres | n_victimas_x100kpar |
-|:-------|:--------|:--------------------|:---------------------------------|:-------------------|:-------------------|:-------------------------|:-------------|:--------------|-----------:|--------------------:|------------------------:|--------------------:|
-| 2020   | 22      | Querétaro           | La vida y la Integridad corporal | Homicidio          | Homicidio culposo  | Con otro elemento        | total_genero | nna           |          0 |           0.0000000 |                      NA |           0.0000000 |
-| 2024   | 10      | Durango             | Libertad personal                | Tráfico de menores | Tráfico de menores | Tráfico de menores       | mujer        | adultos       |          0 |           0.0000000 |               0.0000000 |           0.0000000 |
-| 2024   | 03      | Baja California Sur | La vida y la Integridad corporal | Lesiones           | Lesiones culposas  | En accidente de tránsito | hombre       | nna           |         33 |           3.7243948 |                      NA |          25.5597983 |
-| 2017   | 19      | Nuevo León          | La vida y la Integridad corporal | Feminicidio        | Feminicidio        | Con otro elemento        | mujer        | total_edad    |         13 |           0.2353541 |               0.4715732 |           0.4715732 |
-| 2016   | 01      | Aguascalientes      | La vida y la Integridad corporal | Feminicidio        | Feminicidio        | Con otro elemento        | mujer        | adultos       |          0 |           0.0000000 |               0.0000000 |           0.0000000 |
+| n_year | cve_ent | nombre_estado | bien_juridico_afectado | tipo_de_delito | subtipo_de_delito | modalidad | genero | rango_de_edad | n_victimas | n_victimas_x100khab | n_victimas_x100kmujeres | n_victimas_x100kpar |
+|:---|:---|:---|:---|:---|:---|:---|:---|:---|---:|---:|---:|---:|
+| 2020 | 22 | Querétaro | La vida y la Integridad corporal | Homicidio | Homicidio culposo | Con otro elemento | total_genero | nna | 0 | 0.0000000 | NA | 0.0000000 |
+| 2024 | 10 | Durango | Libertad personal | Tráfico de menores | Tráfico de menores | Tráfico de menores | mujer | adultos | 0 | 0.0000000 | 0.0000000 | 0.0000000 |
+| 2024 | 03 | Baja California Sur | La vida y la Integridad corporal | Lesiones | Lesiones culposas | En accidente de tránsito | hombre | nna | 36 | 4.0629761 | NA | 27.8834163 |
+| 2017 | 19 | Nuevo León | La vida y la Integridad corporal | Feminicidio | Feminicidio | Con otro elemento | mujer | total_edad | 13 | 0.2353541 | 0.4715732 | 0.4715732 |
+| 2016 | 01 | Aguascalientes | La vida y la Integridad corporal | Feminicidio | Feminicidio | Con otro elemento | mujer | adultos | 0 | 0.0000000 | 0.0000000 | 0.0000000 |
 
 <!--TODO: Terminar de escribir las descripciones de delitos del fuero comun en los diccionarios -->
 
@@ -978,28 +978,28 @@ db_incidencia_mun_long %>%
   write_csv(file = paste0(path2sesnsp, "/db_incidencia_mun_long.csv.bz2"))
 ```
 
-| **Variable**             | **Tipo de dato**                            | **Descripción**                                                                                                                               |
-|--------------------------|---------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|
-| `date_year_month`        | Fecha                                       | Mes del año escrito en formato “YYYY-MM-DD”. En todos los casos el día siempre es 15                                                          |
-| `n_year`                 | Número entero o categeórico                 | Número del año, puede ser tratado tanto como número entero o como categoria, depende del objetivo del proyecto                                |
-| `n_month`                | Número entero o (de preferencia) categórico | Número del mes (1-12), sin embargo también puede ser tratato como categoría. En la base de datos se le da preferencia al segunto tipo de dato |
-| `cve_ent`                | Categórico                                  | Clave INEGI del estado                                                                                                                        |
-| `nombre_estado`          | Categórico                                  | Nombre del estado                                                                                                                             |
-| `cve_geo`                | Categórico                                  | Clave INEGI del municipio (resultado de la concatenación del código del estado y del municipio en el estado)                                  |
-| `nombre_municipio`       | Categórico                                  | Nombre del municipio                                                                                                                          |
-| `bien_juridico_afectado` | Categórico                                  | …                                                                                                                                             |
-| `tipo_de_delito`         | Categórico                                  | …                                                                                                                                             |
-| `subtipo_de_delito`      | Categórico                                  | …                                                                                                                                             |
-| `modalidad`              | Categórico                                  | …                                                                                                                                             |
-| `n_delitos`              | Número entero                               | Número de delitos                                                                                                                             |
+| **Variable** | **Tipo de dato** | **Descripción** |
+|----|----|----|
+| `date_year_month` | Fecha | Mes del año escrito en formato “YYYY-MM-DD”. En todos los casos el día siempre es 15 |
+| `n_year` | Número entero o categeórico | Número del año, puede ser tratado tanto como número entero o como categoria, depende del objetivo del proyecto |
+| `n_month` | Número entero o (de preferencia) categórico | Número del mes (1-12), sin embargo también puede ser tratato como categoría. En la base de datos se le da preferencia al segunto tipo de dato |
+| `cve_ent` | Categórico | Clave INEGI del estado |
+| `nombre_estado` | Categórico | Nombre del estado |
+| `cve_geo` | Categórico | Clave INEGI del municipio (resultado de la concatenación del código del estado y del municipio en el estado) |
+| `nombre_municipio` | Categórico | Nombre del municipio |
+| `bien_juridico_afectado` | Categórico | … |
+| `tipo_de_delito` | Categórico | … |
+| `subtipo_de_delito` | Categórico | … |
+| `modalidad` | Categórico | … |
+| `n_delitos` | Número entero | Número de delitos |
 
-| date_year_month | n_year | n_month | cve_ent | nombre_estado | cve_geo | nombre_municipio         | bien_juridico_afectado            | tipo_de_delito   | subtipo_de_delito  | modalidad                                                                           | n_delitos |
-|:----------------|:-------|:--------|:--------|:--------------|:--------|:-------------------------|:----------------------------------|:-----------------|:-------------------|:------------------------------------------------------------------------------------|----------:|
-| 2019-10-15      | 2019   | 10      | 20      | Oaxaca        | 20165   | San José Ayuquila        | El patrimonio                     | Fraude           | Fraude             | Fraude                                                                              |         0 |
-| 2019-06-15      | 2019   | 06      | 28      | Tamaulipas    | 28025   | Miguel Alemán            | El patrimonio                     | Robo             | Otros robos        | Con violencia                                                                       |         1 |
-| 2022-06-15      | 2022   | 06      | 16      | Michoacán     | 16035   | La Huacana               | El patrimonio                     | Robo             | Robo de maquinaria | Robo de cables, tubos y otros objetos destinados a servicios públicos Sin violencia |         0 |
-| 2022-01-15      | 2022   | 01      | 12      | Guerrero      | 12037   | Ixcateopan de Cuauhtémoc | La libertad y la seguridad sexual | Violación simple | Violación simple   | Violación simple                                                                    |         0 |
-| 2020-10-15      | 2020   | 10      | 30      | Veracruz      | 30205   | El Higo                  | La vida y la Integridad corporal  | Lesiones         | Lesiones culposas  | Con arma de fuego                                                                   |         0 |
+| date_year_month | n_year | n_month | cve_ent | nombre_estado | cve_geo | nombre_municipio | bien_juridico_afectado | tipo_de_delito | subtipo_de_delito | modalidad | n_delitos |
+|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|---:|
+| 2019-10-15 | 2019 | 10 | 20 | Oaxaca | 20165 | San José Ayuquila | El patrimonio | Fraude | Fraude | Fraude | 0 |
+| 2019-06-15 | 2019 | 06 | 28 | Tamaulipas | 28025 | Miguel Alemán | El patrimonio | Robo | Otros robos | Con violencia | 1 |
+| 2022-06-15 | 2022 | 06 | 16 | Michoacán | 16035 | La Huacana | El patrimonio | Robo | Robo de maquinaria | Robo de cables, tubos y otros objetos destinados a servicios públicos Sin violencia | 0 |
+| 2022-01-15 | 2022 | 01 | 12 | Guerrero | 12037 | Ixcateopan de Cuauhtémoc | La libertad y la seguridad sexual | Violación simple | Violación simple | Violación simple | 0 |
+| 2020-10-15 | 2020 | 10 | 30 | Veracruz | 30205 | El Higo | La vida y la Integridad corporal | Lesiones | Lesiones culposas | Con arma de fuego | 0 |
 
 #### Incidencia Delictiva del Fuero Común mensual a nivel estatal
 
@@ -1020,26 +1020,26 @@ db_incidencia_ent_long %>%
   write_csv(file = paste0(path2sesnsp, "/db_incidencia_ent_long.csv"))
 ```
 
-| **Variable**             | **Tipo de dato**                            | **Descripción**                                                                                                                               |
-|--------------------------|---------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|
-| `date_year_month`        | Fecha                                       | Mes del año escrito en formato “YYYY-MM-DD”. En todos los casos el día siempre es 15                                                          |
-| `n_year`                 | Número entero o categeórico                 | Número del año, puede ser tratado tanto como número entero o como categoria, depende del objetivo del proyecto                                |
-| `n_month`                | Número entero o (de preferencia) categórico | Número del mes (1-12), sin embargo también puede ser tratato como categoría. En la base de datos se le da preferencia al segunto tipo de dato |
-| `cve_ent`                | Categórico                                  | Clave INEGI del estado                                                                                                                        |
-| `nombre_estado`          | Categórico                                  | Nombre del estado                                                                                                                             |
-| `bien_juridico_afectado` | Categórico                                  | …                                                                                                                                             |
-| `tipo_de_delito`         | Categórico                                  | …                                                                                                                                             |
-| `subtipo_de_delito`      | Categórico                                  | …                                                                                                                                             |
-| `modalidad`              | Categórico                                  | …                                                                                                                                             |
-| `n_delitos`              | Número entero                               | Número de delitos                                                                                                                             |
+| **Variable** | **Tipo de dato** | **Descripción** |
+|----|----|----|
+| `date_year_month` | Fecha | Mes del año escrito en formato “YYYY-MM-DD”. En todos los casos el día siempre es 15 |
+| `n_year` | Número entero o categeórico | Número del año, puede ser tratado tanto como número entero o como categoria, depende del objetivo del proyecto |
+| `n_month` | Número entero o (de preferencia) categórico | Número del mes (1-12), sin embargo también puede ser tratato como categoría. En la base de datos se le da preferencia al segunto tipo de dato |
+| `cve_ent` | Categórico | Clave INEGI del estado |
+| `nombre_estado` | Categórico | Nombre del estado |
+| `bien_juridico_afectado` | Categórico | … |
+| `tipo_de_delito` | Categórico | … |
+| `subtipo_de_delito` | Categórico | … |
+| `modalidad` | Categórico | … |
+| `n_delitos` | Número entero | Número de delitos |
 
-| date_year_month | n_year | n_month | cve_ent | nombre_estado   | bien_juridico_afectado                             | tipo_de_delito                                        | subtipo_de_delito                                     | modalidad                                             | n_delitos |
-|:----------------|:-------|:--------|:--------|:----------------|:---------------------------------------------------|:------------------------------------------------------|:------------------------------------------------------|:------------------------------------------------------|----------:|
-| 2020-01-15      | 2020   | 01      | 08      | Chihuahua       | Otros bienes jurídicos afectados (del fuero común) | Falsificación                                         | Falsificación                                         | Falsificación                                         |        44 |
-| 2018-07-15      | 2018   | 07      | 24      | San Luis Potosí | Otros bienes jurídicos afectados (del fuero común) | Delitos cometidos por servidores públicos             | Delitos cometidos por servidores públicos             | Delitos cometidos por servidores públicos             |        53 |
-| 2018-04-15      | 2018   | 04      | 18      | Nayarit         | La libertad y la seguridad sexual                  | Violación equiparada                                  | Violación equiparada                                  | Violación equiparada                                  |         2 |
-| 2019-04-15      | 2019   | 04      | 11      | Guanajuato      | Libertad personal                                  | Otros delitos que atentan contra la libertad personal | Otros delitos que atentan contra la libertad personal | Otros delitos que atentan contra la libertad personal |         0 |
-| 2021-01-15      | 2021   | 01      | 06      | Colima          | El patrimonio                                      | Robo                                                  | Robo de vehículo automotor                            | Robo de motocicleta Sin violencia                     |        29 |
+| date_year_month | n_year | n_month | cve_ent | nombre_estado | bien_juridico_afectado | tipo_de_delito | subtipo_de_delito | modalidad | n_delitos |
+|:---|:---|:---|:---|:---|:---|:---|:---|:---|---:|
+| 2020-01-15 | 2020 | 01 | 08 | Chihuahua | Otros bienes jurídicos afectados (del fuero común) | Falsificación | Falsificación | Falsificación | 44 |
+| 2018-07-15 | 2018 | 07 | 24 | San Luis Potosí | Otros bienes jurídicos afectados (del fuero común) | Delitos cometidos por servidores públicos | Delitos cometidos por servidores públicos | Delitos cometidos por servidores públicos | 53 |
+| 2018-04-15 | 2018 | 04 | 18 | Nayarit | La libertad y la seguridad sexual | Violación equiparada | Violación equiparada | Violación equiparada | 2 |
+| 2019-04-15 | 2019 | 04 | 11 | Guanajuato | Libertad personal | Otros delitos que atentan contra la libertad personal | Otros delitos que atentan contra la libertad personal | Otros delitos que atentan contra la libertad personal | 0 |
+| 2021-01-15 | 2021 | 01 | 06 | Colima | El patrimonio | Robo | Robo de vehículo automotor | Robo de motocicleta Sin violencia | 29 |
 
 #### Víctimas de Delitos del Fuero Común mensual a nivel estatal
 
@@ -1051,28 +1051,28 @@ db_victimas_ent_long %>%
                           "/db_victimas_delitos_ent_long.csv.bz2"))
 ```
 
-| **Variable**             | **Tipo de dato**                            | **Descripción**                                                                                                                               |
-|--------------------------|---------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|
-| `date_year_month`        | Fecha                                       | Mes del año escrito en formato “YYYY-MM-DD”. En todos los casos el día siempre es 15                                                          |
-| `n_year`                 | Número entero o categeórico                 | Número del año, puede ser tratado tanto como número entero o como categoria, depende del objetivo del proyecto                                |
-| `n_month`                | Número entero o (de preferencia) categórico | Número del mes (1-12), sin embargo también puede ser tratato como categoría. En la base de datos se le da preferencia al segunto tipo de dato |
-| `cve_ent`                | Categórico                                  | Clave INEGI del estado                                                                                                                        |
-| `nombre_estado`          | Categórico                                  | Nombre del estado                                                                                                                             |
-| `bien_juridico_afectado` | Categórico                                  | …                                                                                                                                             |
-| `tipo_de_delito`         | Categórico                                  | …                                                                                                                                             |
-| `subtipo_de_delito`      | Categórico                                  | …                                                                                                                                             |
-| `modalidad`              | Categórico                                  | …                                                                                                                                             |
-| `genero`                 | Categórico                                  | Género asignado a la víctima. Se encuentran 3: `Mujer`, `Hombre` o `No identificado`                                                          |
-| `rango_de_edad`          | Categórico                                  | Rango de edad asignado a la víctima, se encuentran 4: `Menores de edad (0-17)`, `Adultos (18 y más)`, `No especificado` y `No identificado`   |
-| `n_victimas`             | Número entero                               | Número de víctimas                                                                                                                            |
+| **Variable** | **Tipo de dato** | **Descripción** |
+|----|----|----|
+| `date_year_month` | Fecha | Mes del año escrito en formato “YYYY-MM-DD”. En todos los casos el día siempre es 15 |
+| `n_year` | Número entero o categeórico | Número del año, puede ser tratado tanto como número entero o como categoria, depende del objetivo del proyecto |
+| `n_month` | Número entero o (de preferencia) categórico | Número del mes (1-12), sin embargo también puede ser tratato como categoría. En la base de datos se le da preferencia al segunto tipo de dato |
+| `cve_ent` | Categórico | Clave INEGI del estado |
+| `nombre_estado` | Categórico | Nombre del estado |
+| `bien_juridico_afectado` | Categórico | … |
+| `tipo_de_delito` | Categórico | … |
+| `subtipo_de_delito` | Categórico | … |
+| `modalidad` | Categórico | … |
+| `genero` | Categórico | Género asignado a la víctima. Se encuentran 3: `Mujer`, `Hombre` o `No identificado` |
+| `rango_de_edad` | Categórico | Rango de edad asignado a la víctima, se encuentran 4: `Menores de edad (0-17)`, `Adultos (18 y más)`, `No especificado` y `No identificado` |
+| `n_victimas` | Número entero | Número de víctimas |
 
-| date_year_month | n_year | n_month | cve_ent | nombre_estado | bien_juridico_afectado           | tipo_de_delito                                        | subtipo_de_delito                                     | modalidad                                             | genero          | rango_de_edad          | n_victimas |
-|:----------------|:-------|:--------|:--------|:--------------|:---------------------------------|:------------------------------------------------------|:------------------------------------------------------|:------------------------------------------------------|:----------------|:-----------------------|-----------:|
-| 2017-02-15      | 2017   | 02      | 05      | Coahuila      | La vida y la Integridad corporal | Homicidio                                             | Homicidio doloso                                      | Con arma de fuego                                     | Hombre          | Menores de edad (0-17) |          0 |
-| 2016-06-15      | 2016   | 06      | 17      | Morelos       | Libertad personal                | Otros delitos que atentan contra la libertad personal | Otros delitos que atentan contra la libertad personal | Otros delitos que atentan contra la libertad personal | Hombre          | Menores de edad (0-17) |          0 |
-| 2016-02-15      | 2016   | 02      | 13      | Hidalgo       | La vida y la Integridad corporal | Lesiones                                              | Lesiones culposas                                     | No especificado                                       | No identificado | No identificado        |          0 |
-| 2022-01-15      | 2022   | 01      | 25      | Sinaloa       | La sociedad                      | Corrupción de menores                                 | Corrupción de menores                                 | Corrupción de menores                                 | Mujer           | Adultos (18 y más)     |          0 |
-| 2017-10-15      | 2017   | 10      | 18      | Nayarit       | La sociedad                      | Otros delitos contra la sociedad                      | Otros delitos contra la sociedad                      | Otros delitos contra la sociedad                      | No identificado | No identificado        |          0 |
+| date_year_month | n_year | n_month | cve_ent | nombre_estado | bien_juridico_afectado | tipo_de_delito | subtipo_de_delito | modalidad | genero | rango_de_edad | n_victimas |
+|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|---:|
+| 2017-02-15 | 2017 | 02 | 05 | Coahuila | La vida y la Integridad corporal | Homicidio | Homicidio doloso | Con arma de fuego | Hombre | Menores de edad (0-17) | 0 |
+| 2016-06-15 | 2016 | 06 | 17 | Morelos | Libertad personal | Otros delitos que atentan contra la libertad personal | Otros delitos que atentan contra la libertad personal | Otros delitos que atentan contra la libertad personal | Hombre | Menores de edad (0-17) | 0 |
+| 2016-02-15 | 2016 | 02 | 13 | Hidalgo | La vida y la Integridad corporal | Lesiones | Lesiones culposas | No especificado | No identificado | No identificado | 0 |
+| 2022-01-15 | 2022 | 01 | 25 | Sinaloa | La sociedad | Corrupción de menores | Corrupción de menores | Corrupción de menores | Mujer | Adultos (18 y más) | 0 |
+| 2017-10-15 | 2017 | 10 | 18 | Nayarit | La sociedad | Otros delitos contra la sociedad | Otros delitos contra la sociedad | Otros delitos contra la sociedad | No identificado | No identificado | 0 |
 
 ### Bases de datos con información extra y desagregaciones
 
@@ -1094,28 +1094,28 @@ db_incidencia_mun_year_x100khab %>%
     path2sesnsp, "/db_incidencia_mun_year_x100khab_mujeres.csv.bz2"))
 ```
 
-| **Variable**             | **Tipo de dato**            | **Descripción**                                                                                                                                        |
-|--------------------------|-----------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `n_year`                 | Número entero o categeórico | Número del año, puede ser tratado tanto como número entero o como categoria, depende del objetivo del proyecto                                         |
-| `cve_ent`                | Categórico                  | Clave INEGI del estado                                                                                                                                 |
-| `nombre_estado`          | Categórico                  | Nombre del estado                                                                                                                                      |
-| `cve_geo`                | Categórico                  | Clave INEGI del municipio (resultado de la concatenación del código del estado y del municipio en el estado)                                           |
-| `nombre_municipio`       | Categórico                  | Nombre del municipio                                                                                                                                   |
-| `bien_juridico_afectado` | Categórico                  | …                                                                                                                                                      |
-| `tipo_de_delito`         | Categórico                  | …                                                                                                                                                      |
-| `subtipo_de_delito`      | Categórico                  | …                                                                                                                                                      |
-| `modalidad`              | Categórico                  | …                                                                                                                                                      |
-| `n_delitos`              | Número entero               | Número de delitos                                                                                                                                      |
-| `n_delitos_x100khab`     | Número decimal              | Número de delitos por cada 100 mil habitantes. El número de habitantes es con respecto a toda la población del municipio de todas las edades y géneros |
-| `n_delitos_x100kmujeres` | Número decimal              | Número de delitos por cada 100 mil mujeres. El número de habitantes es con respecto a toda la población de mujeres en el municipio de todas las edades |
+| **Variable** | **Tipo de dato** | **Descripción** |
+|----|----|----|
+| `n_year` | Número entero o categeórico | Número del año, puede ser tratado tanto como número entero o como categoria, depende del objetivo del proyecto |
+| `cve_ent` | Categórico | Clave INEGI del estado |
+| `nombre_estado` | Categórico | Nombre del estado |
+| `cve_geo` | Categórico | Clave INEGI del municipio (resultado de la concatenación del código del estado y del municipio en el estado) |
+| `nombre_municipio` | Categórico | Nombre del municipio |
+| `bien_juridico_afectado` | Categórico | … |
+| `tipo_de_delito` | Categórico | … |
+| `subtipo_de_delito` | Categórico | … |
+| `modalidad` | Categórico | … |
+| `n_delitos` | Número entero | Número de delitos |
+| `n_delitos_x100khab` | Número decimal | Número de delitos por cada 100 mil habitantes. El número de habitantes es con respecto a toda la población del municipio de todas las edades y géneros |
+| `n_delitos_x100kmujeres` | Número decimal | Número de delitos por cada 100 mil mujeres. El número de habitantes es con respecto a toda la población de mujeres en el municipio de todas las edades |
 
-| n_year | cve_ent | nombre_estado   | cve_geo | nombre_municipio     | bien_juridico_afectado                             | tipo_de_delito                            | subtipo_de_delito                         | modalidad                                 | n_delitos | n_delitos_x100khab | n_delitos_x100kmujeres |
-|:-------|:--------|:----------------|:--------|:---------------------|:---------------------------------------------------|:------------------------------------------|:------------------------------------------|:------------------------------------------|----------:|-------------------:|-----------------------:|
-| 2023   | 24      | San Luis Potosí | 24057   | Matlapa              | El patrimonio                                      | Robo                                      | Robo de autopartes                        | Con violencia                             |         0 |                  0 |                     NA |
-| 2015   | 26      | Sonora          | 26009   | Bacanora             | Otros bienes jurídicos afectados (del fuero común) | Delitos cometidos por servidores públicos | Delitos cometidos por servidores públicos | Delitos cometidos por servidores públicos |         0 |                  0 |                     NA |
-| 2022   | 20      | Oaxaca          | 20089   | San Andrés Dinicuiti | El patrimonio                                      | Robo                                      | Robo a institución bancaria               | Con violencia                             |         0 |                  0 |                     NA |
-| 2023   | 13      | Hidalgo         | 13039   | Mineral del Monte    | El patrimonio                                      | Robo                                      | Robo en transporte público colectivo      | Con violencia                             |         0 |                  0 |                     NA |
-| 2017   | 20      | Oaxaca          | 20217   | San Juan Tamazola    | La familia                                         | Violencia familiar                        | Violencia familiar                        | Violencia familiar                        |         0 |                  0 |                     NA |
+| n_year | cve_ent | nombre_estado | cve_geo | nombre_municipio | bien_juridico_afectado | tipo_de_delito | subtipo_de_delito | modalidad | n_delitos | n_delitos_x100khab | n_delitos_x100kmujeres |
+|:---|:---|:---|:---|:---|:---|:---|:---|:---|---:|---:|---:|
+| 2023 | 24 | San Luis Potosí | 24057 | Matlapa | El patrimonio | Robo | Robo de autopartes | Con violencia | 0 | 0 | NA |
+| 2015 | 26 | Sonora | 26009 | Bacanora | Otros bienes jurídicos afectados (del fuero común) | Delitos cometidos por servidores públicos | Delitos cometidos por servidores públicos | Delitos cometidos por servidores públicos | 0 | 0 | NA |
+| 2022 | 20 | Oaxaca | 20089 | San Andrés Dinicuiti | El patrimonio | Robo | Robo a institución bancaria | Con violencia | 0 | 0 | NA |
+| 2023 | 13 | Hidalgo | 13039 | Mineral del Monte | El patrimonio | Robo | Robo en transporte público colectivo | Con violencia | 0 | 0 | NA |
+| 2017 | 20 | Oaxaca | 20217 | San Juan Tamazola | La familia | Violencia familiar | Violencia familiar | Violencia familiar | 0 | 0 | NA |
 
 #### Incidencia Delictiva del Fuero Común anual a nivel estatal
 
@@ -1129,26 +1129,26 @@ db_incidencia_ent_nac_year_x100khab %>%
                   "/db_incidencia_ent_nac_year_x100khab_mujeres.csv.bz2"))
 ```
 
-| **Variable**             | **Tipo de dato**            | **Descripción**                                                                                                                                        |
-|--------------------------|-----------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `n_year`                 | Número entero o categeórico | Número del año, puede ser tratado tanto como número entero o como categoria, depende del objetivo del proyecto                                         |
-| `cve_ent`                | Categórico                  | Clave INEGI del estado                                                                                                                                 |
-| `nombre_estado`          | Categórico                  | Nombre del estado                                                                                                                                      |
-| `bien_juridico_afectado` | Categórico                  | …                                                                                                                                                      |
-| `tipo_de_delito`         | Categórico                  | …                                                                                                                                                      |
-| `subtipo_de_delito`      | Categórico                  | …                                                                                                                                                      |
-| `modalidad`              | Categórico                  | …                                                                                                                                                      |
-| `n_delitos`              | Número entero               | Número de delitos                                                                                                                                      |
-| `n_delitos_x100khab`     | Número decimal              | Número de delitos por cada 100 mil habitantes. El número de habitantes es con respecto a toda la población de la entidad de todas las edades y géneros |
-| `n_delitos_x100kmujeres` | Número decimal              | Número de delitos por cada 100 mil mujeres. El número de habitantes es con respecto a toda la población de mujeres en la entidad de todas las edades   |
+| **Variable** | **Tipo de dato** | **Descripción** |
+|----|----|----|
+| `n_year` | Número entero o categeórico | Número del año, puede ser tratado tanto como número entero o como categoria, depende del objetivo del proyecto |
+| `cve_ent` | Categórico | Clave INEGI del estado |
+| `nombre_estado` | Categórico | Nombre del estado |
+| `bien_juridico_afectado` | Categórico | … |
+| `tipo_de_delito` | Categórico | … |
+| `subtipo_de_delito` | Categórico | … |
+| `modalidad` | Categórico | … |
+| `n_delitos` | Número entero | Número de delitos |
+| `n_delitos_x100khab` | Número decimal | Número de delitos por cada 100 mil habitantes. El número de habitantes es con respecto a toda la población de la entidad de todas las edades y géneros |
+| `n_delitos_x100kmujeres` | Número decimal | Número de delitos por cada 100 mil mujeres. El número de habitantes es con respecto a toda la población de mujeres en la entidad de todas las edades |
 
-| n_year | cve_ent | nombre_estado  | bien_juridico_afectado            | tipo_de_delito                   | subtipo_de_delito                | modalidad                               | n_delitos | n_delitos_x100khab | n_delitos_x100kmujeres |
-|:-------|:--------|:---------------|:----------------------------------|:---------------------------------|:---------------------------------|:----------------------------------------|----------:|-------------------:|-----------------------:|
-| 2021   | 01      | Aguascalientes | El patrimonio                     | Robo                             | Robo de vehículo automotor       | Robo de coche de 4 ruedas Con violencia |        74 |           5.024972 |                     NA |
-| 2021   | 01      | Aguascalientes | La vida y la Integridad corporal  | Lesiones                         | Lesiones dolosas                 | No especificado                         |       783 |          53.169637 |                     NA |
-| 2023   | 18      | Nayarit        | La libertad y la seguridad sexual | Hostigamiento sexual             | Hostigamiento sexual             | Hostigamiento sexual                    |         0 |           0.000000 |                     NA |
-| 2023   | 01      | Aguascalientes | El patrimonio                     | Robo                             | Robo a negocio                   | Sin violencia                           |      1904 |         126.022693 |                     NA |
-| 2024   | 07      | Chiapas        | La sociedad                       | Otros delitos contra la sociedad | Otros delitos contra la sociedad | Otros delitos contra la sociedad        |        79 |           1.310517 |                     NA |
+| n_year | cve_ent | nombre_estado | bien_juridico_afectado | tipo_de_delito | subtipo_de_delito | modalidad | n_delitos | n_delitos_x100khab | n_delitos_x100kmujeres |
+|:---|:---|:---|:---|:---|:---|:---|---:|---:|---:|
+| 2021 | 01 | Aguascalientes | El patrimonio | Robo | Robo de vehículo automotor | Robo de coche de 4 ruedas Con violencia | 74 | 5.024972 | NA |
+| 2021 | 01 | Aguascalientes | La vida y la Integridad corporal | Lesiones | Lesiones dolosas | No especificado | 783 | 53.169637 | NA |
+| 2023 | 18 | Nayarit | La libertad y la seguridad sexual | Hostigamiento sexual | Hostigamiento sexual | Hostigamiento sexual | 0 | 0.000000 | NA |
+| 2023 | 01 | Aguascalientes | El patrimonio | Robo | Robo a negocio | Sin violencia | 1904 | 126.022693 | NA |
+| 2024 | 07 | Chiapas | La sociedad | Otros delitos contra la sociedad | Otros delitos contra la sociedad | Otros delitos contra la sociedad | 88 | 1.459817 | NA |
 
 #### Víctimas de Delitos del Fuero Común anual a nivel estatal: Desagregado por genero
 
@@ -1162,27 +1162,27 @@ db_victimas_ent_nac_x100khab %>%
                   "/db_victimas_delitos_ent_nac_x100khab_genero.csv.bz2"))
 ```
 
-| **Variable**              | **Tipo de dato**            | **Descripción**                                                                                                                                         |
-|---------------------------|-----------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `n_year`                  | Número entero o categeórico | Número del año, puede ser tratado tanto como número entero o como categoria, depende del objetivo del proyecto                                          |
-| `cve_ent`                 | Categórico                  | Clave INEGI del estado                                                                                                                                  |
-| `nombre_estado`           | Categórico                  | Nombre del estado                                                                                                                                       |
-| `bien_juridico_afectado`  | Categórico                  | …                                                                                                                                                       |
-| `tipo_de_delito`          | Categórico                  | …                                                                                                                                                       |
-| `subtipo_de_delito`       | Categórico                  | …                                                                                                                                                       |
-| `modalidad`               | Categórico                  | …                                                                                                                                                       |
-| `genero`                  | Categórico                  | Género asignado a la víctima. Se encuentran 3: `Mujer`, `Hombre` o `Total`                                                                              |
-| `n_victimas`              | Número entero               | Número de víctimas                                                                                                                                      |
-| `n_victimas_x100khab`     | Número decimal              | Número de víctimas por cada 100 mil habitantes. El número de habitantes es con respecto a toda la población de la entidad de todas las edades y géneros |
-| `n_victimas_x100kmujeres` | Número decimal              | Número de víctimas por cada 100 mil mujeres. El número de habitantes es con respecto a toda la población de mujeres en la entidad de todas las edades   |
+| **Variable** | **Tipo de dato** | **Descripción** |
+|----|----|----|
+| `n_year` | Número entero o categeórico | Número del año, puede ser tratado tanto como número entero o como categoria, depende del objetivo del proyecto |
+| `cve_ent` | Categórico | Clave INEGI del estado |
+| `nombre_estado` | Categórico | Nombre del estado |
+| `bien_juridico_afectado` | Categórico | … |
+| `tipo_de_delito` | Categórico | … |
+| `subtipo_de_delito` | Categórico | … |
+| `modalidad` | Categórico | … |
+| `genero` | Categórico | Género asignado a la víctima. Se encuentran 3: `Mujer`, `Hombre` o `Total` |
+| `n_victimas` | Número entero | Número de víctimas |
+| `n_victimas_x100khab` | Número decimal | Número de víctimas por cada 100 mil habitantes. El número de habitantes es con respecto a toda la población de la entidad de todas las edades y géneros |
+| `n_victimas_x100kmujeres` | Número decimal | Número de víctimas por cada 100 mil mujeres. El número de habitantes es con respecto a toda la población de mujeres en la entidad de todas las edades |
 
-| n_year | cve_ent | nombre_estado  | bien_juridico_afectado           | tipo_de_delito | subtipo_de_delito | modalidad                | genero | n_victimas | n_victimas_x100khab | n_victimas_x100kmujeres |
-|:-------|:--------|:---------------|:---------------------------------|:---------------|:------------------|:-------------------------|:-------|-----------:|--------------------:|------------------------:|
-| 2021   | 01      | Aguascalientes | La vida y la Integridad corporal | Homicidio      | Homicidio culposo | No especificado          | Hombre |          0 |           0.0000000 |                      NA |
-| 2021   | 01      | Aguascalientes | Libertad personal                | Rapto          | Rapto             | Rapto                    | Hombre |          0 |           0.0000000 |                      NA |
-| 2023   | 18      | Nayarit        | La vida y la Integridad corporal | Lesiones       | Lesiones culposas | Con arma de fuego        | Hombre |          3 |           0.2318170 |                      NA |
-| 2023   | 01      | Aguascalientes | La vida y la Integridad corporal | Feminicidio    | Feminicidio       | Con arma blanca          | Mujer  |          1 |           0.0661884 |               0.1298039 |
-| 2024   | 07      | Chiapas        | La vida y la Integridad corporal | Lesiones       | Lesiones culposas | En accidente de tránsito | Hombre |        236 |           3.9149630 |                      NA |
+| n_year | cve_ent | nombre_estado | bien_juridico_afectado | tipo_de_delito | subtipo_de_delito | modalidad | genero | n_victimas | n_victimas_x100khab | n_victimas_x100kmujeres |
+|:---|:---|:---|:---|:---|:---|:---|:---|---:|---:|---:|
+| 2021 | 01 | Aguascalientes | La vida y la Integridad corporal | Homicidio | Homicidio culposo | No especificado | Hombre | 0 | 0.0000000 | NA |
+| 2021 | 01 | Aguascalientes | Libertad personal | Rapto | Rapto | Rapto | Hombre | 0 | 0.0000000 | NA |
+| 2023 | 18 | Nayarit | La vida y la Integridad corporal | Lesiones | Lesiones culposas | Con arma de fuego | Hombre | 3 | 0.2318170 | NA |
+| 2023 | 01 | Aguascalientes | La vida y la Integridad corporal | Feminicidio | Feminicidio | Con arma blanca | Mujer | 1 | 0.0661884 | 0.1298039 |
+| 2024 | 07 | Chiapas | La vida y la Integridad corporal | Lesiones | Lesiones culposas | En accidente de tránsito | Hombre | 259 | 4.2965060 | NA |
 
 #### Víctimas de Delitos del Fuero Común anual a nivel estatal: Desagregado por genero y rango de edad
 
@@ -1197,29 +1197,29 @@ db_victimas_ent_nac_gender_age_100khab %>%
       "/db_victimas_delitos_ent_nac_100khab_genero_rango_de_edad.csv.bz2"))
 ```
 
-| **Variable**              | **Tipo de dato**            | **Descripción**                                                                                                                                                                                                                                                                                                                                 |
-|---------------------------|-----------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `n_year`                  | Número entero o categeórico | Número del año, puede ser tratado tanto como número entero o como categoria, depende del objetivo del proyecto                                                                                                                                                                                                                                  |
-| `cve_ent`                 | Categórico                  | Clave INEGI del estado                                                                                                                                                                                                                                                                                                                          |
-| `nombre_estado`           | Categórico                  | Nombre del estado                                                                                                                                                                                                                                                                                                                               |
-| `bien_juridico_afectado`  | Categórico                  | …                                                                                                                                                                                                                                                                                                                                               |
-| `tipo_de_delito`          | Categórico                  | …                                                                                                                                                                                                                                                                                                                                               |
-| `subtipo_de_delito`       | Categórico                  | …                                                                                                                                                                                                                                                                                                                                               |
-| `modalidad`               | Categórico                  | …                                                                                                                                                                                                                                                                                                                                               |
-| `genero`                  | Categórico                  | Género asignado a las víctimas. Se encuentran 3: `mujer`, `hombre` o `total_genero`                                                                                                                                                                                                                                                             |
-| `rango_de_edad`           | Categórico                  | Rango de edad asignado a la víctima, se encuentran 3: `nna` (Niñas, Niños y Adolescentes), `adultos` y `total_edad`                                                                                                                                                                                                                             |
-| `n_victimas`              | Número entero               | Número de víctimas                                                                                                                                                                                                                                                                                                                              |
-| `n_victimas_x100khab`     | Número decimal              | Número de víctimas por cada 100 mil habitantes. El número de habitantes es con respecto a toda la población de la entidad de todas las edades y géneros                                                                                                                                                                                         |
-| `n_victimas_x100kmujeres` | Número decimal              | Número de víctimas por cada 100 mil mujeres. El número de habitantes es con respecto a toda la población de mujeres en la entidad de todas las edades. Este dato únicamente existe en las celdas cuyo género sea `mujer`                                                                                                                        |
-| `n_victimas_x100kpar`     | Número decimal              | Número de víctimas por cada 100 mil habitantes. El número de habitantes es con respecto al par de categorias `genero`-`rango_de_edad` y la entidad. Por ejemplo, si la celda tiene valores `nna` y `total_genero`, significa que es el número de víctimas por cada 100 mil habitantes que sean Niñas, Niños y Adolescentes de todos los géneros |
+| **Variable** | **Tipo de dato** | **Descripción** |
+|----|----|----|
+| `n_year` | Número entero o categeórico | Número del año, puede ser tratado tanto como número entero o como categoria, depende del objetivo del proyecto |
+| `cve_ent` | Categórico | Clave INEGI del estado |
+| `nombre_estado` | Categórico | Nombre del estado |
+| `bien_juridico_afectado` | Categórico | … |
+| `tipo_de_delito` | Categórico | … |
+| `subtipo_de_delito` | Categórico | … |
+| `modalidad` | Categórico | … |
+| `genero` | Categórico | Género asignado a las víctimas. Se encuentran 3: `mujer`, `hombre` o `total_genero` |
+| `rango_de_edad` | Categórico | Rango de edad asignado a la víctima, se encuentran 3: `nna` (Niñas, Niños y Adolescentes), `adultos` y `total_edad` |
+| `n_victimas` | Número entero | Número de víctimas |
+| `n_victimas_x100khab` | Número decimal | Número de víctimas por cada 100 mil habitantes. El número de habitantes es con respecto a toda la población de la entidad de todas las edades y géneros |
+| `n_victimas_x100kmujeres` | Número decimal | Número de víctimas por cada 100 mil mujeres. El número de habitantes es con respecto a toda la población de mujeres en la entidad de todas las edades. Este dato únicamente existe en las celdas cuyo género sea `mujer` |
+| `n_victimas_x100kpar` | Número decimal | Número de víctimas por cada 100 mil habitantes. El número de habitantes es con respecto al par de categorias `genero`-`rango_de_edad` y la entidad. Por ejemplo, si la celda tiene valores `nna` y `total_genero`, significa que es el número de víctimas por cada 100 mil habitantes que sean Niñas, Niños y Adolescentes de todos los géneros |
 
-| n_year | cve_ent | nombre_estado | bien_juridico_afectado           | tipo_de_delito | subtipo_de_delito | modalidad           | genero       | rango_de_edad | n_victimas | n_victimas_x100khab | n_victimas_x100kmujeres | n_victimas_x100kpar |
-|:-------|:--------|:--------------|:---------------------------------|:---------------|:------------------|:--------------------|:-------------|:--------------|-----------:|--------------------:|------------------------:|--------------------:|
-| 2020   | 17      | Morelos       | Libertad personal                | Secuestro      | Secuestro         | Secuestro extorsivo | hombre       | nna           |          1 |           0.0499312 |                      NA |           0.3329582 |
-| 2021   | 07      | Chiapas       | La vida y la Integridad corporal | Homicidio      | Homicidio culposo | Con arma blanca     | hombre       | adultos       |          1 |           0.0172844 |                      NA |           0.0593137 |
-| 2015   | 11      | Guanajuato    | La vida y la Integridad corporal | Homicidio      | Homicidio culposo | Con arma de fuego   | mujer        | adultos       |         21 |           0.3508721 |               0.6832852 |           1.0342611 |
-| 2018   | 07      | Chiapas       | La vida y la Integridad corporal | Lesiones       | Lesiones culposas | Con arma de fuego   | total_genero | adultos       |          0 |           0.0000000 |                      NA |           0.0000000 |
-| 2021   | 00      | Nacional      | La vida y la Integridad corporal | Homicidio      | Homicidio culposo | Con arma blanca     | mujer        | nna           |          0 |           0.0000000 |               0.0000000 |           0.0000000 |
+| n_year | cve_ent | nombre_estado | bien_juridico_afectado | tipo_de_delito | subtipo_de_delito | modalidad | genero | rango_de_edad | n_victimas | n_victimas_x100khab | n_victimas_x100kmujeres | n_victimas_x100kpar |
+|:---|:---|:---|:---|:---|:---|:---|:---|:---|---:|---:|---:|---:|
+| 2020 | 17 | Morelos | Libertad personal | Secuestro | Secuestro | Secuestro extorsivo | hombre | nna | 1 | 0.0499312 | NA | 0.3329582 |
+| 2021 | 07 | Chiapas | La vida y la Integridad corporal | Homicidio | Homicidio culposo | Con arma blanca | hombre | adultos | 1 | 0.0172844 | NA | 0.0593137 |
+| 2015 | 11 | Guanajuato | La vida y la Integridad corporal | Homicidio | Homicidio culposo | Con arma de fuego | mujer | adultos | 21 | 0.3508721 | 0.6832852 | 1.0342611 |
+| 2018 | 07 | Chiapas | La vida y la Integridad corporal | Lesiones | Lesiones culposas | Con arma de fuego | total_genero | adultos | 0 | 0.0000000 | NA | 0.0000000 |
+| 2021 | 00 | Nacional | La vida y la Integridad corporal | Homicidio | Homicidio culposo | Con arma blanca | mujer | nna | 0 | 0.0000000 | 0.0000000 | 0.0000000 |
 
 [^1]: Para mayor información sobre conjunto de datos, visitar:
     [Procesamiento y transformación de datos: Proyecciones de
