@@ -508,7 +508,7 @@ desplegables de nombres de entidades y año de interés.
 //| echo: false
 viewof select_ent_name = Inputs.select(
     array_ent_name,
-    {value: 'Yucatán',
+    {value: 'the country',
     label: "Select a state"})
 ```
 
@@ -522,6 +522,8 @@ viewof select_n_year = Inputs.select(
 ```
 
 ## Interactive charts
+
+<!-- TODO: crear funcion para cambiar color de texto sea country o algun estado -->
 
 <div>
   <span style='font-size:1.25em;font-weight:600'>
@@ -582,12 +584,10 @@ Plot.plot({
       z: "cve_ent",
       curve: "catmull-rom",
       stroke: (d) => d.nombre_estado === "the country" ? true : false,
-      strokeWidth: (d) => d.nombre_estado === select_ent_name || 
-                          d.nombre_estado === "the country" ? 
-                          2.5 : 0.5,
-      strokeOpacity: (d) => d.nombre_estado === select_ent_name || 
-                            d.nombre_estado === "the country" ? 
-                            true : false,
+      strokeWidth: (d) => [select_ent_name, "the country"]
+                          .includes(d.nombre_estado) ? 2.5 : 0.5,
+      strokeOpacity: (d) => [select_ent_name, "the country"]
+                            .includes(d.nombre_estado) ? true : false,
       sort: {channel: "stroke"}
       })
     /* = END =*/
@@ -678,12 +678,10 @@ Plot.plot({
       z: "cve_ent",
       curve: "catmull-rom",
       stroke: (d) => d.nombre_estado === "the country" ? true : false,
-      strokeWidth: (d) => d.nombre_estado === select_ent_name || 
-                          d.nombre_estado === "the country" ? 
-                          2.5 : 0.5,
-      strokeOpacity: (d) => d.nombre_estado === select_ent_name || 
-                            d.nombre_estado === "the country" ? 
-                            true : false,
+      strokeWidth: (d) => [select_ent_name, "the country"]
+                          .includes(d.nombre_estado) ? 2.5 : 0.5,
+      strokeOpacity: (d) => [select_ent_name, "the country"]
+                            .includes(d.nombre_estado) ? true : false,
       sort: {channel: "stroke"}
       })
     /* = END =*/
@@ -771,12 +769,10 @@ Plot.plot({
       z: "n_year",
       curve: "catmull-rom",
       stroke: (d) => d.n_year === "1981-2010" ? true : false,
-      strokeWidth: (d) => d.n_year === select_n_year || 
-                          d.n_year === "1981-2010" ? 
-                          2.5 : 0.5,
-      strokeOpacity: (d) => d.n_year === select_n_year || 
-                            d.n_year === "1981-2010" ? 
-                            true : false,
+      strokeWidth: (d) => [select_n_year, "1981-2010"]
+                          .includes(d.n_year) ? 2.5 : 0.5,
+      strokeOpacity: (d) => [select_n_year, "1981-2010"]
+                            .includes(d.n_year) ? true : false,
       sort: {channel: "stroke"}
       })
     /* = END =*/
