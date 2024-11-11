@@ -1,6 +1,6 @@
 # Procesamiento y transformación de datos: Sequía en México
 Isaac Arroyo
-21 de octubre de 2024
+11 de noviembre de 2024
 
 ## Introducción y objetivos
 
@@ -65,11 +65,11 @@ msm_long['sequia'] = msm_long['sequia'].fillna("Sin sequia")
 
 | cve_concatenada | cve_ent | cve_mun | nombre_mun | entidad | org_cuenca | clv_oc | con_cuenca | cve_conc | full_date | sequia |
 |---:|---:|---:|:---|:---|:---|:---|:---|---:|---:|:---|
-| 15027 | 15 | 027 | Chapultepec | Estado de México | Lerma-Santiago-Pacífico | VIII | Lerma - Chapala | 15 | 2023_10_31_00_00_00 | D1 |
-| 07018 | 07 | 018 | Coapilla | Chiapas | Frontera Sur | XI | Rios Grijalva y Usumacinta | 24 | 2006_08_31_00_00_00 | Sin sequia |
-| 19051 | 19 | 051 | Villaldama | Nuevo León | Río Bravo | VI | Rio Bravo | 12 | 2012_04_30_00_00_00 | D2 |
-| 05023 | 05 | 023 | Ocampo | Coahuila de Zaragoza | Río Bravo | VI | Rio Bravo | 12 | 2014_01_31_00_00_00 | Sin sequia |
-| 06010 | 06 | 010 | Villa de Álvarez | Colima | Lerma-Santiago-Pacífico | VIII | Costa Pacifico Centro | 17 | 2017_07_15_00_00_00 | D1 |
+| 27009 | 27 | 009 | Jalapa | Tabasco | Frontera Sur | XI | Rios Grijalva y Usumacinta | 24 | 2017_03_31_00_00_00 | D2 |
+| 20176 | 20 | 176 | San Juan Bautista Coixtlahuaca | Oaxaca | Golfo Centro | X | Rio Papaloapan | 21 | 2009_03_31_00_00_00 | Sin sequia |
+| 30138 | 30 | 138 | Río Blanco | Veracruz de Ignacio de la Llave | Golfo Centro | X | Rio Papaloapan | 21 | 2008_04_30_00_00_00 | D0 |
+| 30209 | 30 | 209 | Tatahuicapan de Juárez | Veracruz de Ignacio de la Llave | Golfo Centro | X | Rio Papaloapan | 21 | 2008_05_31_00_00_00 | D0 |
+| 20510 | 20 | 510 | Santo Domingo Ixcatlán | Oaxaca | Pacífico Sur | V | Costa de Oaxaca | 11 | 2013_12_31_00_00_00 | Sin sequia |
 
 ### Asignar unidad de fecha a la columna `full_date`
 
@@ -139,13 +139,13 @@ msm_long_filled = (msm_long[['full_date','cve_concatenada', 'sequia']]
   .reset_index(drop = True))
 ```
 
-| full_date           | cve_concatenada | sequia |
-|:--------------------|----------------:|:-------|
-| 2011-11-09 00:00:00 |           21061 | D0     |
-| 2005-04-22 00:00:00 |           04003 | D2     |
-| 2016-08-19 00:00:00 |           31101 | D1     |
-| 2024-03-25 00:00:00 |           07012 | D0     |
-| 2017-02-04 00:00:00 |           12075 | D0     |
+| full_date           | cve_concatenada | sequia     |
+|:--------------------|----------------:|:-----------|
+| 2016-08-21 00:00:00 |           15023 | Sin sequia |
+| 2022-10-05 00:00:00 |           08051 | Sin sequia |
+| 2012-08-09 00:00:00 |           14026 | Sin sequia |
+| 2014-03-06 00:00:00 |           20414 | D0         |
+| 2021-10-28 00:00:00 |           28040 | D0         |
 
 ## Cálculo de rachas y rachas máximas
 
@@ -278,11 +278,11 @@ Muestra de `db_rachas_mun`
 
 | cve_concatenada | sequia | racha | full_date_start_racha | full_date_end_racha | racha_dias |
 |---:|:---|---:|:---|:---|---:|
-| 12080 | D0 | 16 | 2017-05-16 00:00:00 | 2017-05-31 00:00:00 | 15 |
-| 30082 | D0 | 46 | 2024-07-01 00:00:00 | 2024-08-15 00:00:00 | 45 |
-| 20417 | Sin sequia | 243 | 2010-07-01 00:00:00 | 2011-02-28 00:00:00 | 242 |
-| 31054 | D0 | 15 | 2019-05-01 00:00:00 | 2019-05-15 00:00:00 | 14 |
-| 20311 | D2 | 153 | 2016-07-16 00:00:00 | 2016-12-15 00:00:00 | 152 |
+| 11013 | D0 | 92 | 2022-11-16 00:00:00 | 2023-02-15 00:00:00 | 91 |
+| 32011 | D2 | 122 | 2006-03-01 00:00:00 | 2006-06-30 00:00:00 | 121 |
+| 09008 | D0 | 31 | 2023-05-16 00:00:00 | 2023-06-15 00:00:00 | 30 |
+| 30119 | D1 | 46 | 2014-03-16 00:00:00 | 2014-04-30 00:00:00 | 45 |
+| 26037 | Sin sequia | 153 | 2022-07-16 00:00:00 | 2022-12-15 00:00:00 | 152 |
 
 Muestra de `db_rachas_max_mun`
 
@@ -292,7 +292,7 @@ Muestra de `db_rachas_max_mun`
 | 14100 | D0 | 365 | 2004-08-01 00:00:00 | 2005-07-31 00:00:00 | 364 |
 | 17011 | Sin sequia | 1995 | 2011-09-01 00:00:00 | 2017-02-15 00:00:00 | 1994 |
 | 31034 | D3 | 181 | 2009-09-01 00:00:00 | 2010-02-28 00:00:00 | 180 |
-| 25007 | D4 | 274 | 2024-01-16 00:00:00 | 2024-10-15 00:00:00 | 273 |
+| 25007 | D4 | 290 | 2024-01-16 00:00:00 | 2024-10-31 00:00:00 | 289 |
 
 ## Reasignar nombre de Estados, Municipios y Cuencas
 
@@ -472,11 +472,11 @@ db_msm_og.to_csv(
 
 | nombre_estado | cve_ent | nombre_municipio | cve_geo | org_cuenca | clv_oc | con_cuenca | cve_conc | full_date | sequia |
 |:---|---:|:---|---:|:---|:---|:---|---:|:---|:---|
-| Veracruz | 30 | Coxquihui | 30050 | Golfo Centro | X | Rios Tuxpan al Jamapa | 20 | 2021-12-15 00:00:00 | D0 |
-| Veracruz | 30 | Mariano Escobedo | 30101 | Golfo Centro | X | Rio Papaloapan | 21 | 2012-01-31 00:00:00 | Sin sequia |
-| Estado de México | 15 | Villa Guerrero | 15113 | Balsas | IV | Rio Balsas | 9 | 2021-08-15 00:00:00 | D0 |
-| Michoacán | 16 | Nocupétaro | 16057 | Balsas | IV | Rio Balsas | 9 | 2006-06-30 00:00:00 | D0 |
-| Oaxaca | 20 | San Ildefonso Villa Alta | 20156 | Golfo Centro | X | Rio Papaloapan | 21 | 2021-08-31 00:00:00 | Sin sequia |
+| Veracruz | 30 | Chalma | 30055 | Golfo Norte | IX | Rio Panuco | 19 | 2007-05-31 00:00:00 | Sin sequia |
+| Oaxaca | 20 | Villa Hidalgo Yalálag | 20038 | Golfo Centro | X | Rio Papaloapan | 21 | 2024-04-15 00:00:00 | D0 |
+| Puebla | 21 | Tlacuilotepec | 21178 | Golfo Centro | X | Rios Tuxpan al Jamapa | 20 | 2016-08-15 00:00:00 | Sin sequia |
+| Morelos | 17 | Axochiapan | 17003 | Balsas | IV | Rio Balsas | 9 | 2018-10-15 00:00:00 | Sin sequia |
+| Baja California Sur | 03 | Loreto | 03009 | Península De Baja California | I | Baja California Sur | 1 | 2005-11-30 00:00:00 | Sin sequia |
 
 Muestra del archivo **`sequia_municipios_days.csv.bz2`**
 
@@ -489,11 +489,11 @@ db_msm_mod.to_csv(
 
 | nombre_estado | cve_ent | nombre_municipio | cve_geo | org_cuenca | clv_oc | con_cuenca | cve_conc | full_date | sequia |
 |:---|---:|:---|---:|:---|:---|:---|---:|:---|:---|
-| Oaxaca | 20 | Santa María Totolapilla | 20440 | Pacífico Sur | V | Costa de Oaxaca | 11 | 2011-01-15 00:00:00 | Sin sequia |
-| Yucatán | 31 | Samahil | 31063 | Península De Yucatán | XII | Peninsula de Yucatan | 25 | 2013-10-03 00:00:00 | Sin sequia |
-| Ciudad de México | 09 | Gustavo A. Madero | 09005 | Aguas del Valle de México | XIII | Valle de Mexico | 26 | 2015-03-14 00:00:00 | Sin sequia |
-| Tabasco | 27 | Centla | 27003 | Frontera Sur | XI | Rios Grijalva y Usumacinta | 24 | 2005-07-28 00:00:00 | D0 |
-| Puebla | 21 | Tlapanalá | 21185 | Balsas | IV | Rio Balsas | 9 | 2019-02-15 00:00:00 | Sin sequia |
+| Yucatán | 31 | Ixil | 31039 | Península De Yucatán | XII | Peninsula de Yucatan | 25 | 2008-11-08 00:00:00 | D0 |
+| Zacatecas | 32 | Tepetongo | 32046 | Lerma-Santiago-Pacífico | VIII | Rio Santiago | 16 | 2019-11-13 00:00:00 | Sin sequia |
+| Tamaulipas | 28 | Hidalgo | 28016 | Golfo Norte | IX | Rios San Fernando-Soto la Marina | 18 | 2014-10-01 00:00:00 | Sin sequia |
+| San Luis Potosí | 24 | Santa Catarina | 24031 | Golfo Norte | IX | Rio Panuco | 19 | 2011-11-11 00:00:00 | D1 |
+| Oaxaca | 20 | Totontepec Villa de Morelos | 20554 | Golfo Centro | X | Rio Papaloapan | 21 | 2021-12-06 00:00:00 | Sin sequia |
 
 ### Base de datos de Rachas de Sequía en Municipios
 
@@ -511,11 +511,11 @@ db_rachas_mun.to_csv(
 
 | nombre_estado | cve_ent | nombre_municipio | cve_geo | org_cuenca | clv_oc | con_cuenca | cve_conc | sequia | full_date_start_racha | full_date_end_racha | racha_dias |
 |:---|---:|:---|---:|:---|:---|:---|---:|:---|:---|:---|---:|
-| Puebla | 21 | Honey | 21057 | Golfo Centro | X | Rios Tuxpan al Jamapa | 20 | D0 | 2019-06-01 00:00:00 | 2019-06-30 00:00:00 | 29 |
-| Veracruz | 30 | Banderilla | 30026 | Golfo Centro | X | Rios Tuxpan al Jamapa | 20 | D1 | 2019-04-16 00:00:00 | 2019-04-30 00:00:00 | 14 |
-| Oaxaca | 20 | San Juan Cieneguilla | 20186 | Balsas | IV | Rio Balsas | 9 | D0 | 2008-02-01 00:00:00 | 2008-06-30 00:00:00 | 150 |
-| Oaxaca | 20 | Yogana | 20563 | Pacífico Sur | V | Costa de Oaxaca | 11 | D0 | 2019-07-16 00:00:00 | 2019-08-15 00:00:00 | 30 |
-| Chiapas | 07 | Coapilla | 07018 | Frontera Sur | XI | Rios Grijalva y Usumacinta | 24 | Sin sequia | 2015-10-01 00:00:00 | 2016-06-15 00:00:00 | 258 |
+| Yucatán | 31 | Tunkás | 31097 | Península De Yucatán | XII | Peninsula de Yucatan | 25 | D1 | 2019-08-01 00:00:00 | 2019-10-31 00:00:00 | 91 |
+| Michoacán | 16 | Epitacio Huerta | 16031 | Lerma-Santiago-Pacífico | VIII | Lerma - Chapala | 15 | D0 | 2017-05-16 00:00:00 | 2017-06-15 00:00:00 | 30 |
+| Estado de México | 15 | Nextlalpan | 15059 | Aguas del Valle de México | XIII | Valle de Mexico | 26 | D1 | 2009-04-01 00:00:00 | 2009-08-31 00:00:00 | 152 |
+| Chiapas | 07 | Solosuchiapa | 07084 | Frontera Sur | XI | Rios Grijalva y Usumacinta | 24 | D0 | 2022-08-01 00:00:00 | 2022-09-15 00:00:00 | 45 |
+| Durango | 10 | Gómez Palacio | 10007 | Cuencas Centrales Del Norte | VII | Nazas-Aguanaval | 13 | D0 | 2013-07-01 00:00:00 | 2013-09-30 00:00:00 | 91 |
 
 ### Base de datos de Máximas Rachas de Sequía en Municipios
 
@@ -541,4 +541,4 @@ db_rachas_max_mun.to_csv(
 
 > \[!NOTE\]
 >
-> Fecha de actualización del Monitor de Sequía de México: October 15, 2024
+> Fecha de actualización del Monitor de Sequía de México: October 31, 2024
