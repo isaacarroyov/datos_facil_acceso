@@ -1,7 +1,6 @@
-# Procesamiento de datos: Incidencia Delictiva y Víctimas del Fuero
-Común
+# Procesamiento de datos: Incidencia Delictiva y Víctimas del Fuero Común
 Isaac Arroyo
-24 de octubre de 2024
+25 de noviembre de 2024
 
 ## Introducción y objetivos
 
@@ -45,7 +44,7 @@ db_incidencia_mun <- read_csv(
   janitor::clean_names()
 
 # - - Número de víctimas de delitos - - #
-url_victimas_ent <- "https://drive.google.com/file/d/1To-Ufl7Dj2FMHO8UDROmyaVgPE25aicn/view"
+url_victimas_ent <- "https://drive.google.com/file/d/1Ac-BYk-w7go-DIfCcfsfRiaV_QrAf4Z4/view"
 id_file_victimas_ent <- str_extract(
     string = url_victimas_ent,
     pattern = "(?<=d/)(.*?)(?=/view)")
@@ -66,14 +65,14 @@ db_victimas_ent <- read_csv(
 | 2020 | 31 | Yucatán | 31093 | Tixkokob | El patrimonio | Robo | Robo de vehículo automotor | Robo de motocicleta Con violencia | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | 2020 | 31 | Yucatán | 31019 | Chemax | El patrimonio | Abuso de confianza | Abuso de confianza | Abuso de confianza | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | 2023 | 11 | Guanajuato | 11017 | Irapuato | El patrimonio | Robo | Robo a negocio | Sin violencia | 19 | 4 | 8 | 12 | 12 | 15 | 21 | 13 | 25 | 23 | 9 | 20 |
-| 2024 | 20 | Oaxaca | 20105 | San Antonino Monte Verde | El patrimonio | Robo | Robo a transeúnte en vía pública | Sin violencia | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | NA | NA | NA |
+| 2024 | 20 | Oaxaca | 20105 | San Antonino Monte Verde | El patrimonio | Robo | Robo a transeúnte en vía pública | Sin violencia | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | NA | NA |
 
 **Muestra de `db_victimas_ent`**
 
 | ano | clave_ent | entidad | bien_juridico_afectado | tipo_de_delito | subtipo_de_delito | modalidad | sexo | rango_de_edad | enero | febrero | marzo | abril | mayo | junio | julio | agosto | septiembre | octubre | noviembre | diciembre |
 |:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|
 | 2023 | 30 | Veracruz de Ignacio de la Llave | La vida y la Integridad corporal | Feminicidio | Feminicidio | Con arma blanca | Mujer | Menores de edad (0-17) | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| 2024 | 1 | Aguascalientes | La vida y la Integridad corporal | Aborto | Aborto | Aborto | No identificado | No identificado | 0 | 1 | 1 | 0 | 0 | 1 | 0 | 0 | 1 | NA | NA | NA |
+| 2024 | 1 | Aguascalientes | La vida y la Integridad corporal | Aborto | Aborto | Aborto | No identificado | No identificado | 0 | 1 | 1 | 0 | 0 | 1 | 0 | 0 | 1 | 1 | NA | NA |
 | 2017 | 19 | Nuevo León | La vida y la Integridad corporal | Homicidio | Homicidio culposo | Con otro elemento | Hombre | Adultos (18 y más) | 6 | 2 | 4 | 0 | 2 | 4 | 3 | 3 | 0 | 5 | 0 | 1 |
 | 2018 | 30 | Veracruz de Ignacio de la Llave | La sociedad | Otros delitos contra la sociedad | Otros delitos contra la sociedad | Otros delitos contra la sociedad | Hombre | Menores de edad (0-17) | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | 2020 | 4 | Campeche | La vida y la Integridad corporal | Homicidio | Homicidio doloso | Con otro elemento | Hombre | Menores de edad (0-17) | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -227,10 +226,10 @@ db_incidencia_mun_renamed <- db_incidencia_mun %>%
 
 | n_year | cve_ent | nombre_estado | cve_geo | nombre_municipio | bien_juridico_afectado | tipo_de_delito | subtipo_de_delito | modalidad | enero | febrero | marzo | abril | mayo | junio | julio | agosto | septiembre | octubre | noviembre | diciembre |
 |:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|
-| 2024 | 20 | Oaxaca | 20472 | Santiago Laollaga | La vida y la Integridad corporal | Homicidio | Homicidio doloso | Con otro elemento | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | NA | NA | NA |
+| 2024 | 20 | Oaxaca | 20472 | Santiago Laollaga | La vida y la Integridad corporal | Homicidio | Homicidio doloso | Con otro elemento | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | NA | NA |
 | 2021 | 20 | Oaxaca | 20402 | Santa María Cortijo | La vida y la Integridad corporal | Homicidio | Homicidio culposo | En accidente de tránsito | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | 2018 | 31 | Yucatán | 31100 | Ucú | La sociedad | Corrupción de menores | Corrupción de menores | Corrupción de menores | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| 2024 | 13 | Hidalgo | 13014 | Calnali | La libertad y la seguridad sexual | Violación equiparada | Violación equiparada | Violación equiparada | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | NA | NA | NA |
+| 2024 | 13 | Hidalgo | 13014 | Calnali | La libertad y la seguridad sexual | Violación equiparada | Violación equiparada | Violación equiparada | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | NA | NA |
 | 2020 | 32 | Zacatecas | 32025 | Luis Moya | El patrimonio | Robo | Robo a transeúnte en vía pública | Con violencia | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 
 ``` r
@@ -255,7 +254,7 @@ db_victimas_ent_renamed <- db_victimas_ent %>%
 | 2018 | 11 | Guanajuato | La vida y la Integridad corporal | Homicidio | Homicidio culposo | Con otro elemento | Mujer | Menores de edad (0-17) | 8 | 7 | 7 | 6 | 8 | 2 | 6 | 3 | 2 | 3 | 0 | 4 |
 | 2023 | 03 | Baja California Sur | La vida y la Integridad corporal | Lesiones | Lesiones culposas | Con arma de fuego | Hombre | No especificado | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | 2020 | 29 | Tlaxcala | El patrimonio | Extorsión | Extorsión | Extorsión | Mujer | Adultos (18 y más) | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| 2024 | 15 | Estado de México | Libertad personal | Secuestro | Secuestro | Secuestro con calidad de rehén | Hombre | Menores de edad (0-17) | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | NA | NA | NA |
+| 2024 | 15 | Estado de México | Libertad personal | Secuestro | Secuestro | Secuestro con calidad de rehén | Hombre | Menores de edad (0-17) | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | NA | NA |
 | 2016 | 19 | Nuevo León | La vida y la Integridad corporal | Homicidio | Homicidio doloso | Con arma de fuego | Mujer | No especificado | 1 | 1 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 
 ### Transformación de *wide format* a *long format*
@@ -341,7 +340,7 @@ db_victimas_ent_long <- db_victimas_ent_renamed %>%
 | 2020-01-15 | 2020 | 01 | 05 | Coahuila | La vida y la Integridad corporal | Homicidio | Homicidio culposo | No especificado | Mujer | Menores de edad (0-17) | 0 |
 | 2016-09-15 | 2016 | 09 | 14 | Jalisco | La vida y la Integridad corporal | Lesiones | Lesiones culposas | No especificado | Mujer | Menores de edad (0-17) | 1 |
 | 2019-11-15 | 2019 | 11 | 31 | Yucatán | La vida y la Integridad corporal | Homicidio | Homicidio doloso | Con arma blanca | Mujer | Adultos (18 y más) | 0 |
-| 2024-01-15 | 2024 | 01 | 30 | Veracruz | La vida y la Integridad corporal | Otros delitos que atentan contra la vida y la integridad corporal | Otros delitos que atentan contra la vida y la integridad corporal | Otros delitos que atentan contra la vida y la integridad corporal | Hombre | Menores de edad (0-17) | 0 |
+| 2024-08-15 | 2024 | 08 | 27 | Tabasco | La sociedad | Corrupción de menores | Corrupción de menores | Corrupción de menores | Hombre | Menores de edad (0-17) | 0 |
 
 ### Cambios específicos
 
@@ -583,7 +582,7 @@ df_incidencia_nac_year <- df_incidencia_ent_year %>%
 | 2022 | 00 | Nacional | El patrimonio | Robo | Robo a institución bancaria | Sin violencia | 70 |
 | 2021 | 00 | Nacional | La vida y la Integridad corporal | Homicidio | Homicidio culposo | Con otro elemento | 1755 |
 | 2020 | 00 | Nacional | La vida y la Integridad corporal | Feminicidio | Feminicidio | Con arma blanca | 229 |
-| 2024 | 00 | Nacional | Otros bienes jurídicos afectados (del fuero común) | Narcomenudeo | Narcomenudeo | Narcomenudeo | 69706 |
+| 2024 | 00 | Nacional | Otros bienes jurídicos afectados (del fuero común) | Narcomenudeo | Narcomenudeo | Narcomenudeo | 77444 |
 
 Similar al caso del tasado de delitos a nivel municipal, se tiene que
 agregar información específica de la población de mujeres para el tasado
@@ -691,7 +690,7 @@ df_victimas_ent_nac_gender_year <- bind_rows(
 | 2019 | 09 | Ciudad de México | La vida y la Integridad corporal | Homicidio | Homicidio doloso | Con arma de fuego | Mujer | 85 |
 | 2024 | 09 | Ciudad de México | La vida y la Integridad corporal | Homicidio | Homicidio culposo | Con arma blanca | Mujer | 0 |
 | 2024 | 16 | Michoacán | Libertad personal | Secuestro | Secuestro | Secuestro exprés | Total | 0 |
-| 2024 | 00 | Nacional | La vida y la Integridad corporal | Homicidio | Homicidio doloso | Con arma blanca | Total | 1608 |
+| 2024 | 00 | Nacional | La vida y la Integridad corporal | Homicidio | Homicidio doloso | Con arma blanca | Total | 1786 |
 
 #### Adjuntar el valor de la población del estado para el tasado de víctimas por 100 mil habitantes.
 
@@ -730,7 +729,7 @@ db_victimas_ent_nac_x100khab <- df_victimas_ent_nac_gender_year %>%
 | 2022 | 25 | Sinaloa | Libertad personal | Secuestro | Secuestro | Secuestro con calidad de rehén | Total | 0 | 0.0000000 | NA |
 | 2016 | 17 | Morelos | La vida y la Integridad corporal | Lesiones | Lesiones dolosas | No especificado | Mujer | 939 | 48.0188271 | 93.0809805 |
 | 2016 | 31 | Yucatán | La vida y la Integridad corporal | Feminicidio | Feminicidio | Con arma blanca | Mujer | 1 | 0.0455400 | 0.0899220 |
-| 2017 | 00 | Nacional | La vida y la Integridad corporal | Feminicidio | Feminicidio | No especificado | Mujer | 38 | 0.0304543 | 0.0596785 |
+| 2017 | 00 | Nacional | La vida y la Integridad corporal | Feminicidio | Feminicidio | Con otro elemento | Mujer | 376 | 0.3013372 | 0.5905033 |
 
 ### Número anual de víctimas de delitos por género y rango de edad
 
@@ -953,7 +952,7 @@ db_victimas_ent_nac_gender_age_100khab <- df_victimas_ent_nac_gender_age_year %>
 |:---|:---|:---|:---|:---|:---|:---|:---|:---|---:|---:|---:|---:|
 | 2020 | 22 | Querétaro | La vida y la Integridad corporal | Homicidio | Homicidio culposo | Con otro elemento | total_genero | nna | 0 | 0.0000000 | NA | 0.0000000 |
 | 2024 | 10 | Durango | Libertad personal | Tráfico de menores | Tráfico de menores | Tráfico de menores | mujer | adultos | 0 | 0.0000000 | 0.0000000 | 0.0000000 |
-| 2024 | 03 | Baja California Sur | La vida y la Integridad corporal | Lesiones | Lesiones culposas | En accidente de tránsito | hombre | nna | 36 | 4.0629761 | NA | 27.8834163 |
+| 2024 | 03 | Baja California Sur | La vida y la Integridad corporal | Lesiones | Lesiones culposas | En accidente de tránsito | hombre | nna | 38 | 4.2886970 | NA | 29.4324950 |
 | 2017 | 19 | Nuevo León | La vida y la Integridad corporal | Feminicidio | Feminicidio | Con otro elemento | mujer | total_edad | 13 | 0.2353541 | 0.4715732 | 0.4715732 |
 | 2016 | 01 | Aguascalientes | La vida y la Integridad corporal | Feminicidio | Feminicidio | Con otro elemento | mujer | adultos | 0 | 0.0000000 | 0.0000000 | 0.0000000 |
 
@@ -995,11 +994,11 @@ db_incidencia_mun_long %>%
 
 | date_year_month | n_year | n_month | cve_ent | nombre_estado | cve_geo | nombre_municipio | bien_juridico_afectado | tipo_de_delito | subtipo_de_delito | modalidad | n_delitos |
 |:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|---:|
+| 2024-01-15 | 2024 | 01 | 31 | Yucatán | 31003 | Akil | La vida y la Integridad corporal | Lesiones | Lesiones culposas | Con arma de fuego | 0 |
 | 2019-10-15 | 2019 | 10 | 20 | Oaxaca | 20165 | San José Ayuquila | El patrimonio | Fraude | Fraude | Fraude | 0 |
 | 2019-06-15 | 2019 | 06 | 28 | Tamaulipas | 28025 | Miguel Alemán | El patrimonio | Robo | Otros robos | Con violencia | 1 |
 | 2022-06-15 | 2022 | 06 | 16 | Michoacán | 16035 | La Huacana | El patrimonio | Robo | Robo de maquinaria | Robo de cables, tubos y otros objetos destinados a servicios públicos Sin violencia | 0 |
 | 2022-01-15 | 2022 | 01 | 12 | Guerrero | 12037 | Ixcateopan de Cuauhtémoc | La libertad y la seguridad sexual | Violación simple | Violación simple | Violación simple | 0 |
-| 2020-10-15 | 2020 | 10 | 30 | Veracruz | 30205 | El Higo | La vida y la Integridad corporal | Lesiones | Lesiones culposas | Con arma de fuego | 0 |
 
 #### Incidencia Delictiva del Fuero Común mensual a nivel estatal
 
@@ -1148,7 +1147,7 @@ db_incidencia_ent_nac_year_x100khab %>%
 | 2021 | 01 | Aguascalientes | La vida y la Integridad corporal | Lesiones | Lesiones dolosas | No especificado | 783 | 53.169637 | NA |
 | 2023 | 18 | Nayarit | La libertad y la seguridad sexual | Hostigamiento sexual | Hostigamiento sexual | Hostigamiento sexual | 0 | 0.000000 | NA |
 | 2023 | 01 | Aguascalientes | El patrimonio | Robo | Robo a negocio | Sin violencia | 1904 | 126.022693 | NA |
-| 2024 | 07 | Chiapas | La sociedad | Otros delitos contra la sociedad | Otros delitos contra la sociedad | Otros delitos contra la sociedad | 88 | 1.459817 | NA |
+| 2024 | 07 | Chiapas | La sociedad | Otros delitos contra la sociedad | Otros delitos contra la sociedad | Otros delitos contra la sociedad | 95 | 1.575938 | NA |
 
 #### Víctimas de Delitos del Fuero Común anual a nivel estatal: Desagregado por genero
 
@@ -1182,7 +1181,7 @@ db_victimas_ent_nac_x100khab %>%
 | 2021 | 01 | Aguascalientes | Libertad personal | Rapto | Rapto | Rapto | Hombre | 0 | 0.0000000 | NA |
 | 2023 | 18 | Nayarit | La vida y la Integridad corporal | Lesiones | Lesiones culposas | Con arma de fuego | Hombre | 3 | 0.2318170 | NA |
 | 2023 | 01 | Aguascalientes | La vida y la Integridad corporal | Feminicidio | Feminicidio | Con arma blanca | Mujer | 1 | 0.0661884 | 0.1298039 |
-| 2024 | 07 | Chiapas | La vida y la Integridad corporal | Lesiones | Lesiones culposas | En accidente de tránsito | Hombre | 259 | 4.2965060 | NA |
+| 2024 | 07 | Chiapas | La vida y la Integridad corporal | Lesiones | Lesiones culposas | En accidente de tránsito | Hombre | 296 | 4.9102926 | NA |
 
 #### Víctimas de Delitos del Fuero Común anual a nivel estatal: Desagregado por genero y rango de edad
 
