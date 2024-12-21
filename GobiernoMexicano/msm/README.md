@@ -1,6 +1,6 @@
 # Procesamiento y transformación de datos: Sequía en México
 Isaac Arroyo
-25 de noviembre de 2024
+21 de diciembre de 2024
 
 ## Introducción y objetivos
 
@@ -36,13 +36,13 @@ msm_og = msm_og.clean_names(remove_special = True)
 > \[!NOTE\]  
 > La tabla muestra únicamente una muestra de las columnas de fecha del registro
 
-| cve_concatenada | cve_ent | cve_mun | nombre_mun | entidad | org_cuenca | clv_oc | con_cuenca | cve_conc | 2016_07_31_00_00_00 | 2009_10_31_00_00_00 | 2010_09_30_00_00_00 | 2019_10_31_00_00_00 |
-|---:|---:|---:|:---|:---|:---|:---|:---|---:|:---|:---|---:|:---|
-| 21098 | 21 | 098 | Molcaxac | Puebla | Balsas | IV | Rio Balsas | 9 | nan | D0 | nan | nan |
-| 27012 | 27 | 012 | Macuspana | Tabasco | Frontera Sur | XI | Rios Grijalva y Usumacinta | 24 | D1 | D3 | nan | D3 |
-| 20306 | 20 | 306 | San Pedro el Alto | Oaxaca | Pacífico Sur | V | Costa de Oaxaca | 11 | D0 | nan | nan | nan |
-| 16086 | 16 | 086 | Tanhuato | Michoacán de Ocampo | Lerma-Santiago-Pacífico | VIII | Lerma - Chapala | 15 | D1 | D2 | nan | D1 |
-| 15004 | 15 | 004 | Almoloya de Alquisiras | Estado de México | Balsas | IV | Rio Balsas | 9 | nan | D1 | nan | D0 |
+| cve_concatenada | cve_ent | cve_mun | nombre_mun             | entidad             | org_cuenca              | clv_oc | con_cuenca                 | cve_conc | 2016_07_31_00_00_00 | 2009_10_31_00_00_00 | 2010_09_30_00_00_00 | 2019_10_31_00_00_00 |
+|----------------:|--------:|--------:|:-----------------------|:--------------------|:------------------------|:-------|:---------------------------|---------:|:--------------------|:--------------------|--------------------:|:--------------------|
+|           21098 |      21 |     098 | Molcaxac               | Puebla              | Balsas                  | IV     | Rio Balsas                 |        9 | nan                 | D0                  |                 nan | nan                 |
+|           27012 |      27 |     012 | Macuspana              | Tabasco             | Frontera Sur            | XI     | Rios Grijalva y Usumacinta |       24 | D1                  | D3                  |                 nan | D3                  |
+|           20306 |      20 |     306 | San Pedro el Alto      | Oaxaca              | Pacífico Sur            | V      | Costa de Oaxaca            |       11 | D0                  | nan                 |                 nan | nan                 |
+|           16086 |      16 |     086 | Tanhuato               | Michoacán de Ocampo | Lerma-Santiago-Pacífico | VIII   | Lerma - Chapala            |       15 | D1                  | D2                  |                 nan | D1                  |
+|           15004 |      15 |     004 | Almoloya de Alquisiras | Estado de México    | Balsas                  | IV     | Rio Balsas                 |        9 | nan                 | D1                  |                 nan | D0                  |
 
 A partir de esta tabla, enlistan los cambios necesarios:
 
@@ -63,13 +63,13 @@ msm_long = pd.melt(
 msm_long['sequia'] = msm_long['sequia'].fillna("Sin sequia")
 ```
 
-| cve_concatenada | cve_ent | cve_mun | nombre_mun | entidad | org_cuenca | clv_oc | con_cuenca | cve_conc | full_date | sequia |
-|---:|---:|---:|:---|:---|:---|:---|:---|---:|---:|:---|
-| 13056 | 13 | 056 | Santiago Tulantepec de Lugo Guerrero | Hidalgo | Golfo Norte | IX | Rio Panuco | 19 | 2018_03_15_00_00_00 | Sin sequia |
-| 29057 | 29 | 057 | Santa Apolonia Teacalco | Tlaxcala | Balsas | IV | Rio Balsas | 9 | 2022_04_30_00_00_00 | Sin sequia |
-| 20155 | 20 | 155 | San Ildefonso Sola | Oaxaca | Pacífico Sur | V | Costa de Oaxaca | 11 | 2019_09_30_00_00_00 | D1 |
-| 21194 | 21 | 194 | Venustiano Carranza | Puebla | Golfo Centro | X | Rios Tuxpan al Jamapa | 20 | 2003_05_31_00_00_00 | D0 |
-| 20232 | 20 | 232 | San Lucas Ojitlán | Oaxaca | Golfo Centro | X | Rio Papaloapan | 21 | 2020_06_15_00_00_00 | Sin sequia |
+| cve_concatenada | cve_ent | cve_mun | nombre_mun          | entidad | org_cuenca              | clv_oc | con_cuenca            | cve_conc |           full_date | sequia     |
+|----------------:|--------:|--------:|:--------------------|:--------|:------------------------|:-------|:----------------------|---------:|--------------------:|:-----------|
+|           20552 |      20 |     552 | Tlacotepec Plumas   | Oaxaca  | Golfo Centro            | X      | Rio Papaloapan        |       21 | 2022_12_31_00_00_00 | D0         |
+|           20541 |      20 |     541 | Tanetze de Zaragoza | Oaxaca  | Golfo Centro            | X      | Rio Papaloapan        |       21 | 2007_12_31_00_00_00 | Sin sequia |
+|           14067 |      14 |     067 | Puerto Vallarta     | Jalisco | Lerma-Santiago-Pacífico | VIII   | Costa Pacifico Centro |       17 | 2005_10_31_00_00_00 | D0         |
+|           26047 |      26 |     047 | Pitiquito           | Sonora  | Noroeste                | II     | Alto Noroeste         |        3 | 2024_11_30_00_00_00 | D3         |
+|           14002 |      14 |     002 | Acatlán de Juárez   | Jalisco | Lerma-Santiago-Pacífico | VIII   | Lerma - Chapala       |       15 | 2006_06_30_00_00_00 | D2         |
 
 ### Asignar unidad de fecha a la columna `full_date`
 
@@ -141,11 +141,11 @@ msm_long_filled = (msm_long[['full_date','cve_concatenada', 'sequia']]
 
 | full_date           | cve_concatenada | sequia     |
 |:--------------------|----------------:|:-----------|
-| 2012-05-12 00:00:00 |           05012 | D1         |
-| 2014-10-07 00:00:00 |           14103 | Sin sequia |
-| 2012-05-03 00:00:00 |           30139 | Sin sequia |
-| 2023-12-07 00:00:00 |           20461 | D1         |
-| 2014-06-04 00:00:00 |           30106 | Sin sequia |
+| 2003-02-18 00:00:00 |           29048 | D0         |
+| 2024-02-11 00:00:00 |           15065 | D0         |
+| 2011-11-11 00:00:00 |           30095 | D0         |
+| 2004-11-01 00:00:00 |           30015 | D1         |
+| 2020-11-07 00:00:00 |           20152 | Sin sequia |
 
 ## Cálculo de rachas y rachas máximas
 
@@ -276,23 +276,23 @@ db_rachas_max_mun = pd.concat(lista_dfs_rachas_max).reset_index(drop=True)
 
 Muestra de `db_rachas_mun`
 
-| cve_concatenada | sequia | racha | full_date_start_racha | full_date_end_racha | racha_dias |
-|---:|:---|---:|:---|:---|---:|
-| 20363 | Sin sequia | 244 | 2007-07-01 00:00:00 | 2008-02-29 00:00:00 | 243 |
-| 20239 | Sin sequia | 31 | 2023-05-16 00:00:00 | 2023-06-15 00:00:00 | 30 |
-| 14011 | Sin sequia | 168 | 2021-06-16 00:00:00 | 2021-11-30 00:00:00 | 167 |
-| 20124 | Sin sequia | 91 | 2013-09-01 00:00:00 | 2013-11-30 00:00:00 | 90 |
-| 20086 | D1 | 151 | 2003-01-01 00:00:00 | 2003-05-31 00:00:00 | 150 |
+| cve_concatenada | sequia     | racha | full_date_start_racha | full_date_end_racha | racha_dias |
+|----------------:|:-----------|------:|:----------------------|:--------------------|-----------:|
+|           21131 | Sin sequia |    61 | 2006-09-01 00:00:00   | 2006-10-31 00:00:00 |         60 |
+|           31009 | D1         |    31 | 2011-08-01 00:00:00   | 2011-08-31 00:00:00 |         30 |
+|           20476 | D0         |   120 | 2006-01-01 00:00:00   | 2006-04-30 00:00:00 |        119 |
+|           12038 | D0         |    31 | 2022-05-16 00:00:00   | 2022-06-15 00:00:00 |         30 |
+|           28043 | Sin sequia |   365 | 2008-07-01 00:00:00   | 2009-06-30 00:00:00 |        364 |
 
 Muestra de `db_rachas_max_mun`
 
-| cve_concatenada | sequia | racha | full_date_start_racha | full_date_end_racha | racha_dias |
-|---:|:---|---:|:---|:---|---:|
-| 19046 | D3 | 153 | 2011-08-01 00:00:00 | 2011-12-31 00:00:00 | 152 |
-| 14100 | D0 | 365 | 2004-08-01 00:00:00 | 2005-07-31 00:00:00 | 364 |
-| 17011 | Sin sequia | 1995 | 2011-09-01 00:00:00 | 2017-02-15 00:00:00 | 1994 |
-| 31034 | D3 | 181 | 2009-09-01 00:00:00 | 2010-02-28 00:00:00 | 180 |
-| 25007 | D4 | 305 | 2024-01-16 00:00:00 | 2024-11-15 00:00:00 | 304 |
+| cve_concatenada | sequia     | racha | full_date_start_racha | full_date_end_racha | racha_dias |
+|----------------:|:-----------|------:|:----------------------|:--------------------|-----------:|
+|           19046 | D3         |   153 | 2011-08-01 00:00:00   | 2011-12-31 00:00:00 |        152 |
+|           14100 | D0         |   365 | 2004-08-01 00:00:00   | 2005-07-31 00:00:00 |        364 |
+|           17011 | Sin sequia |  1995 | 2011-09-01 00:00:00   | 2017-02-15 00:00:00 |       1994 |
+|           31034 | D3         |   181 | 2009-09-01 00:00:00   | 2010-02-28 00:00:00 |        180 |
+|           25007 | D4         |   335 | 2024-01-16 00:00:00   | 2024-12-15 00:00:00 |        334 |
 
 ## Reasignar nombre de Estados, Municipios y Cuencas
 
@@ -348,13 +348,13 @@ Markdown(
    .to_markdown(index = False))
 ```
 
-| org_cuenca | clv_oc | con_cuenca | cve_conc | cve_geo | nombre_estado | cve_ent | nombre_municipio | cve_mun |
-|:---|:---|:---|---:|---:|:---|---:|:---|---:|
-| Golfo Centro | X | Rios Tuxpan al Jamapa | 20 | 21028 | Puebla | 21 | Camocuautla | 028 |
-| Golfo Centro | X | Rio Papaloapan | 21 | 20323 | Oaxaca | 20 | San Pedro Ocotepec | 323 |
-| Lerma-Santiago-Pacífico | VIII | Costa Pacifico Centro | 17 | 14017 | Jalisco | 14 | Ayutla | 017 |
-| Golfo Centro | X | Rio Papaloapan | 21 | 30031 | Veracruz | 30 | Carrillo Puerto | 031 |
-| Río Bravo | VI | Rio Bravo | 12 | 08061 | Chihuahua | 08 | Satevó | 061 |
+| org_cuenca              | clv_oc | con_cuenca            | cve_conc | cve_geo | nombre_estado | cve_ent | nombre_municipio   | cve_mun |
+|:------------------------|:-------|:----------------------|---------:|--------:|:--------------|--------:|:-------------------|--------:|
+| Golfo Centro            | X      | Rios Tuxpan al Jamapa |       20 |   21028 | Puebla        |      21 | Camocuautla        |     028 |
+| Golfo Centro            | X      | Rio Papaloapan        |       21 |   20323 | Oaxaca        |      20 | San Pedro Ocotepec |     323 |
+| Lerma-Santiago-Pacífico | VIII   | Costa Pacifico Centro |       17 |   14017 | Jalisco       |      14 | Ayutla             |     017 |
+| Golfo Centro            | X      | Rio Papaloapan        |       21 |   30031 | Veracruz      |      30 | Carrillo Puerto    |     031 |
+| Río Bravo               | VI     | Rio Bravo             |       12 |   08061 | Chihuahua     |      08 | Satevó             |     061 |
 
 Unir con las bases de datos de interés y reordenar las columnas
 
@@ -470,13 +470,13 @@ db_msm_og.to_csv(
    index = False)
 ```
 
-| nombre_estado | cve_ent | nombre_municipio | cve_geo | org_cuenca | clv_oc | con_cuenca | cve_conc | full_date | sequia |
-|:---|---:|:---|---:|:---|:---|:---|---:|:---|:---|
-| Estado de México | 15 | Chapultepec | 15027 | Lerma-Santiago-Pacífico | VIII | Lerma - Chapala | 15 | 2023-11-30 00:00:00 | D0 |
-| Chiapas | 07 | Coapilla | 07018 | Frontera Sur | XI | Rios Grijalva y Usumacinta | 24 | 2006-10-31 00:00:00 | Sin sequia |
-| Nuevo León | 19 | Villaldama | 19051 | Río Bravo | VI | Rio Bravo | 12 | 2012-06-30 00:00:00 | D1 |
-| Coahuila | 05 | Ocampo | 05023 | Río Bravo | VI | Rio Bravo | 12 | 2014-02-28 00:00:00 | Sin sequia |
-| Colima | 06 | Villa de Álvarez | 06010 | Lerma-Santiago-Pacífico | VIII | Costa Pacifico Centro | 17 | 2017-08-15 00:00:00 | D0 |
+| nombre_estado | cve_ent | nombre_municipio                     | cve_geo | org_cuenca   | clv_oc | con_cuenca            | cve_conc | full_date           | sequia     |
+|:--------------|--------:|:-------------------------------------|--------:|:-------------|:-------|:----------------------|---------:|:--------------------|:-----------|
+| Hidalgo       |      13 | Santiago Tulantepec de Lugo Guerrero |   13056 | Golfo Norte  | IX     | Rio Panuco            |       19 | 2018-04-15 00:00:00 | Sin sequia |
+| Tlaxcala      |      29 | Santa Apolonia Teacalco              |   29057 | Balsas       | IV     | Rio Balsas            |        9 | 2022-05-31 00:00:00 | Sin sequia |
+| Oaxaca        |      20 | San Ildefonso Sola                   |   20155 | Pacífico Sur | V      | Costa de Oaxaca       |       11 | 2019-10-31 00:00:00 | D0         |
+| Puebla        |      21 | Venustiano Carranza                  |   21194 | Golfo Centro | X      | Rios Tuxpan al Jamapa |       20 | 2003-05-31 00:00:00 | D0         |
+| Oaxaca        |      20 | San Lucas Ojitlán                    |   20232 | Golfo Centro | X      | Rio Papaloapan        |       21 | 2020-07-15 00:00:00 | Sin sequia |
 
 Muestra del archivo **`sequia_municipios_days.csv.bz2`**
 
@@ -487,13 +487,13 @@ db_msm_mod.to_csv(
    index = False)
 ```
 
-| nombre_estado | cve_ent | nombre_municipio | cve_geo | org_cuenca | clv_oc | con_cuenca | cve_conc | full_date | sequia |
-|:---|---:|:---|---:|:---|:---|:---|---:|:---|:---|
-| Veracruz | 30 | Veracruz | 30193 | Golfo Centro | X | Rios Tuxpan al Jamapa | 20 | 2016-12-17 00:00:00 | D0 |
-| Oaxaca | 20 | San Pedro y San Pablo Tequixtepec | 20340 | Balsas | IV | Rio Balsas | 9 | 2020-07-16 00:00:00 | D0 |
-| Michoacán | 16 | Churintzio | 16028 | Lerma-Santiago-Pacífico | VIII | Lerma - Chapala | 15 | 2003-11-17 00:00:00 | Sin sequia |
-| Oaxaca | 20 | San Vicente Lachixío | 20535 | Pacífico Sur | V | Costa de Oaxaca | 11 | 2020-01-18 00:00:00 | D0 |
-| Oaxaca | 20 | Santa Catalina Quierí | 20361 | Pacífico Sur | V | Costa de Oaxaca | 11 | 2024-05-30 00:00:00 | D2 |
+| nombre_estado | cve_ent | nombre_municipio      | cve_geo | org_cuenca   | clv_oc | con_cuenca      | cve_conc | full_date           | sequia     |
+|:--------------|--------:|:----------------------|--------:|:-------------|:-------|:----------------|---------:|:--------------------|:-----------|
+| Oaxaca        |      20 | Villa Hidalgo Yalálag |   20038 | Golfo Centro | X      | Rio Papaloapan  |       21 | 2012-04-14 00:00:00 | Sin sequia |
+| Michoacán     |      16 | Paracho               |   16065 | Balsas       | IV     | Rio Balsas      |        9 | 2014-04-27 00:00:00 | Sin sequia |
+| Oaxaca        |      20 | San Pedro Tidaá       |   20331 | Pacífico Sur | V      | Costa de Oaxaca |       11 | 2006-03-23 00:00:00 | Sin sequia |
+| Puebla        |      21 | San Antonio Cañada    |   21120 | Golfo Centro | X      | Rio Papaloapan  |       21 | 2015-12-08 00:00:00 | Sin sequia |
+| Oaxaca        |      20 | San Juan Quiahije     |   20213 | Pacífico Sur | V      | Costa de Oaxaca |       11 | 2004-06-05 00:00:00 | Sin sequia |
 
 ### Base de datos de Rachas de Sequía en Municipios
 
@@ -509,13 +509,13 @@ db_rachas_mun.to_csv(
    index = False)
 ```
 
-| nombre_estado | cve_ent | nombre_municipio | cve_geo | org_cuenca | clv_oc | con_cuenca | cve_conc | sequia | full_date_start_racha | full_date_end_racha | racha_dias |
-|:---|---:|:---|---:|:---|:---|:---|---:|:---|:---|:---|---:|
-| Oaxaca | 20 | Santo Domingo Zanatepec | 20525 | Pacífico Sur | V | Costa de Oaxaca | 11 | Sin sequia | 2018-09-01 00:00:00 | 2019-02-28 00:00:00 | 180 |
-| Oaxaca | 20 | San Pedro Yucunama | 20341 | Balsas | IV | Rio Balsas | 9 | Sin sequia | 2021-01-01 00:00:00 | 2021-04-15 00:00:00 | 104 |
-| Veracruz | 30 | Cosamaloapan de Carpio | 30045 | Golfo Centro | X | Rio Papaloapan | 21 | D0 | 2016-02-16 00:00:00 | 2016-06-15 00:00:00 | 120 |
-| Veracruz | 30 | Tres Valles | 30207 | Golfo Centro | X | Rio Papaloapan | 21 | Sin sequia | 2005-06-01 00:00:00 | 2006-09-30 00:00:00 | 486 |
-| Guanajuato | 11 | Manuel Doblado | 11008 | Lerma-Santiago-Pacífico | VIII | Lerma - Chapala | 15 | D1 | 2005-12-01 00:00:00 | 2005-12-31 00:00:00 | 30 |
+| nombre_estado | cve_ent | nombre_municipio       | cve_geo | org_cuenca                | clv_oc | con_cuenca           | cve_conc | sequia     | full_date_start_racha | full_date_end_racha | racha_dias |
+|:--------------|--------:|:-----------------------|--------:|:--------------------------|:-------|:---------------------|---------:|:-----------|:----------------------|:--------------------|-----------:|
+| Puebla        |      21 | General Felipe Ángeles |   21065 | Balsas                    | IV     | Rio Balsas           |        9 | Sin sequia | 2005-03-01 00:00:00   | 2005-08-31 00:00:00 |        183 |
+| Hidalgo       |      13 | Juárez Hidalgo         |   13033 | Golfo Norte               | IX     | Rio Panuco           |       19 | Sin sequia | 2013-06-01 00:00:00   | 2015-08-15 00:00:00 |        805 |
+| Hidalgo       |      13 | Mixquiahuala de Juárez |   13041 | Aguas del Valle de México | XIII   | Valle de Mexico      |       26 | D3         | 2024-01-01 00:00:00   | 2024-04-15 00:00:00 |        105 |
+| Yucatán       |      31 | Yaxkukul               |   31105 | Península De Yucatán      | XII    | Peninsula de Yucatan |       25 | Sin sequia | 2003-01-01 00:00:00   | 2003-01-31 00:00:00 |         30 |
+| Oaxaca        |      20 | San Miguel Achiutla    |   20258 | Pacífico Sur              | V      | Costa de Oaxaca      |       11 | Sin sequia | 2006-03-01 00:00:00   | 2006-03-31 00:00:00 |         30 |
 
 ### Base de datos de Máximas Rachas de Sequía en Municipios
 
@@ -531,14 +531,14 @@ db_rachas_max_mun.to_csv(
    index = False)
 ```
 
-| nombre_estado | cve_ent | nombre_municipio | cve_geo | org_cuenca | clv_oc | con_cuenca | cve_conc | sequia | full_date_start_racha | full_date_end_racha | racha_dias |
-|:---|---:|:---|---:|:---|:---|:---|---:|:---|:---|:---|---:|
-| Hidalgo | 13 | Mineral del Monte | 13039 | Golfo Norte | IX | Rio Panuco | 19 | Sin sequia | 2013-06-01 00:00:00 | 2017-05-15 00:00:00 | 1444 |
-| Querétaro | 22 | Peñamiller | 22013 | Golfo Norte | IX | Rio Panuco | 19 | D3 | 2023-09-01 00:00:00 | 2023-12-31 00:00:00 | 121 |
-| Guerrero | 12 | Alcozauca de Guerrero | 12004 | Balsas | IV | Rio Balsas | 9 | Sin sequia | 2003-10-01 00:00:00 | 2005-12-31 00:00:00 | 822 |
-| Oaxaca | 20 | Guevea de Humboldt | 20036 | Golfo Centro | X | Rio Coatzacoalcos | 22 | Sin sequia | 2011-06-01 00:00:00 | 2012-11-30 00:00:00 | 548 |
-| Tlaxcala | 29 | Apetatitlán de Antonio Carvajal | 29002 | Balsas | IV | Rio Balsas | 9 | Sin sequia | 2013-06-01 00:00:00 | 2017-02-15 00:00:00 | 1355 |
+| nombre_estado | cve_ent | nombre_municipio                | cve_geo | org_cuenca   | clv_oc | con_cuenca        | cve_conc | sequia     | full_date_start_racha | full_date_end_racha | racha_dias |
+|:--------------|--------:|:--------------------------------|--------:|:-------------|:-------|:------------------|---------:|:-----------|:----------------------|:--------------------|-----------:|
+| Hidalgo       |      13 | Mineral del Monte               |   13039 | Golfo Norte  | IX     | Rio Panuco        |       19 | Sin sequia | 2013-06-01 00:00:00   | 2017-05-15 00:00:00 |       1444 |
+| Querétaro     |      22 | Peñamiller                      |   22013 | Golfo Norte  | IX     | Rio Panuco        |       19 | D3         | 2023-09-01 00:00:00   | 2023-12-31 00:00:00 |        121 |
+| Guerrero      |      12 | Alcozauca de Guerrero           |   12004 | Balsas       | IV     | Rio Balsas        |        9 | Sin sequia | 2003-10-01 00:00:00   | 2005-12-31 00:00:00 |        822 |
+| Oaxaca        |      20 | Guevea de Humboldt              |   20036 | Golfo Centro | X      | Rio Coatzacoalcos |       22 | Sin sequia | 2011-06-01 00:00:00   | 2012-11-30 00:00:00 |        548 |
+| Tlaxcala      |      29 | Apetatitlán de Antonio Carvajal |   29002 | Balsas       | IV     | Rio Balsas        |        9 | Sin sequia | 2013-06-01 00:00:00   | 2017-02-15 00:00:00 |       1355 |
 
 > \[!NOTE\]
 >
-> Fecha de actualización del Monitor de Sequía de México: November 15, 2024
+> Fecha de actualización del Monitor de Sequía de México: December 15, 2024
