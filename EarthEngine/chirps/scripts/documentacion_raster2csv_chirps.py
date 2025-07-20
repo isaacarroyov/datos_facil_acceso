@@ -25,7 +25,7 @@
 ## Introducción
 
 En este documento se encuentra el código para la extracción de
-la **Precipitación en milímetros (mm)** de manera diaria.
+la **Precipitación en milímetros (mm)**.
 
 Cada aspecto del código, así como las decisiones tomadas sobre éste, se
 documentan en diferentes secciones. Todo este archivo documenta el código
@@ -51,17 +51,14 @@ tendrán 4 archivos CSV:
 
 * Precipitación anual en milímetros
 * Precipitación mensual en milímetros
-* Precipitación semanal en milímetros
-* Precipitación diaria en milímetros
 
 Para cada uno de los conjuntos de datos, el periodo de información es de
-un determinado año de interés y _nivel_ espacial (municipios, estados).
+un determinado año de interés y _nivel_ espacial (municipios, estados
+o país).
 
-> [!NOTE] 
-> 
-> Pendiente por hacer: Código para tener como raster la anomalía de 
-precipitación con respecto a la normal (porcentaje y milímetros). Se tiene 
-como solución temporal el cálculo en **`documentacion_wide2long_chirps.R`**
+> [!NOTE]  
+>
+> Pendiente por hacer: Código para tener como raster la anomalía de precipitación con respecto a la normal (porcentaje y milímetros). Se tiene como solución temporal el cálculo en **`documentacion_wide2long_chirps.R`**
 """
 
 # %% [markdown]
@@ -114,13 +111,10 @@ def func_tag_date(img): # <1>
     full_date = ee.Date(ee.Number(img.get("system:time_start"))) # <2>
     n_year = ee.Number(full_date.get("year")) # <3>
     n_month = ee.Number(full_date.get("month")) # <3>
-    n_week = ee.Number(full_date.get("week")) # <3>
     n_day = ee.Number(full_date.get("day")) # <3>
     return img.set( # <4>
         {"n_year": n_year, # <4>
-         "n_month": n_month, # <4>
-         "n_week":n_week, # <4>
-         "n_day": n_day}) # <4>
+         "n_month": n_month}) # <4>
 
 # %% [markdown]
 """
@@ -128,20 +122,21 @@ def func_tag_date(img): # <1>
 2. Obtener la fecha de la imagen, como esta en formato UNIX, se tiene que
 transformar a fecha con `ee.Date`
 3. De la fecha se obtiene el valor numérico del año, mes, semana y día
-4. Asignación de año y semana del año como propiedades de la `ee.Image`
+4. Asignación de año  y mes como propiedades de la `ee.Image`
 """
 
 # %% 
 #| label: create-chirps_year_interes
 n_year_interes = 1981 # <1>
 chirps_year_interes = (chirps # <2>
-                       .map(func_tag_date)
-                       .filter(ee.Filter.eq("n_year", n_year_interes))) # <2>
+                       .map(func_tag_date) # <2>
+                       .filter(ee.Filter.eq("n_year", n_year_interes))) # <3>
 
 # %% [markdown]
 """
-1. Nullam porta nunc at ipsum maximus, vel tristique felis fermentum.
-2. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+1. Seleccionar el año de interés
+2. Etiquetar fechas en el cojunto de datos
+3. Filtrar por año de interés
 """
 
 # %% [markdown]
@@ -159,7 +154,6 @@ imágenes
 
 # %%
 #| label: create-lists_week_month_year
-list_week = ee.List.sequence(1, 52)
 list_month = ee.List.sequence(1, 12)
 list_year = ee.List.sequence(n_year_interes, n_year_interes)
 
@@ -193,24 +187,20 @@ list_pr_month = list_month.map(
 
 imgcoll_pr_month = ee.ImageCollection(list_pr_month)
 
-# - - Agrupación por semana - - #
-# ~ Lista de 52 ee.Image ~ #
-list_pr_week = list_week.map(
-    lambda element: (chirps_year_interes
-                     .filter(ee.Filter.eq("n_week", element))
-                     .sum()
-                     .set({"n_week": element})))
-
-imgcoll_pr_week = ee.ImageCollection(list_pr_week)
+# %% [markdown]
+"""
+1. Tomar la `ee.ImageCollection`
+2. Filtrar por el periodo de interés (año o mes)
+3. Sumar todos los pixeles = Acumulación de lluvia
+4. Asignar el año de la información. Es útil para el momento de
+exportar como CSV
+5. La operación se hace dentro de una `ee.List`, y el resultado de cada
+iteración del `map` es una imagen individual. Al final se tiene una
+lista de `ee.Image` que puede ser transformada a una colección.
+"""
 
 # %% [markdown]
 """
-1. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-2. Nullam porta nunc at ipsum maximus, vel tristique felis fermentum.
-3. Donec rutrum nulla nisi. Aenean ut aliquet turpis.
-4. Nunc ut massa euismod, faucibus massa eget, lobortis libero.
-5. Proin accumsan tortor nec mollis euismod.
-
 ## Periodos como bandas de una `ee.Image`
 
 Para poder extraer la información de los raster, se tiene que crear una
@@ -218,8 +208,6 @@ imagen de _N_ bandas:
 
 * `ee.Image` de 1 banda: Precipitación anual
 * `ee.Image` de 12 bandas: Precipitación mensual
-* `ee.Image` de 52 bandas: Precipitación semanal
-* `ee.Image` de 365 bandas: Precipitación diaria
 
 > [!IMPORTANT]
 >
@@ -234,18 +222,15 @@ from datetime import datetime
 
 limit_date = "2024-08-31" # <1>
 limit_date = datetime.strptime(limit_date, '%Y-%m-%d') # <1>
-limit_date_week = limit_date.isocalendar().week # <1>
 limit_date_month = limit_date.month # <1>
 limit_date_year = limit_date.year # <1>
 
 if limit_date_year == n_year_interes: # <2>
     dict_nombre_bandas = dict( # <3>
-        week = [f"0{i}" if i < 10 else str(i) for i in range(1, limit_date_week + 1)], # <3>
         month = [f"0{i}" if i < 10 else str(i) for i in range(1, limit_date_month + 1)], # <3>
         year = [str(n_year_interes)]) # <3>
 else:
     dict_nombre_bandas = dict( # <4>
-        week = [f"0{i}" if i < 10 else str(i) for i in range(1,53)], # <4>
         month = [f"0{i}" if i < 10 else str(i) for i in range(1,13)], # <4>
         year = [str(n_year_interes)]) # <4>
 
@@ -257,21 +242,15 @@ img_pr_month = (imgcoll_pr_month
                 .toBands()
                 .rename(dict_nombre_bandas["month"]))
 
-img_pr_week = (imgcoll_pr_week
-               .toBands()
-               .rename(dict_nombre_bandas["week"]))
-
-img_pr_day = chirps_year_interes.toBands()
-
 # %% [markdown]
 """
 1. Obtener los elementos de semana, mes y año del límite de información
 próxima del conjunto de datos de CHIRPS Daily (Cambiante)
 2. Comprobar si el año de interés es el año del límite de información próxima
 3. Si el año de interés es el año del límite de información próxima, entonces
-se toman como límites de semanas o meses, los de la fecha límite.
+se toman como límites de meses los de la fecha límite.
 4. Si el año de interés NO es el año del límite de información próxima,
-entonces se toman todos los meses y semanas del año.
+entonces se toman todos los meses del año.
 5. Pasar `ee.ImageCollection` de _**n**_ imágenes a una `ee.Image`
 de _**n**_ bandas
 6. Renombrar el nombre de las bandas a los números de los semanas, meses o años
@@ -285,6 +264,7 @@ Para poder exportar la información como una tabla de CSV, primero se tiene
 que almacenar o reducir la información a las geometrias de las regiones
 del país (sean entidades, municipios o la nación).
 """
+
 # %%
 #| label: load-fc_interes
 select_fc_interes = "mun"
@@ -292,7 +272,11 @@ dict_fc = dict(
     ent = "projects/project-name/assets/00ent",
     mun = "projects/project-name/assets/00mun")
 
-fc = ee.FeatureCollection(dict_fc[select_fc_interes])
+if select_fc_interes == "nac":
+    fc = (ee.FeatureCollection("USDOS/LSIB_SIMPLE/2017")
+          .filter(ee.Filter.eq("COUNTRY_NA", "Mexico")))
+else:
+    fc = ee.FeatureCollection(dict_fc[select_fc_interes])
 
 # %% [markdown]
 """
@@ -332,30 +316,6 @@ img2fc_pr_month = (img_pr_month
 
 fc_pr_month = ee.FeatureCollection(img2fc_pr_month.toList(3000).flatten())
 
-# - - Precipitación semanal - - #
-img2fc_pr_week = (img_pr_week
-  .reduceRegions(
-      collection = fc,
-      reducer = ee.Reducer.mean(),
-      scale = 5566)
-  .map(lambda feature: (ee.Feature(feature)
-                        .set({'n_year': n_year_interes})
-                        .setGeometry(None))))
-
-fc_pr_week = ee.FeatureCollection(img2fc_pr_week.toList(3000).flatten())
-
-# - - Precipitación diaria - - #
-img2fc_pr_day = (img_pr_day
-  .reduceRegions(
-      collection = fc,
-      reducer = ee.Reducer.mean(),
-      scale = 5566)
-  .map(lambda feature: (ee.Feature(feature)
-                        .set({"n_year": n_year_interes})
-                        .setGeometry(None))))
-
-fc_pr_day = ee.FeatureCollection(img2fc_pr_day.toList(3000).flatten())
-
 # %% [markdown]
 """
 1. Se crea una `ee.FeatureCollection` a partir de la información de la
@@ -390,16 +350,10 @@ filename_pr_year = f"chirps_pr_mm_{select_fc_interes}_year_{n_year_interes}"
 # ~ Precipitación mensual ~ #
 filename_pr_month = f"chirps_pr_mm_{select_fc_interes}_month_{n_year_interes}"
 
-# ~ Precipitación semanal ~ #
-filename_pr_week = f"chirps_pr_mm_{select_fc_interes}_week_{n_year_interes}"
-
-# ~ Precipitación diaria ~ #
-filename_pr_day = f"chirps_pr_mm_{select_fc_interes}_day_{n_year_interes}"
-
 # %% [markdown]
 """
-Finalmente, para cada tipo de archivo CSV, se crea 
-(`ee.Batch.Export.table`) y se manda al servidor Google Earth 
+Finalmente, para cada tipo de archivo CSV, se crea
+(`ee.Batch.Export.table`) y se manda al servidor Google Earth
 Engine (`task.start()`)
 """
 
@@ -418,17 +372,3 @@ task_pr_month = ee.batch.Export.table.toDrive(
     description = filename_pr_month,
     folder = "pruebas_ee")
 task_pr_month.start()
-
-# ~ Exportar precipitación semanal ~ #
-task_pr_week = ee.batch.Export.table.toDrive(
-    collection = fc_pr_week,
-    description = filename_pr_week,
-    folder = "pruebas_ee")
-task_pr_week.start()
-
-# ~ Exportar precipitación diaria ~ #
-task_pr_day = ee.batch.Export.table.toDrive(
-    collection = fc_pr_day,
-    description = filename_pr_day,
-    folder = "pruebas_ee")
-task_pr_day.start()
