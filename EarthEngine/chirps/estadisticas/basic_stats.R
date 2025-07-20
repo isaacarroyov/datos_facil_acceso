@@ -41,59 +41,7 @@ library(ggtext)
 library(scales)
 library(ggrepel)
 library(MetBrewer)
-library(gghighlight)
 library(sf)
-
-theme_set(theme_void(base_family = "Helvetica", base_size = 8))
-theme_update(
-  # ~ ~ Text ~ ~ #
-  # Title, subtitle, captions, facets
-  plot.title.position = "plot",
-  plot.caption.position = "plot",
-  plot.title = ggtext::element_textbox(
-    size = 13,
-    face = "bold",
-    halign = 0,
-    hjust = 0,
-    margin = margin(t = 0.08, b = 0.05, unit = "in"),
-    width = unit(5, "in")),
-  plot.subtitle = ggtext::element_textbox(
-    size = 9,
-    face = "plain",
-    halign = 0,
-    hjust = 0,
-    margin = margin(b = 0.15, unit = "in"),
-    width = unit(5, "in")),
-  plot.caption = ggtext::element_textbox(
-    size = 7,
-    face = "plain",
-    halign = 0,
-    hjust = 0,
-    margin = margin(b = 0.05, t = 0.08, unit = "in"),
-    width = unit(5, "in")),
-  
-  # Axes
-  axis.title = element_blank(),
-  axis.text = element_text(),
-  axis.text.x = element_text(
-    hjust = 0.5,
-    margin = margin(t = 0.03, unit = "in")),
-  axis.text.y = element_text(
-    hjust = 1,
-    margin = margin(r = 0.03, unit = "in")),
-  
-  # Facets and grids
-  strip.text = element_text(
-    face = "bold",
-    size = 9),
-  
-  # ~ ~ Lines ~ ~ #
-  # Axis
-  axis.ticks = element_line(color = "black", linewidth = 0.3),
-  axis.ticks.length = unit(0.05, "in"),
-  axis.line = element_line(color = "black", linewidth = 0.3),
-  panel.grid.minor = element_blank(),
-  panel.grid.major = element_line(color = "gray90", linewidth = 0.3))
 
 path2main <- paste0(getwd(), "/../../..")
 path2ee <- paste0(path2main, "/EarthEngine")
@@ -118,11 +66,6 @@ normal_ent_month <- read_csv(
                   "/normal",
                   "/db_pr_normal_ent_month.csv"))
 
-normal_ent_week <- read_csv(
-    file = paste0(path2data,
-                  "/normal",
-                  "/db_pr_normal_ent_week.csv"))
-
 # Municipios
 normal_mun_year <- read_csv(
     file = paste0(path2data,
@@ -133,11 +76,6 @@ normal_mun_month <- read_csv(
     file = paste0(path2data,
                   "/normal",
                   "/db_pr_normal_mun_month.csv"))
-
-normal_mun_week <- read_csv(
-    file = paste0(path2data,
-                  "/normal",
-                  "/db_pr_normal_mun_week.csv"))
 
 # ~ Estados ~ #
 chirps_ent_year <- read_csv(
@@ -150,11 +88,6 @@ chirps_ent_month <- read_csv(
                   "/estados",
                   "/db_pr_ent_month.csv"))
 
-chirps_ent_week <- read_csv(
-    file = paste0(path2data,
-                  "/estados",
-                  "/db_pr_ent_week.csv"))
-
 # ~ Municipios ~ #
 chirps_mun_year <- read_csv(
     file = paste0(path2data,
@@ -166,18 +99,23 @@ chirps_mun_month <- read_csv(
                   "/municipios",
                   "/db_pr_mun_month.csv.bz2"))
 
-chirps_mun_week <- read_csv(
-    file = paste0(path2data,
-                  "/municipios",
-                  "/db_pr_mun_week.csv.bz2"))
-
 text_recent_date <- chirps_ent_month %>%
   filter(!is.na(pr_mm)) %>%
   filter(max(date_year_month) == date_year_month) %>%
   distinct(date_year_month) %>%
   pull(date_year_month) %>%
   format(format = "%B %Y") %>%
-  str_to_title()
+  str_to_title() %>%
+  paste0("Datos a ", .)
+
+# TODO: Datos a visualizar
+# 
+# Crear un conjunto de datos con los años 2011-presente + Normal
+# para los 32 estados + Nacional con las métricas:
+#   * pr_mm -> grafica de lineas por region (mes)
+#   * cumsum_pr_mm -> grafica de lineas por region (mes)
+#   * anomaly_pr_prop -> Heatmaps por region (mes y año) + mapas a nivel municipal (mes y año)
+#   * cumsum_anomaly_pr_prop -> Tabla de información para generar textos (mes)
 
 #' ## 01
 #' 
@@ -193,136 +131,7 @@ text_recent_date <- chirps_ent_month %>%
 #' convallis in. Nunc a dictum mauris. Proin tincidunt erat erat, vitae 
 #' vulputate mi placerat vitae. Aenean scelerisque, turpis a varius congue, 
 #' diam mi consectetur metus, eu pulvinar dui nisl nec neque.
-
-#| label: fig-cumsum-pr-nac
-
-chirps_nac_month <- normal_ent_month %>%
-  group_by(n_month) %>%
-  summarise(normal_pr_mm = mean(normal_pr_mm, na.rm = TRUE)) %>%
-  ungroup() %>%
-  arrange(n_month) %>%
-  mutate(
-    n_month = as.integer(n_month),
-    cumsum_normal_pr_mm = cumsum(normal_pr_mm))
-
-
-chirps_ent_month %>%
-  group_by(
-    n_year,
-    n_month) %>%
-  summarise(pr_mm = mean(pr_mm, na.rm = TRUE)) %>%
-  ungroup() %>%
-  group_by(n_year) %>%
-  arrange(n_month, .by_group = TRUE) %>%
-  mutate(cumsum_pr_mm = cumsum(pr_mm)) %>%
-  ungroup() %>%
-  ggplot(
-    mapping = aes(
-      x = n_month,
-      y = cumsum_pr_mm,
-      group = n_year,
-      color = case_when(
-        n_year == 2024 ~ "red",
-        n_year == 2023 ~ "orange",
-        .default = "gray80"),
-      size = if_else(
-        condition = n_year %in% 2023:2024,
-        true = 1,
-        false = 0.3
-      ))) +
-  geom_line() +
-  #geom_step(direction = "mid") +
-  geom_line(
-    data = chirps_nac_month,
-    mapping = aes(y = cumsum_normal_pr_mm, group = NULL),
-    color = "steelblue",
-    size = 1) +
-  scale_color_identity() +
-  scale_size_identity() +
-  scale_y_continuous(
-    labels = label_comma(suffix = "\nmm"),
-    expand = expansion(mult = c(0, 0))) +
-  scale_x_continuous(
-    breaks = 1:12,
-    labels = month.abb,
-    expand = expansion(mult = c(0, 0.1))) +
-  labs(
-    title = paste("<span style='color:red;'>2024</span> no ha sido tan",
-                  "seco como <span style='color:orange;'>2023</span>"),
-    subtitle = paste("Acumulación de la precipitación en",
-                      "<b>México</b>. Periodo: 1981 -",
-                      text_recent_date,".",
-                      "<br>Se resalta la",
-                      "<b style='color:steelblue'>acumulación normal</b>."),
-    caption = paste("Fuente:", text_source_chirps,
-                    "<br>Nota: La <em>normal</em> es el promedio de",
-                    "periodo 1981 - 2010")) +
-  theme(
-    axis.line.y = element_blank(),
-    axis.ticks.y = element_blank(),
-    panel.grid.major.x = element_blank())
-
-# tgutil::ggpreview(width = 5, height = 5 * 0.75, units = "in", bg = "#F3EFE1")
-
-#'
-
-#| label: fig-pr-nac
-chirps_ent_month %>%
-  group_by(
-    n_year,
-    n_month) %>%
-  summarise(pr_mm = mean(pr_mm, na.rm = TRUE)) %>%
-  ungroup() %>%
-  group_by(n_year) %>%
-  arrange(n_month, .by_group = TRUE) %>%
-  mutate(cumsum_pr_mm = cumsum(pr_mm)) %>%
-  ungroup() %>%
-  ggplot(
-    mapping = aes(
-      x = n_month,
-      y = pr_mm,
-      group = n_year,
-      color = case_when(
-        n_year == 2024 ~ "red",
-        n_year == 2023 ~ "orange",
-        .default = "gray80"),
-      size = if_else(
-        condition = n_year %in% 2023:2024,
-        true = 1,
-        false = 0.3
-      ))) +
-  geom_line() +
-  geom_line(
-    data = chirps_nac_month,
-    mapping = aes(y = normal_pr_mm, group = NULL),
-    color = "steelblue",
-    size = 1) +
-  scale_color_identity() +
-  scale_size_identity() +
-  scale_y_continuous(
-    labels = label_comma(suffix = "\nmm"),
-    expand = expansion(mult = c(0, 0))) +
-  scale_x_continuous(
-    breaks = 1:12,
-    labels = month.abb,
-    expand = expansion(mult = c(0, 0.03))) +
-  labs(
-    title = paste("<span style='color:red;'>2024</span> no ha sido tan",
-                  "seco como <span style='color:orange;'>2023</span>"),
-    subtitle = paste("Precipitación mensual en <b>México</b>.",
-                     "Periodo: 1981 -", text_recent_date,".",
-                     "<br>Se resalta la",
-                     "<b style='color:steelblue'>precipitación normal</b>"),
-    caption = paste("Fuente:", text_source_chirps,
-                    "<br>Nota: La <em>normal</em> es el promedio de",
-                    "periodo 1981 - 2010")) +
-  theme(
-    axis.line.y = element_blank(),
-    axis.ticks.y = element_blank(),
-    panel.grid.major.x = element_blank())
-
-# tgutil::ggpreview(width = 5, height = 5 * 0.75, units = "in", bg = "#F3EFE1")
-
+#' 
 #' ## 02
 #' 
 #' Suspendisse egestas elementum convallis. Praesent cursus dictum magna, 
