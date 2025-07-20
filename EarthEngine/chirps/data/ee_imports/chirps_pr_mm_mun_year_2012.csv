@@ -5,7 +5,7 @@ system:index,CVEGEO,CVE_ENT,CVE_MUN,NOMGEO,mean,n_year,.geo
 00000000000000000003,01006,01,006,Pabell�n de Arteaga,440.30435225179065,2012,"{""type"":""MultiPoint"",""coordinates"":[]}"
 00000000000000000004,01005,01,005,Jes�s Mar�a,492.41305187205387,2012,"{""type"":""MultiPoint"",""coordinates"":[]}"
 00000000000000000005,01004,01,004,Cos�o,404.01088650470655,2012,"{""type"":""MultiPoint"",""coordinates"":[]}"
-00000000000000000006,01003,01,003,Calvillo,566.052985369292,2012,"{""type"":""MultiPoint"",""coordinates"":[]}"
+00000000000000000006,01003,01,003,Calvillo,566.0529853692918,2012,"{""type"":""MultiPoint"",""coordinates"":[]}"
 00000000000000000007,01002,01,002,Asientos,385.1116836200825,2012,"{""type"":""MultiPoint"",""coordinates"":[]}"
 00000000000000000008,01001,01,001,Aguascalientes,505.58044407429094,2012,"{""type"":""MultiPoint"",""coordinates"":[]}"
 00000000000000000009,01010,01,010,El Llano,452.17495387592896,2012,"{""type"":""MultiPoint"",""coordinates"":[]}"

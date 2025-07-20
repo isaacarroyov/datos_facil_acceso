@@ -30,4 +30,4 @@ system:index,CVEGEO,CVE_ENT,NOMGEO,mean,n_year,.geo
 0000000000000000001c,29,29,Tlaxcala,762.7544550626578,1999,"{""type"":""MultiPoint"",""coordinates"":[]}"
 0000000000000000001d,30,30,Veracruz de Ignacio de la Llave,1967.799888604388,1999,"{""type"":""MultiPoint"",""coordinates"":[]}"
 0000000000000000001e,31,31,Yucat�n,1230.6036458673348,1999,"{""type"":""MultiPoint"",""coordinates"":[]}"
-0000000000000000001f,32,32,Zacatecas,347.65296789874236,1999,"{""type"":""MultiPoint"",""coordinates"":[]}"
+0000000000000000001f,32,32,Zacatecas,347.6529678987424,1999,"{""type"":""MultiPoint"",""coordinates"":[]}"

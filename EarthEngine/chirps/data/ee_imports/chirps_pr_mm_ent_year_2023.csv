@@ -12,7 +12,7 @@ system:index,CVEGEO,CVE_ENT,NOMGEO,mean,n_year,.geo
 0000000000000000000a,11,11,Guanajuato,446.8377142204401,2023,"{""type"":""MultiPoint"",""coordinates"":[]}"
 0000000000000000000b,12,12,Guerrero,1115.2011581847737,2023,"{""type"":""MultiPoint"",""coordinates"":[]}"
 0000000000000000000c,13,13,Hidalgo,665.9809194614812,2023,"{""type"":""MultiPoint"",""coordinates"":[]}"
-0000000000000000000d,14,14,Jalisco,782.2354287162464,2023,"{""type"":""MultiPoint"",""coordinates"":[]}"
+0000000000000000000d,14,14,Jalisco,782.2354287162462,2023,"{""type"":""MultiPoint"",""coordinates"":[]}"
 0000000000000000000e,15,15,M�xico,827.9014137595146,2023,"{""type"":""MultiPoint"",""coordinates"":[]}"
 0000000000000000000f,16,16,Michoac�n de Ocampo,764.061106828451,2023,"{""type"":""MultiPoint"",""coordinates"":[]}"
 00000000000000000010,17,17,Morelos,836.7969170629868,2023,"{""type"":""MultiPoint"",""coordinates"":[]}"
