@@ -66,7 +66,7 @@ db_incidencia_mun <- read_csv(
   janitor::clean_names()
 
 # - - Número de víctimas de delitos - - #
-url_victimas_ent <- "https://drive.google.com/file/d/15CKG__pwzPXKjPtVf-K8czvbngdb1pNv/view"
+url_victimas_ent <- "https://drive.google.com/file/d/19oWhMBgL6FmmtAUt9tGYrhmj0PUYBVKp/view"
 id_file_victimas_ent <- str_extract(
     string = url_victimas_ent,
     pattern = "(?<=d/)(.*?)(?=/view)")
