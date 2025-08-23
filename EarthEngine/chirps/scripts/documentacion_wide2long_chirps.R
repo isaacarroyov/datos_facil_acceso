@@ -18,25 +18,15 @@
 #'   eval: true
 #'   warning: false
 #' ---
-#' 
-#' > [!NOTE]
-#' > 
-#' > Se puede observar que se cambia el directorio de trabajo a la carpeta 
-#' **`/EarthEngine/chirps/scripts`** para después agregar `/../../..` en la 
-#' variable **`path2main`**. Este cambio se hace para que al renderizar, el 
-#' código se pueda ejecutar correctamente, ya que el archivo toma como 
-#' directorio de trabajo la carpeta en la que se encuentra el script en el 
-#' que se esta haciendo el código.
 
-#| label: setworkingdir
-#| eval: false
-setwd("./EarthEngine/chirps/scripts")
+#| label: here_i_am
+here::i_am("EarthEngine/chirps/scripts/documentacion_wide2long_chirps.R") 
 
 #' ## Introducción y objetivos
 #' 
 #' La extracción de la **precipitación en milímetros (mm)** fue a través 
 #' de Google Earth Engine. El periodo de extracción de los datos fue de 
-#' 45 años, iniciando en 1981 hasta 2025. En total se tienen 176 archivos 
+#' 45 años, iniciando en 1981 hasta 2025. En total se tienen 180 archivos 
 #' CSV en la carpeta **`EarthEngine/chirps/data/ee_imports`**
 #' 
 #' |**Tipo de archivo CSV**|**Número de archivos**|
@@ -49,13 +39,13 @@ setwd("./EarthEngine/chirps/scripts")
 #' El siguiente paso es poder unir todo en 8 archivos
 #' 
 #' * Anual: 
-#'   * Métricas de precipitación a nivel estatal en el periodo 1981 a 2024.
-#'   * Métricas de precipitación a nivel municipal en el periodo 1981 a 2024.
+#'   * Métricas de precipitación a nivel estatal en el periodo 1981 a 2025.
+#'   * Métricas de precipitación a nivel municipal en el periodo 1981 a 2025.
 #'   * Precipitación normal (promedio histórico) a nivel estatal.
 #'   * Precipitación normal (promedio histórico) a nivel municipal.
 #' * Mensual: 
-#'   * Métricas de precipitación a nivel estatal en el periodo 1981 a 2024.
-#'   * Métricas de precipitación a nivel municipal en el periodo 1981 a 2024.
+#'   * Métricas de precipitación a nivel estatal en el periodo 1981 a 2025.
+#'   * Métricas de precipitación a nivel municipal en el periodo 1981 a 2025.
 #'   * Precipitación normal (promedio histórico) a nivel estatal.
 #'   * Precipitación normal (promedio histórico) a nivel municipal.
 
@@ -64,10 +54,10 @@ setwd("./EarthEngine/chirps/scripts")
 Sys.setlocale(locale = "es_ES")
 library(tidyverse)
 
-path2main <- paste0(getwd(), "/../../..")
-path2ee <- paste0(path2main, "/EarthEngine")
-path2chirps <- paste0(path2ee, "/chirps")
-path2data <- paste0(path2chirps, "/data")
+path2repo <- here::here()
+path2ee <- here::here("EarthEngine")
+path2chirps <- here::here("EarthEngine", "chirps")
+path2chirpsdata <- here::here("EarthEngine", "chirps", "data")
 
 #' ## Los conjuntos de datos
 #' 
@@ -90,7 +80,7 @@ path2data <- paste0(path2chirps, "/data")
 # Obtener el nombre (path incluido) de todos los archivos que se 
 # importaron de Google Earth Engine 
 all_csv_chirps <- list.files(
-    path = paste0(path2data, "/ee_imports"),
+    path = here::here(path2chirpsdata, "ee_imports"),
     pattern = "*.csv",
     full.names = TRUE)
 
@@ -446,7 +436,7 @@ slice_sample(.data = chirps_mun_month_anomalies, n = 5)
 
 #| label: create-func_adjuntar_cve_nom_ent_mun
 db_cve_nom_ent_mun <- read_csv( # <1>
-    file = paste0(path2main, "/GobiernoMexicano/cve_nom_municipios.csv")) # <1>
+    file = here::here("GobiernoMexicano", "cve_nom_municipios.csv")) # <1>
 
 func_adjuntar_cve_nom_ent_mun <- function(df, region) {
   if (region == "ent") { # <2>
@@ -527,15 +517,15 @@ db_pr_mun_month <- func_adjuntar_cve_nom_ent_mun(
 #' 
 #' ### Estados
 #' 
-#' **Base de datos de métrias de precipitación anual a nivel estatal**
+#' **Base de datos de métricas de precipitación anual a nivel estatal**
 #' 
-#' Se guarda bajo el nombre **`db_pr_ent_year.csv`**
+#' Se guarda bajo el nombre **`db_mex_pr_ent_year.csv`**
 
 #| label: save-db_pr_ent_year
 write_csv(
-    x = db_pr_ent_year,
-    file = paste0(path2data, "/estados/db_pr_ent_year.csv"),
-    na = "")
+  x = db_pr_ent_year,
+  file = here::here(path2chirpsdata, "estados", "db_mex_pr_ent_year.csv"),
+  na = "")
 
 #'
 
@@ -544,15 +534,15 @@ write_csv(
 set.seed(1)
 slice_sample(.data = db_pr_ent_year, n = 5)
 
-#' **Base de datos de métrias de precipitación mensual a nivel estatal**
+#' **Base de datos de métricas de precipitación mensual a nivel estatal**
 #' 
-#' Se guarda bajo el nombre **`db_pr_ent_month.csv`**
+#' Se guarda bajo el nombre **`db_mex_pr_ent_month.csv`**
 
 #| label: save-db_pr_ent_month
 write_csv(
-    x = db_pr_ent_month,
-    file = paste0(path2data, "/estados/db_pr_ent_month.csv"),
-    na = "")
+  x = db_pr_ent_month,
+  file = here::here(path2chirpsdata, "estados", "db_mex_pr_ent_month.csv"),
+  na = "")
 
 #' 
 
@@ -563,15 +553,15 @@ slice_sample(.data = db_pr_ent_month, n = 5)
 
 #' ### Municipios
 #' 
-#' **Base de datos de métrias de precipitación anual a nivel municipal**
+#' **Base de datos de métricas de precipitación anual a nivel municipal**
 #' 
-#' Se guarda bajo el nombre **`db_pr_mun_year.csv`**
+#' Se guarda bajo el nombre **`db_mex_pr_mun_year.csv`**
 
 #| label: save-db_pr_mun_year
 write_csv(
-    x = db_pr_mun_year,
-    file = paste0(path2data, "/municipios/db_pr_mun_year.csv"),
-    na = "")
+  x = db_pr_mun_year,
+  file = here::here(path2chirpsdata, "municipios", "db_mex_pr_mun_year.csv"),
+  na = "")
 
 #'
 
@@ -580,99 +570,72 @@ write_csv(
 set.seed(1)
 slice_sample(.data = db_pr_mun_year, n = 5)
 
-#' **Base de datos de métrias de precipitación mensual a nivel municipal**
+#' **Base de datos de métricas de precipitación mensual a nivel municipal**
 #' 
-#' Se guarda bajo el nombre **`db_pr_mun_month.csv.bz2`**
+#' Se guarda bajo el nombre **`db_mex_pr_mun_month.csv.bz2`**
 
 #| label: save-db_pr_mun_month
 write_csv(
-    x = db_pr_mun_month,
-    file = paste0(path2data, "/municipios/db_pr_mun_month.csv.bz2"),
-    na = "")
+  x = db_pr_mun_month,
+  file = here::here(path2chirpsdata, "municipios", "db_mex_pr_mun_month.csv.bz2"),
+  na = "")
 
 #' ### Precipitaciones normales
 #' 
-#' **Base de datos de métrias de precipitación normal anual a nivel estatal**
+#' **Base de datos de métricas de precipitación normal anual a nivel estatal**
 #' 
-#' Se guarda bajo el nombre **`db_pr_normal_ent_year.csv`**
+#' Se guarda bajo el nombre **`db_mex_pr_normal_ent_year.csv`**
 
 #| label: save-normal_pr_mm_ent_year
-normal_pr_mm_ent_year %>%
-  left_join(
-    y = distinct(db_cve_nom_ent_mun, nombre_estado, cve_ent),
-    by = join_by(cvegeo == cve_ent)) %>%
-  rename(cve_ent = cvegeo) %>%
-  relocate(nombre_estado, .before = cve_ent) %>%
-  write_csv(
-    file = paste0(path2data, "/normal/db_pr_normal_ent_year.csv"),
-    na = "")
-
-#'
-
-#| label: show_sample_final-normal_pr_mm_ent_year
-#| echo: false
-set.seed(1)
-slice_sample(.data = normal_pr_mm_ent_year, n = 5) %>%
+db_pr_normal_ent_year <- normal_pr_mm_ent_year %>%
   left_join(
     y = distinct(db_cve_nom_ent_mun, nombre_estado, cve_ent),
     by = join_by(cvegeo == cve_ent)) %>%
   rename(cve_ent = cvegeo) %>%
   relocate(nombre_estado, .before = cve_ent)
 
-#' **Base de datos de métrias de precipitación normal mensual a nivel estatal**
-#' 
-#' Se guarda bajo el nombre **`db_pr_normal_ent_month.csv`**
+write_csv(
+  x = db_pr_normal_ent_year,
+  file = here::here(path2chirpsdata, "normal", "db_mex_pr_normal_ent_year.csv"),
+  na = "")
 
-#| label: save-normal_pr_mm_ent_month
-normal_pr_mm_ent_month %>%
+#'
+
+#| label: show_sample_final-db_pr_normal_ent_year
+#| echo: false
+set.seed(1)
+slice_sample(.data = db_pr_normal_ent_year, n = 5)
+
+#' **Base de datos de métricas de precipitación normal mensual a nivel estatal**
+#' 
+#' Se guarda bajo el nombre **`db_mex_pr_normal_ent_month.csv`**
+
+#| label: save-db_pr_normal_ent_month
+db_pr_normal_ent_month <- normal_pr_mm_ent_month %>%
   left_join(
     y = distinct(db_cve_nom_ent_mun, nombre_estado, cve_ent),
     by = join_by(cvegeo == cve_ent)) %>%
   rename(cve_ent = cvegeo) %>%
-  relocate(nombre_estado, .before = cve_ent) %>%
+  relocate(nombre_estado, .before = cve_ent)
+
 write_csv(
-    file = paste0(path2data, "/normal/db_pr_normal_ent_month.csv"),
-    na = "")
+  x = db_pr_normal_ent_month,
+  file = here::here(path2chirpsdata, "normal", "db_mex_pr_normal_ent_month.csv"),
+  na = "")
 
 #' 
 
 #| label: show_sample_final-normal_pr_mm_ent_month
 #| echo: false
 set.seed(1)
-slice_sample(.data = normal_pr_mm_ent_month, n = 5) %>%
-  left_join(
-    y = distinct(db_cve_nom_ent_mun, nombre_estado, cve_ent),
-    by = join_by(cvegeo == cve_ent)) %>%
-  rename(cve_ent = cvegeo) %>%
-  relocate(nombre_estado, .before = cve_ent)
+slice_sample(.data = db_pr_normal_ent_month, n = 5)
 
-#' **Base de datos de métrias de precipitación normal anual a nivel municipal**
+#' **Base de datos de métricas de precipitación normal anual a nivel municipal**
 #' 
-#' Se guarda bajo el nombre **`db_pr_normal_mun_year.csv`**
+#' Se guarda bajo el nombre **`db_mex_pr_normal_mun_year.csv`**
 
-#| label: save-normal_pr_mm_mun_year
-normal_pr_mm_mun_year %>%
-  left_join(
-    y = distinct(.data = db_cve_nom_ent_mun,
-                 cve_geo,
-                 nombre_estado,
-                 cve_ent,
-                 nombre_municipio),
-    by = join_by(cvegeo == cve_geo)) %>%
-  rename(cve_geo = cvegeo) %>%
-  relocate(nombre_estado, .before = cve_geo) %>%
-  relocate(cve_ent, .after = nombre_estado) %>%
-  relocate(nombre_municipio, .before = cve_geo) %>%
-  write_csv(
-    file = paste0(path2data, "/normal/db_pr_normal_mun_year.csv"),
-    na = "")
-
-#'
-
-#| label: show_sample-normal_pr_mm_mun_year
-#| echo: false
-set.seed(1)
-slice_sample(.data = normal_pr_mm_mun_year, n = 5) %>%
+#| label: save-db_pr_normal_mun_year
+db_pr_normal_mun_year <- normal_pr_mm_mun_year %>%
   left_join(
     y = distinct(.data = db_cve_nom_ent_mun,
                  cve_geo,
@@ -685,34 +648,24 @@ slice_sample(.data = normal_pr_mm_mun_year, n = 5) %>%
   relocate(cve_ent, .after = nombre_estado) %>%
   relocate(nombre_municipio, .before = cve_geo)
 
-#' **Base de datos de métrias de precipitación normal mensual a nivel municipal**
-#' 
-#' Se guarda bajo el nombre **`db_pr_normal_mun_month.csv`**
+write_csv(
+  x = db_pr_normal_mun_year,
+  file = here::here(path2chirpsdata, "normal", "db_mex_pr_normal_mun_year.csv"),
+  na = "")
 
-#| label: save-normal_pr_mm_mun_month
-normal_pr_mm_mun_month %>%
-  left_join(
-    y = distinct(.data = db_cve_nom_ent_mun,
-                 cve_geo,
-                 nombre_estado,
-                 cve_ent,
-                 nombre_municipio),
-    by = join_by(cvegeo == cve_geo)) %>%
-  rename(cve_geo = cvegeo) %>%
-  relocate(nombre_estado, .before = cve_geo) %>%
-  relocate(cve_ent, .after = nombre_estado) %>%
-  relocate(nombre_municipio, .before = cve_geo) %>%
-  mutate(n_month = as.integer(n_month)) %>%
-  write_csv(
-    file = paste0(path2data, "/normal/db_pr_normal_mun_month.csv"),
-    na = "")
+#'
 
-#' 
-
-#| label: show_sample_final-normal_pr_mm_mun_month
+#| label: show_sample-db_pr_normal_mun_year
 #| echo: false
 set.seed(1)
-slice_sample(.data = normal_pr_mm_mun_month, n = 5) %>%
+slice_sample(.data = db_pr_normal_mun_year, n = 5)
+
+#' **Base de datos de métricas de precipitación normal mensual a nivel municipal**
+#' 
+#' Se guarda bajo el nombre **`db_mex_pr_normal_mun_month.csv`**
+
+#| label: save-db_pr_normal_mun_month
+db_pr_normal_mun_month <- normal_pr_mm_mun_month %>%
   left_join(
     y = distinct(.data = db_cve_nom_ent_mun,
                  cve_geo,
@@ -725,3 +678,15 @@ slice_sample(.data = normal_pr_mm_mun_month, n = 5) %>%
   relocate(cve_ent, .after = nombre_estado) %>%
   relocate(nombre_municipio, .before = cve_geo) %>%
   mutate(n_month = as.integer(n_month))
+
+write_csv(
+  x = db_pr_normal_mun_month,
+  file = here::here(path2chirpsdata, "normal", "db_mex_pr_normal_mun_month.csv"),
+  na = "")
+
+#' 
+
+#| label: show_sample_final-db_pr_normal_mun_month
+#| echo: false
+set.seed(1)
+slice_sample(.data = db_pr_normal_mun_month, n = 5)
