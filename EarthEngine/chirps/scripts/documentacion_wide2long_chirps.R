@@ -26,7 +26,7 @@ here::i_am("EarthEngine/chirps/scripts/documentacion_wide2long_chirps.R")
 #' 
 #' La extracción de la **precipitación en milímetros (mm)** fue a través 
 #' de Google Earth Engine. El periodo de extracción de los datos fue de 
-#' 45 años, iniciando en 1981 hasta 2025. En total se tienen 176 archivos 
+#' 45 años, iniciando en 1981 hasta 2025. En total se tienen 180 archivos 
 #' CSV en la carpeta **`EarthEngine/chirps/data/ee_imports`**
 #' 
 #' |**Tipo de archivo CSV**|**Número de archivos**|
@@ -619,7 +619,7 @@ db_pr_normal_ent_month <- normal_pr_mm_ent_month %>%
   relocate(nombre_estado, .before = cve_ent)
 
 write_csv(
-  x = db_pr_normal_ent_month
+  x = db_pr_normal_ent_month,
   file = here::here(path2chirpsdata, "normal", "db_pr_normal_ent_month.csv"),
   na = "")
 
