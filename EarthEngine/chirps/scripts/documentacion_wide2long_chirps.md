@@ -24,35 +24,31 @@
   - [<span class="toc-section-number">7.2</span> Municipios](#municipios)
   - [<span class="toc-section-number">7.3</span> Precipitaciones normales](#precipitaciones-normales)
 
-> \[!NOTE\]
->
-> Se puede observar que se cambia el directorio de trabajo a la carpeta **`/EarthEngine/chirps/scripts`** para después agregar `/../../..` en la variable **`path2main`**. Este cambio se hace para que al renderizar, el código se pueda ejecutar correctamente, ya que el archivo toma como directorio de trabajo la carpeta en la que se encuentra el script en el que se esta haciendo el código.
-
 ``` r
-setwd("./EarthEngine/chirps/scripts")
+here::i_am("EarthEngine/chirps/scripts/documentacion_wide2long_chirps.R") 
 ```
 
 ## Introducción y objetivos
 
-La extracción de la **precipitación en milímetros (mm)** fue a través de Google Earth Engine. El periodo de extracción de los datos fue de 45 años, iniciando en 1981 hasta 2025. En total se tienen 176 archivos CSV en la carpeta **`EarthEngine/chirps/data/ee_imports`**
+La extracción de la **precipitación en milímetros (mm)** fue a través de Google Earth Engine. El periodo de extracción de los datos fue de 45 años, iniciando en 1981 hasta 2025. En total se tienen 180 archivos CSV en la carpeta **`EarthEngine/chirps/data/ee_imports`**
 
-| **Tipo de archivo CSV**                 | **Número de archivos**                           |
-|-----------------------------------------|--------------------------------------------------|
-| Precipitación anual de los estados      | 1 archivo por cada año :arrow_right: 45 archivos |
-| Precipitación mensual de los estados    | 1 archivo por cada año :arrow_right: 45 archivos |
-| Precipitación anual de los municipios   | 1 archivo por cada año :arrow_right: 45 archivos |
+| **Tipo de archivo CSV** | **Número de archivos** |
+|----|----|
+| Precipitación anual de los estados | 1 archivo por cada año :arrow_right: 45 archivos |
+| Precipitación mensual de los estados | 1 archivo por cada año :arrow_right: 45 archivos |
+| Precipitación anual de los municipios | 1 archivo por cada año :arrow_right: 45 archivos |
 | Precipitación mensual de los municipios | 1 archivo por cada año :arrow_right: 45 archivos |
 
 El siguiente paso es poder unir todo en 8 archivos
 
 - Anual:
-  - Métricas de precipitación a nivel estatal en el periodo 1981 a 2024.
-  - Métricas de precipitación a nivel municipal en el periodo 1981 a 2024.
+  - Métricas de precipitación a nivel estatal en el periodo 1981 a 2025.
+  - Métricas de precipitación a nivel municipal en el periodo 1981 a 2025.
   - Precipitación normal (promedio histórico) a nivel estatal.
   - Precipitación normal (promedio histórico) a nivel municipal.
 - Mensual:
-  - Métricas de precipitación a nivel estatal en el periodo 1981 a 2024.
-  - Métricas de precipitación a nivel municipal en el periodo 1981 a 2024.
+  - Métricas de precipitación a nivel estatal en el periodo 1981 a 2025.
+  - Métricas de precipitación a nivel municipal en el periodo 1981 a 2025.
   - Precipitación normal (promedio histórico) a nivel estatal.
   - Precipitación normal (promedio histórico) a nivel municipal.
 
@@ -60,10 +56,10 @@ El siguiente paso es poder unir todo en 8 archivos
 Sys.setlocale(locale = "es_ES")
 library(tidyverse)
 
-path2main <- paste0(getwd(), "/../../..")
-path2ee <- paste0(path2main, "/EarthEngine")
-path2chirps <- paste0(path2ee, "/chirps")
-path2data <- paste0(path2chirps, "/data")
+path2repo <- here::here()
+path2ee <- here::here("EarthEngine")
+path2chirps <- here::here("EarthEngine", "chirps")
+path2chirpsdata <- here::here("EarthEngine", "chirps", "data")
 ```
 
 ## Los conjuntos de datos
@@ -82,7 +78,7 @@ Para dividir en 8 grupos a todos los archivos, se usarán 2 partes del nombre: `
 # Obtener el nombre (path incluido) de todos los archivos que se 
 # importaron de Google Earth Engine 
 all_csv_chirps <- list.files(
-    path = paste0(path2data, "/ee_imports"),
+    path = here::here(path2chirpsdata, "ee_imports"),
     pattern = "*.csv",
     full.names = TRUE)
 
@@ -159,21 +155,21 @@ Las columnas de interés son las que tienen el código del estado o municipio (`
 
 | cvegeo | n_year | mean               |
 |:-------|:-------|:-------------------|
-| 25     | 2013   | 718.0398315102568  |
-| 07     | 2003   | 2066.261205197081  |
-| 01     | 1986   | 589.0792644435983  |
-| 02     | 2011   | 133.8548643126248  |
-| 23     | 1996   | 1206.0562337592528 |
+| 25     | 2012   | 715.0737995472939  |
+| 07     | 2002   | 1890.8175706313602 |
+| 01     | 1985   | 554.5302252346366  |
+| 02     | 2010   | 161.18254985392224 |
+| 23     | 1995   | 1452.6002760836577 |
 
 **Muestra de datos: Precipitación en milímetros mensual a nivel estatal**
 
-| cvegeo | n_year | x01                | x02                | x03                | x04                | x05                | x06                  | x07                | x08                | x09                | x10                | x11               | x12                |
-|:-------|:-------|:-------------------|:-------------------|:-------------------|:-------------------|:-------------------|:---------------------|:-------------------|:-------------------|:-------------------|:-------------------|:------------------|:-------------------|
-| 25     | 2012   | 8.002081910771784  | 9.078194131860103  | 4.245432148995365  | 0.8111924063024587 | 0.4805014698503636 | 45.82847035007077    | 190.1685423222091  | 231.22429026141032 | 130.50970281837    | 44.509617813780174 | 7.114725168627959 | 43.10104874504511  |
-| 07     | 2002   | 38.99664121905262  | 66.95147406500753  | 33.7011112511111   | 25.343206725032886 | 118.42358376104104 | 322.695395564078     | 238.40081035341217 | 232.71763032382583 | 445.5615337497574  | 190.59085202793733 | 123.0281351469849 | 54.407196444117    |
-| 01     | 1985   | 9.558769440008394  | 3.828289024647326  | 4.465417296415644  | 8.787392602874972  | 20.101997511422404 | 152.7658437224622    | 115.62645598316148 | 96.1548473553145   | 58.1832005744891   | 58.2982545575875   | 7.853042337757421 | 18.906714828495836 |
-| 02     | 2010   | 38.997024648851976 | 28.909910132917226 | 21.02283924106932  | 12.614580033601074 | 0.3671345100617597 | 0.013355120032271831 | 2.093100650098661  | 5.015776877602795  | 4.319623976839639  | 12.638956789333117 | 6.912177347959977 | 28.278070525554362 |
-| 23     | 1995   | 35.742715619401295 | 18.74646313623549  | 37.483081691824644 | 57.27765378589855  | 47.082283174239876 | 195.79054514766395   | 173.8629484484224  | 154.99552701213273 | 286.91104010818935 | 306.97029565648137 | 52.00130581192142 | 85.7364164912458   |
+| cvegeo | n_year | x01 | x02 | x03 | x04 | x05 | x06 | x07 | x08 | x09 | x10 | x11 | x12 |
+|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|
+| 25 | 2012 | 8.002081910771784 | 9.078194131860103 | 4.245432148995365 | 0.8111924063024587 | 0.4805014698503636 | 45.82847035007077 | 190.1685423222091 | 231.22429026141032 | 130.50970281837 | 44.509617813780174 | 7.114725168627959 | 43.10104874504511 |
+| 07 | 2002 | 38.99664121905262 | 66.95147406500753 | 33.7011112511111 | 25.343206725032886 | 118.42358376104104 | 322.695395564078 | 238.40081035341217 | 232.71763032382583 | 445.5615337497574 | 190.59085202793733 | 123.0281351469849 | 54.407196444117 |
+| 01 | 1985 | 9.558769440008394 | 3.828289024647326 | 4.465417296415644 | 8.787392602874972 | 20.101997511422404 | 152.7658437224622 | 115.62645598316148 | 96.1548473553145 | 58.1832005744891 | 58.2982545575875 | 7.853042337757421 | 18.906714828495836 |
+| 02 | 2010 | 38.997024648851976 | 28.909910132917226 | 21.02283924106932 | 12.614580033601074 | 0.3671345100617597 | 0.013355120032271831 | 2.093100650098661 | 5.015776877602795 | 4.319623976839639 | 12.638956789333117 | 6.912177347959977 | 28.278070525554362 |
+| 23 | 1995 | 35.742715619401295 | 18.74646313623549 | 37.483081691824644 | 57.27765378589855 | 47.082283174239876 | 195.79054514766395 | 173.8629484484224 | 154.99552701213273 | 286.91104010818935 | 306.97029565648137 | 52.00130581192142 | 85.7364164912458 |
 
 ### Decisiones sobre los datos
 
@@ -433,13 +429,13 @@ chirps_mun_month_anomalies <- func_anomaly_pr(
 
 **Muestra de `chirps_mun_month_anomalies`**
 
-| cvegeo | n_year | n_month |     pr_mm | cumsum_pr_mm | anomaly_pr_mm | anomaly_pr_prop | cumulative_anomaly_pr_mm | cumulative_anomaly_pr_prop |
-|:-------|:-------|:--------|----------:|-------------:|--------------:|----------------:|-------------------------:|---------------------------:|
-| 16044  | 1999   | 01      |  3.483830 |      3.48383 |    -10.250953 |      -0.7463498 |                -10.25095 |                 -0.7463498 |
-| 08023  | 1998   | 09      | 26.246990 |    216.33189 |    -21.871277 |      -0.4545317 |                -65.47042 |                 -0.2323275 |
-| 21001  | 1990   | 10      | 70.853869 |    707.18026 |      9.184644 |       0.1489340 |                -20.37182 |                 -0.0280005 |
-| 05011  | 2008   | 09      | 57.531007 |    346.30815 |     -1.097176 |      -0.0187141 |                 40.82665 |                  0.1336469 |
-| 20172  | 2008   | 11      |  9.211882 |    842.37945 |     -4.522744 |      -0.3292950 |                 60.36479 |                  0.0771914 |
+| cvegeo | n_year | n_month | pr_mm | cumsum_pr_mm | anomaly_pr_mm | anomaly_pr_prop | cumulative_anomaly_pr_mm | cumulative_anomaly_pr_prop |
+|:---|:---|:---|---:|---:|---:|---:|---:|---:|
+| 16044 | 1999 | 01 | 3.483830 | 3.48383 | -10.250953 | -0.7463498 | -10.25095 | -0.7463498 |
+| 08023 | 1998 | 09 | 26.246990 | 216.33189 | -21.871277 | -0.4545317 | -65.47042 | -0.2323275 |
+| 21001 | 1990 | 10 | 70.853869 | 707.18026 | 9.184644 | 0.1489340 | -20.37182 | -0.0280005 |
+| 05011 | 2008 | 09 | 57.531007 | 346.30815 | -1.097176 | -0.0187141 | 40.82665 | 0.1336469 |
+| 20172 | 2008 | 11 | 9.211882 | 842.37945 | -4.522744 | -0.3292950 | 60.36479 | 0.0771914 |
 
 ## Detalles finales
 
@@ -449,7 +445,7 @@ Como últimos pasos: \* Se agregan los nombres de los estados y municipios \* Pa
 
 ``` r
 db_cve_nom_ent_mun <- read_csv(
-    file = paste0(path2main, "/GobiernoMexicano/cve_nom_municipios.csv"))
+    file = here::here("GobiernoMexicano", "cve_nom_municipios.csv"))
 
 func_adjuntar_cve_nom_ent_mun <- function(df, region) {
   if (region == "ent") {
@@ -534,116 +530,120 @@ La carpeta `ee_imports` son los archivos creados a partir de Google Earth Engine
 
 ### Estados
 
-**Base de datos de métrias de precipitación anual a nivel estatal**
+**Base de datos de métricas de precipitación anual a nivel estatal**
 
-Se guarda bajo el nombre **`db_pr_ent_year.csv`**
+Se guarda bajo el nombre **`db_mex_pr_ent_year.csv`**
 
 ``` r
 write_csv(
-    x = db_pr_ent_year,
-    file = paste0(path2data, "/estados/db_pr_ent_year.csv"),
-    na = "")
+  x = db_pr_ent_year,
+  file = here::here(path2chirpsdata, "estados", "db_mex_pr_ent_year.csv"),
+  na = "")
 ```
 
 | cve_ent | nombre_estado   | n_year |     pr_mm | anomaly_pr_mm | anomaly_pr_prop |
 |:--------|:----------------|-------:|----------:|--------------:|----------------:|
-| 25      | Sinaloa         |   2013 |  718.0398 |      23.25036 |       0.0334639 |
-| 07      | Chiapas         |   2003 | 2066.2612 |      67.93134 |       0.0339941 |
-| 01      | Aguascalientes  |   1986 |  589.0793 |      55.65469 |       0.1043347 |
-| 02      | Baja California |   2011 |  133.8549 |     -10.65981 |      -0.0737628 |
-| 23      | Quintana Roo    |   1996 | 1206.0562 |     -73.12135 |      -0.0571628 |
+| 25      | Sinaloa         |   2012 |  715.0738 |      21.42257 |       0.0308838 |
+| 07      | Chiapas         |   2002 | 1890.8176 |    -107.02688 |      -0.0535712 |
+| 01      | Aguascalientes  |   1985 |  554.5302 |      25.29634 |       0.0477980 |
+| 02      | Baja California |   2010 |  161.1825 |      14.63347 |       0.0998537 |
+| 23      | Quintana Roo    |   1995 | 1452.6003 |     167.24272 |       0.1301138 |
 
-**Base de datos de métrias de precipitación mensual a nivel estatal**
+**Base de datos de métricas de precipitación mensual a nivel estatal**
 
-Se guarda bajo el nombre **`db_pr_ent_month.csv`**
+Se guarda bajo el nombre **`db_mex_pr_ent_month.csv`**
 
 ``` r
 write_csv(
-    x = db_pr_ent_month,
-    file = paste0(path2data, "/estados/db_pr_ent_month.csv"),
-    na = "")
+  x = db_pr_ent_month,
+  file = here::here(path2chirpsdata, "estados", "db_mex_pr_ent_month.csv"),
+  na = "")
 ```
 
-| cve_ent | nombre_estado    | date_year_month | n_year | n_month |      pr_mm | cumsum_pr_mm | anomaly_pr_mm | anomaly_pr_prop | cumulative_anomaly_pr_mm | cumulative_anomaly_pr_prop |
-|:--------|:-----------------|:----------------|-------:|--------:|-----------:|-------------:|--------------:|----------------:|-------------------------:|---------------------------:|
-| 09      | Ciudad de México | 2018-11-15      |   2018 |      11 | 64.7932521 |  1123.866748 |    43.4737866 |       2.0391593 |              173.3136935 |                  0.1823293 |
-| 25      | Sinaloa          | 2002-06-15      |   2002 |       6 | 11.6097278 |    37.408283 |   -27.0175565 |      -0.6994423 |              -47.6071161 |                 -0.5599823 |
-| 20      | Oaxaca           | 2004-03-15      |   2004 |       3 | 22.5779114 |    51.563134 |     8.8229937 |       0.6414429 |                7.8625653 |                  0.1799191 |
-| 16      | Michoacán        | 2011-02-15      |   2011 |       2 |  0.1041584 |     4.780574 |    -3.3008471 |      -0.9694102 |              -12.5236876 |                 -0.7237343 |
-| 08      | Chihuahua        | 2003-06-15      |   2003 |       6 | 43.6411635 |   101.380991 |     0.3073605 |       0.0070929 |               -0.4212855 |                 -0.0041383 |
+| cve_ent | nombre_estado | date_year_month | n_year | n_month | pr_mm | cumsum_pr_mm | anomaly_pr_mm | anomaly_pr_prop | cumulative_anomaly_pr_mm | cumulative_anomaly_pr_prop |
+|:---|:---|:---|---:|---:|---:|---:|---:|---:|---:|---:|
+| 09 | Ciudad de México | 2018-11-15 | 2018 | 11 | 64.7932521 | 1123.866748 | 43.4737866 | 2.0391593 | 173.3136935 | 0.1823293 |
+| 25 | Sinaloa | 2002-06-15 | 2002 | 6 | 11.6097278 | 37.408283 | -27.0175565 | -0.6994423 | -47.6071161 | -0.5599823 |
+| 20 | Oaxaca | 2004-03-15 | 2004 | 3 | 22.5779114 | 51.563134 | 8.8229937 | 0.6414429 | 7.8625653 | 0.1799191 |
+| 16 | Michoacán | 2011-02-15 | 2011 | 2 | 0.1041584 | 4.780574 | -3.3008471 | -0.9694102 | -12.5236876 | -0.7237343 |
+| 08 | Chihuahua | 2003-06-15 | 2003 | 6 | 43.6411635 | 101.380991 | 0.3073605 | 0.0070929 | -0.4212855 | -0.0041383 |
 
 ### Municipios
 
-**Base de datos de métrias de precipitación anual a nivel municipal**
+**Base de datos de métricas de precipitación anual a nivel municipal**
 
-Se guarda bajo el nombre **`db_pr_mun_year.csv`**
+Se guarda bajo el nombre **`db_mex_pr_mun_year.csv`**
 
 ``` r
 write_csv(
-    x = db_pr_mun_year,
-    file = paste0(path2data, "/municipios/db_pr_mun_year.csv"),
-    na = "")
+  x = db_pr_mun_year,
+  file = here::here(path2chirpsdata, "municipios", "db_mex_pr_mun_year.csv"),
+  na = "")
 ```
 
-| cve_ent | nombre_estado    | cve_geo | nombre_municipio     | n_year |     pr_mm | anomaly_pr_mm | anomaly_pr_prop |
-|:--------|:-----------------|:--------|:---------------------|-------:|----------:|--------------:|----------------:|
-| 30      | Veracruz         | 30108   | Minatitlán           |   1990 | 2233.4879 |    -536.47491 |      -0.1936759 |
-| 07      | Chiapas          | 07062   | Ostuacán             |   2005 | 2826.5362 |    -463.78120 |      -0.1409533 |
-| 20      | Oaxaca           | 20089   | San Andrés Dinicuiti |   1998 |  627.0260 |     -20.07578 |      -0.0310241 |
-| 09      | Ciudad de México | 09010   | Álvaro Obregón       |   2009 |  962.0613 |    -158.41321 |      -0.1413805 |
-| 21      | Puebla           | 21201   | Xochiltepec          |   1985 |  857.3468 |      28.84472 |       0.0348155 |
+| cve_ent | nombre_estado | cve_geo | nombre_municipio | n_year | pr_mm | anomaly_pr_mm | anomaly_pr_prop |
+|:---|:---|:---|:---|---:|---:|---:|---:|
+| 30 | Veracruz | 30108 | Minatitlán | 1990 | 2233.4879 | -536.47491 | -0.1936759 |
+| 07 | Chiapas | 07062 | Ostuacán | 2005 | 2826.5362 | -463.78120 | -0.1409533 |
+| 20 | Oaxaca | 20089 | San Andrés Dinicuiti | 1998 | 627.0260 | -20.07578 | -0.0310241 |
+| 09 | Ciudad de México | 09010 | Álvaro Obregón | 2009 | 962.0613 | -158.41321 | -0.1413805 |
+| 21 | Puebla | 21201 | Xochiltepec | 1985 | 857.3468 | 28.84472 | 0.0348155 |
 
-**Base de datos de métrias de precipitación mensual a nivel municipal**
+**Base de datos de métricas de precipitación mensual a nivel municipal**
 
-Se guarda bajo el nombre **`db_pr_mun_month.csv.bz2`**
+Se guarda bajo el nombre **`db_mex_pr_mun_month.csv.bz2`**
 
 ``` r
 write_csv(
-    x = db_pr_mun_month,
-    file = paste0(path2data, "/municipios/db_pr_mun_month.csv.bz2"),
-    na = "")
+  x = db_pr_mun_month,
+  file = here::here(path2chirpsdata, "municipios", "db_mex_pr_mun_month.csv.bz2"),
+  na = "")
 ```
 
 ### Precipitaciones normales
 
-**Base de datos de métrias de precipitación normal anual a nivel estatal**
+**Base de datos de métricas de precipitación normal anual a nivel estatal**
 
-Se guarda bajo el nombre **`db_pr_normal_ent_year.csv`**
+Se guarda bajo el nombre **`db_mex_pr_normal_ent_year.csv`**
 
 ``` r
-normal_pr_mm_ent_year %>%
+db_pr_normal_ent_year <- normal_pr_mm_ent_year %>%
   left_join(
     y = distinct(db_cve_nom_ent_mun, nombre_estado, cve_ent),
     by = join_by(cvegeo == cve_ent)) %>%
   rename(cve_ent = cvegeo) %>%
-  relocate(nombre_estado, .before = cve_ent) %>%
-  write_csv(
-    file = paste0(path2data, "/normal/db_pr_normal_ent_year.csv"),
-    na = "")
+  relocate(nombre_estado, .before = cve_ent)
+
+write_csv(
+  x = db_pr_normal_ent_year,
+  file = here::here(path2chirpsdata, "normal", "db_mex_pr_normal_ent_year.csv"),
+  na = "")
 ```
 
 | nombre_estado   | cve_ent | normal_pr_mm |
 |:----------------|:--------|-------------:|
-| Sinaloa         | 25      |     694.7895 |
-| Campeche        | 04      |    1329.3114 |
-| Chiapas         | 07      |    1998.3299 |
-| Aguascalientes  | 01      |     533.4246 |
-| Baja California | 02      |     144.5147 |
+| Sinaloa         | 25      |     693.6512 |
+| Campeche        | 04      |    1329.8219 |
+| Chiapas         | 07      |    1997.8444 |
+| Aguascalientes  | 01      |     529.2339 |
+| Baja California | 02      |     146.5491 |
 
-**Base de datos de métrias de precipitación normal mensual a nivel estatal**
+**Base de datos de métricas de precipitación normal mensual a nivel estatal**
 
-Se guarda bajo el nombre **`db_pr_normal_ent_month.csv`**
+Se guarda bajo el nombre **`db_mex_pr_normal_ent_month.csv`**
 
 ``` r
-normal_pr_mm_ent_month %>%
+db_pr_normal_ent_month <- normal_pr_mm_ent_month %>%
   left_join(
     y = distinct(db_cve_nom_ent_mun, nombre_estado, cve_ent),
     by = join_by(cvegeo == cve_ent)) %>%
   rename(cve_ent = cvegeo) %>%
-  relocate(nombre_estado, .before = cve_ent) %>%
+  relocate(nombre_estado, .before = cve_ent)
+
 write_csv(
-    file = paste0(path2data, "/normal/db_pr_normal_ent_month.csv"),
-    na = "")
+  x = db_pr_normal_ent_month,
+  file = here::here(path2chirpsdata, "normal", "db_mex_pr_normal_ent_month.csv"),
+  na = "")
 ```
 
 | nombre_estado | cve_ent | n_month | normal_pr_mm | normal_cumsum_pr_mm |
@@ -654,12 +654,12 @@ write_csv(
 | Sinaloa       | 25      | 11      |     18.12924 |            665.8746 |
 | Quintana Roo  | 23      | 06      |    174.96036 |            460.1294 |
 
-**Base de datos de métrias de precipitación normal anual a nivel municipal**
+**Base de datos de métricas de precipitación normal anual a nivel municipal**
 
-Se guarda bajo el nombre **`db_pr_normal_mun_year.csv`**
+Se guarda bajo el nombre **`db_mex_pr_normal_mun_year.csv`**
 
 ``` r
-normal_pr_mm_mun_year %>%
+db_pr_normal_mun_year <- normal_pr_mm_mun_year %>%
   left_join(
     y = distinct(.data = db_cve_nom_ent_mun,
                  cve_geo,
@@ -670,10 +670,12 @@ normal_pr_mm_mun_year %>%
   rename(cve_geo = cvegeo) %>%
   relocate(nombre_estado, .before = cve_geo) %>%
   relocate(cve_ent, .after = nombre_estado) %>%
-  relocate(nombre_municipio, .before = cve_geo) %>%
-  write_csv(
-    file = paste0(path2data, "/normal/db_pr_normal_mun_year.csv"),
-    na = "")
+  relocate(nombre_municipio, .before = cve_geo)
+
+write_csv(
+  x = db_pr_normal_mun_year,
+  file = here::here(path2chirpsdata, "normal", "db_mex_pr_normal_mun_year.csv"),
+  na = "")
 ```
 
 | nombre_estado    | cve_ent | nombre_municipio          | cve_geo | normal_pr_mm |
@@ -684,12 +686,12 @@ normal_pr_mm_mun_year %>%
 | Morelos          | 17      | Tetela del Volcán         | 17022   |    1068.4810 |
 | Oaxaca           | 20      | Santo Domingo Tlatayápam  | 20518   |     881.6413 |
 
-**Base de datos de métrias de precipitación normal mensual a nivel municipal**
+**Base de datos de métricas de precipitación normal mensual a nivel municipal**
 
-Se guarda bajo el nombre **`db_pr_normal_mun_month.csv`**
+Se guarda bajo el nombre **`db_mex_pr_normal_mun_month.csv`**
 
 ``` r
-normal_pr_mm_mun_month %>%
+db_pr_normal_mun_month <- normal_pr_mm_mun_month %>%
   left_join(
     y = distinct(.data = db_cve_nom_ent_mun,
                  cve_geo,
@@ -701,16 +703,18 @@ normal_pr_mm_mun_month %>%
   relocate(nombre_estado, .before = cve_geo) %>%
   relocate(cve_ent, .after = nombre_estado) %>%
   relocate(nombre_municipio, .before = cve_geo) %>%
-  mutate(n_month = as.integer(n_month)) %>%
-  write_csv(
-    file = paste0(path2data, "/normal/db_pr_normal_mun_month.csv"),
-    na = "")
+  mutate(n_month = as.integer(n_month))
+
+write_csv(
+  x = db_pr_normal_mun_month,
+  file = here::here(path2chirpsdata, "normal", "db_mex_pr_normal_mun_month.csv"),
+  na = "")
 ```
 
-| nombre_estado | cve_ent | nombre_municipio        | cve_geo | n_month | normal_pr_mm | normal_cumsum_pr_mm |
-|:--------------|:--------|:------------------------|:--------|--------:|-------------:|--------------------:|
-| Oaxaca        | 20      | Santa María Texcatitlán | 20436   |       1 |     6.998389 |            6.998389 |
-| Tamaulipas    | 28      | Soto la Marina          | 28037   |       4 |    34.954641 |           98.654178 |
-| Guerrero      | 12      | Coyuca de Catalán       | 12022   |      11 |    16.597458 |         1255.506504 |
-| Veracruz      | 30      | Poza Rica de Hidalgo    | 30131   |       5 |    68.533040 |          236.263532 |
-| Oaxaca        | 20      | San Agustín Yatareni    | 20087   |       6 |   168.384020 |          269.401264 |
+| nombre_estado | cve_ent | nombre_municipio | cve_geo | n_month | normal_pr_mm | normal_cumsum_pr_mm |
+|:---|:---|:---|:---|---:|---:|---:|
+| Oaxaca | 20 | Santa María Texcatitlán | 20436 | 1 | 6.998389 | 6.998389 |
+| Tamaulipas | 28 | Soto la Marina | 28037 | 4 | 34.954641 | 98.654178 |
+| Guerrero | 12 | Coyuca de Catalán | 12022 | 11 | 16.597458 | 1255.506504 |
+| Veracruz | 30 | Poza Rica de Hidalgo | 30131 | 5 | 68.533040 | 236.263532 |
+| Oaxaca | 20 | San Agustín Yatareni | 20087 | 6 | 168.384020 | 269.401264 |
