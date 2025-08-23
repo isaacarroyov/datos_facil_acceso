@@ -78,7 +78,7 @@ Para dividir en 8 grupos a todos los archivos, se usarán 2 partes del nombre: `
 # Obtener el nombre (path incluido) de todos los archivos que se 
 # importaron de Google Earth Engine 
 all_csv_chirps <- list.files(
-    path = paste0(path2chirpsdata, "/ee_imports"),
+    path = here::here(path2chirpsdata, "ee_imports"),
     pattern = "*.csv",
     full.names = TRUE)
 
@@ -532,12 +532,12 @@ La carpeta `ee_imports` son los archivos creados a partir de Google Earth Engine
 
 **Base de datos de métricas de precipitación anual a nivel estatal**
 
-Se guarda bajo el nombre **`db_pr_ent_year.csv`**
+Se guarda bajo el nombre **`db_mex_pr_ent_year.csv`**
 
 ``` r
 write_csv(
   x = db_pr_ent_year,
-  file = here::here(path2chirpsdata, "estados", "db_pr_ent_year.csv"),
+  file = here::here(path2chirpsdata, "estados", "db_mex_pr_ent_year.csv"),
   na = "")
 ```
 
@@ -551,12 +551,12 @@ write_csv(
 
 **Base de datos de métricas de precipitación mensual a nivel estatal**
 
-Se guarda bajo el nombre **`db_pr_ent_month.csv`**
+Se guarda bajo el nombre **`db_mex_pr_ent_month.csv`**
 
 ``` r
 write_csv(
   x = db_pr_ent_month,
-  file = here::here(path2chirpsdata, "estados", "db_pr_ent_month.csv"),
+  file = here::here(path2chirpsdata, "estados", "db_mex_pr_ent_month.csv"),
   na = "")
 ```
 
@@ -572,12 +572,12 @@ write_csv(
 
 **Base de datos de métricas de precipitación anual a nivel municipal**
 
-Se guarda bajo el nombre **`db_pr_mun_year.csv`**
+Se guarda bajo el nombre **`db_mex_pr_mun_year.csv`**
 
 ``` r
 write_csv(
   x = db_pr_mun_year,
-  file = here::here(path2chirpsdata, "municipios", "db_pr_mun_year.csv"),
+  file = here::here(path2chirpsdata, "municipios", "db_mex_pr_mun_year.csv"),
   na = "")
 ```
 
@@ -591,12 +591,12 @@ write_csv(
 
 **Base de datos de métricas de precipitación mensual a nivel municipal**
 
-Se guarda bajo el nombre **`db_pr_mun_month.csv.bz2`**
+Se guarda bajo el nombre **`db_mex_pr_mun_month.csv.bz2`**
 
 ``` r
 write_csv(
   x = db_pr_mun_month,
-  file = here::here(path2chirpsdata, "municipios", "db_pr_mun_month.csv.bz2"),
+  file = here::here(path2chirpsdata, "municipios", "db_mex_pr_mun_month.csv.bz2"),
   na = "")
 ```
 
@@ -604,7 +604,7 @@ write_csv(
 
 **Base de datos de métricas de precipitación normal anual a nivel estatal**
 
-Se guarda bajo el nombre **`db_pr_normal_ent_year.csv`**
+Se guarda bajo el nombre **`db_mex_pr_normal_ent_year.csv`**
 
 ``` r
 db_pr_normal_ent_year <- normal_pr_mm_ent_year %>%
@@ -616,7 +616,7 @@ db_pr_normal_ent_year <- normal_pr_mm_ent_year %>%
 
 write_csv(
   x = db_pr_normal_ent_year,
-  file = here::here(path2chirpsdata, "normal", "db_pr_normal_ent_year.csv"),
+  file = here::here(path2chirpsdata, "normal", "db_mex_pr_normal_ent_year.csv"),
   na = "")
 ```
 
@@ -630,7 +630,7 @@ write_csv(
 
 **Base de datos de métricas de precipitación normal mensual a nivel estatal**
 
-Se guarda bajo el nombre **`db_pr_normal_ent_month.csv`**
+Se guarda bajo el nombre **`db_mex_pr_normal_ent_month.csv`**
 
 ``` r
 db_pr_normal_ent_month <- normal_pr_mm_ent_month %>%
@@ -642,7 +642,7 @@ db_pr_normal_ent_month <- normal_pr_mm_ent_month %>%
 
 write_csv(
   x = db_pr_normal_ent_month,
-  file = here::here(path2chirpsdata, "normal", "db_pr_normal_ent_month.csv"),
+  file = here::here(path2chirpsdata, "normal", "db_mex_pr_normal_ent_month.csv"),
   na = "")
 ```
 
@@ -656,7 +656,7 @@ write_csv(
 
 **Base de datos de métricas de precipitación normal anual a nivel municipal**
 
-Se guarda bajo el nombre **`db_pr_normal_mun_year.csv`**
+Se guarda bajo el nombre **`db_mex_pr_normal_mun_year.csv`**
 
 ``` r
 db_pr_normal_mun_year <- normal_pr_mm_mun_year %>%
@@ -674,7 +674,7 @@ db_pr_normal_mun_year <- normal_pr_mm_mun_year %>%
 
 write_csv(
   x = db_pr_normal_mun_year,
-  file = here::here(path2chirpsdata, "normal", "db_pr_normal_mun_year.csv"),
+  file = here::here(path2chirpsdata, "normal", "db_mex_pr_normal_mun_year.csv"),
   na = "")
 ```
 
@@ -688,7 +688,7 @@ write_csv(
 
 **Base de datos de métricas de precipitación normal mensual a nivel municipal**
 
-Se guarda bajo el nombre **`db_pr_normal_mun_month.csv`**
+Se guarda bajo el nombre **`db_mex_pr_normal_mun_month.csv`**
 
 ``` r
 db_pr_normal_mun_month <- normal_pr_mm_mun_month %>%
@@ -707,7 +707,7 @@ db_pr_normal_mun_month <- normal_pr_mm_mun_month %>%
 
 write_csv(
   x = db_pr_normal_mun_month,
-  file = here::here(path2chirpsdata, "normal", "db_pr_normal_mun_month.csv"),
+  file = here::here(path2chirpsdata, "normal", "db_mex_pr_normal_mun_month.csv"),
   na = "")
 ```
 
