@@ -49,6 +49,13 @@ path2data <- here::here("EarthEngine", "chirps", "data")
 #'   - Mapa de anomalía de acumulación de lluvia al mes actual en porcentaje a nivel municipal
 #'   - _Line chart_ de acumulación mensual de lluvia en milimetros a nivel nacional
 #'   - _Stripes_ de anomalía de lluvia anual en porcentaje a nivel nacional
+#' 
+#' > [!NOTE] 
+#' > 
+#' > Por el momento, todas las visualizaciones seran exportadas como 
+#' imágenes estáticas. Conforme el proyecto avance, se includirán las 
+#' versiones interactivas, sea con una librería de JavaScript o alguna 
+#' herramienta de visualización de datos como Flourish.
 
 # - - CHIRPS - - #
 # ~ Normal ~ #
@@ -86,21 +93,158 @@ text_recent_date <- date_data_as_of %>%
   str_to_title() %>%
   paste0("Datos a ", .)
 
-#' ## 02
+#' ## _Grid_ de _line charts_: Acumulación mensual de la precipitación a nivel estatal
 #' 
-#' Suspendisse egestas elementum convallis. Praesent cursus dictum magna, 
-#' non lacinia nibh vehicula et. Ut auctor congue tellus eu interdum. Nam 
-#' non blandit odio, non pretium dolor. Vestibulum facilisis tincidunt 
-#' elit, in ornare dolor pulvinar id. Vivamus id purus in nisl varius 
-#' posuere at id nunc. Fusce id lacus porta, euismod tellus a, tincidunt 
-#' tortor. Sed euismod turpis id urna iaculis, sit amet iaculis justo 
-#' efficitur. In sollicitudin est eu venenatis tincidunt. Maecenas commodo 
-#' neque tincidunt purus vulputate, et congue augue tempor. Nulla non 
-#' ullamcorper arcu. Aliquam sed dolor fermentum, ornare leo sit amet, 
-#' pretium turpis. In pretium posuere libero id rhoncus. Fusce vestibulum, 
-#' nulla ut porttitor pretium, felis sapien pretium arcu, ac convallis 
-#' massa lacus sit amet ligula.
+#' ### Años a mostrar
 #' 
+#' Se omitirán los años _base_, aquellos con los que se hizo el cálculo de 
+#' la normal (también llamado _promedio histórico_), por lo que solamente 
+#' se mostrarán los años del 2011 en adelante.
+#' 
+#' ### Texto a mostrar
+#' 
+#' Al tratarse de una sola imagen no se van a etiquetar todas las líneas, 
+#' por lo que solo se van a mostrar los siguientes años por estado:
+#' - Año con mayor lluvia
+#' - Año con menor lluvia
+#' - Año actual
+#' - Año anterior al actual
+#' 
+#' El número máximo de etiquetas por estado es 4, ya que el año con mayor o 
+#' menor lluvia puede ser el año anterior al actual.
+#' 
+#' ### Líneas a resaltar
+#' 
+#' Resaltar con texto no es suficiente, por lo que también se resaltará 
+#' a través del grosor de las líneas aquellas con los mismos años. Además 
+#' también se resaltará la línea que represente el promedio histórico. 
+#' 
+#' Al final de cada línea resaltada se agregará un circulo al final.
+
+current_n_year <- chirps_ent_nac_month %>%
+  arrange(n_year) %>%
+  pull(n_year) %>%
+  max()
+
+df_cumsum_pr_ent_2011 <- chirps_ent_nac_month %>%
+  mutate(n_month = as.integer(n_month)) %>%
+  filter(
+    # Año 2011 en adelante
+    n_year >= 2011,
+    # Ignorar valores nacionales
+    cve_ent != "00") %>%
+  select(cve_ent, nombre_estado, n_year, n_month, cumsum_pr_mm) %>%
+  mutate(n_year = as.character(n_year))
+
+# Promedio histórico (adaptado)
+df_cumsum_pr_ent_historical_average <- normal_ent_nac_month %>%
+      mutate(n_month = as.integer(n_month)) %>%
+      filter(cve_ent != "00") %>%
+      select(cve_ent, nombre_estado, n_month, normal_cumsum_pr_mm) %>%
+      rename(cumsum_pr_mm = normal_cumsum_pr_mm) %>%
+      mutate(n_year = "Promedio histórico")
+
+df_vis_cumulative_pr_mm <- bind_rows(
+    df_cumsum_pr_ent_2011,
+    df_cumsum_pr_ent_historical_average) %>%
+  # Drop NA rows
+  filter(!is.na(cumsum_pr_mm)) %>%
+  mutate(
+  # Order lines
+    n_year = ordered(
+      x = n_year,
+      levels = c(as.character(2011:2024), "Promedio histórico", "2025")),
+  
+  # colour coding years
+    n_year_colour = case_when(
+      n_year %in% 2011:2015 ~ "2011-2015",
+      n_year %in% 2016:2020 ~ "2016-2020",
+      n_year %in% 2021:2024 ~ "2021-2024",
+      .default = n_year)) %>%
+  group_by(
+    cve_ent,
+    nombre_estado) %>%
+  arrange(n_year, n_month, .by_group = TRUE) %>%
+  mutate(
+    # Locate years of interest: promedio historico, current, previous, rainiest and driest
+    n_year_oi = if_else(
+      condition = cumsum_pr_mm == max(cumsum_pr_mm[which(n_month == max(n_month))]) |
+                  cumsum_pr_mm == min(cumsum_pr_mm[which(n_month == max(n_month))]) |
+                  n_year %in% c("Promedio histórico", current_n_year, current_n_year - 1),
+      true = n_year,
+      false = NA_character_)) %>%
+  group_by(
+    cve_ent,
+    nombre_estado,
+    n_year) %>%
+  mutate(
+    # Label only latest month and ignore "Promedio histórico"
+    n_year_label = case_when(
+      n_year_oi == "Promedio histórico" ~ NA_character_,
+      !is.na(n_year_oi) & n_month == max(n_month) ~ n_year_oi,
+      .default = NA_character_),
+    n_month_endpoint_year_oi = if_else(
+      condition = !is.na(n_year_oi) & n_month == max(n_month),
+      true = n_month,
+      false = NA)) %>%
+  ungroup() %>%
+  group_by(
+    cve_ent,
+    nombre_estado) %>%
+  mutate(
+    # Highlight years of interest with linewidth
+    n_year_linewidth = if_else(
+      condition = n_year %in% unique(n_year_oi[!is.na(n_year_oi)]),
+      true = n_year,
+      false = NA)) %>%
+  ungroup() %>%
+  select(!n_year_oi)
+
+# DATAVIS TESTING
+# testing mex grid
+mex_grid <- geofacet::mx_state_grid3 %>%
+  as_tibble() %>%
+  select(row,col, code) %>%
+  mutate(
+    code = if_else(
+      condition = code >= 10,
+      true = as.character(code),
+      false = paste0("0", code))) %>%
+  left_join(
+    y = df_vis_cumulative_pr_mm %>%
+          distinct(cve_ent, nombre_estado) %>%
+          rename(name = nombre_estado),
+    by = join_by(code == cve_ent))
+
+geofacet::grid_preview(mex_grid)
+
+# vis
+df_vis_cumulative_pr_mm %>%
+  ggplot(
+    mapping = aes(
+      x = n_month,
+      y = cumsum_pr_mm,
+      group = n_year,
+      colour = n_year_colour,
+      label = n_year_label,
+      linewidth = if_else(condition = !is.na(n_year_linewidth), true = 0.7, false = 0.3)
+    )
+  ) +
+  geom_line() +
+  geom_point(
+    mapping = aes(
+      x = n_month_endpoint_year_oi)
+        ) +
+  geom_text(show.legend = FALSE) +
+  # geofacet::facet_geo(facets = vars(nombre_estado), grid = mex_grid, label = "name", scales = "free") +
+  facet_wrap(facets = vars(nombre_estado),ncol = 4,scales = "free") +
+  scale_linewidth_identity() +
+  coord_cartesian(clip = "off") +
+  theme(
+    legend.location = "none",
+    legend.position = "top",
+    legend.justification = "left")
+
 #' ## 03
 #' 
 #' Interdum et malesuada fames ac ante ipsum primis in faucibus. Sed dui 
