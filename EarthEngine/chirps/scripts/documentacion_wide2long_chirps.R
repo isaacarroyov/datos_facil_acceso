@@ -20,7 +20,7 @@
 #' ---
 
 #| label: here_i_am
-here::i_am("EarthEngine/chirps/scripts/documentacion_wide2long_chirps.R") 
+here::i_am("EarthEngine/chirps/scripts/documentacion_wide2long_chirps.R")
 
 #' ## Introducción y objetivos
 #' 
@@ -104,7 +104,6 @@ csvs_chirps_mun_year <- str_subset(string = all_csv_chirps, pattern = "_mun_year
 #' archivos de interés (dados por `idx_`).
 
 #| label: concat_all_files
-
 # - - Entidades - - #
 # ~ Anual ~ #
 chirps_ent_year <- map(
@@ -112,7 +111,8 @@ chirps_ent_year <- map(
     .f = \(x) read_csv(file = x, col_types = cols(.default = "c"))) %>% # <2>
   bind_rows() %>% # <3>
   janitor::clean_names() %>% # <4>
-  select(cvegeo, n_year, mean) # <5>
+  select(cvegeo, n_year, mean) %>% # <5>
+  mutate(mean = as.numeric(mean)) # <7>
 
 # ~ Mensual ~ #
 chirps_ent_month <- map(
@@ -120,7 +120,11 @@ chirps_ent_month <- map(
     .f = \(x) read_csv(file = x, col_types = cols(.default = "c"))) %>%
   bind_rows() %>%
   janitor::clean_names() %>%
-  select(c(cvegeo, n_year, starts_with("x"))) # <6>
+  select(c(cvegeo, n_year, starts_with("x")))  %>% # <6>
+  mutate( # <7>
+    across( # <7>
+      .cols = starts_with("x"), # <7>
+      .fns = as.numeric)) # <7>
 
 # - - Municipios - - #
 # ~ Anual ~ #
@@ -129,7 +133,8 @@ chirps_mun_year <- map(
     .f = \(x) read_csv(file = x, col_types = cols(.default = "c"))) %>%
   bind_rows() %>%
   janitor::clean_names() %>%
-  select(cvegeo, n_year, mean)
+  select(cvegeo, n_year, mean) %>%
+  mutate(mean = as.numeric(mean))
 
 # ~ Mensual ~ #
 chirps_mun_month <- map(
@@ -137,7 +142,8 @@ chirps_mun_month <- map(
     .f = \(x) read_csv(file = x, col_types = cols(.default = "c"))) %>%
   bind_rows() %>%
   janitor::clean_names() %>%
-  select(c(cvegeo, n_year, starts_with("x")))
+  select(c(cvegeo, n_year, starts_with("x"))) %>%
+  mutate(across(.cols = starts_with("x"), .fns = as.numeric))
 
 #' 1. Seleccionar archivos CSVS
 #' 2. Usar una función anónima para poder dar valor a más argumentos 
@@ -153,6 +159,8 @@ chirps_mun_month <- map(
 #' municipio (`cvegeo`), el año de la información (`n_year`) y el número de 
 #' mes (después de usar `janitor::clean_names`, todas inician con 
 #' `x`).
+#' 7. Las columnas de precipitación (`mean` y los meses) se convierten a 
+#' numéricas
 
 #' **Muestra de datos: Precipitación en milímetros anual a nivel estatal**
 
@@ -180,10 +188,10 @@ slice_sample(.data = chirps_ent_month, n = 5)
 #' **óptima** de hacer este proceso en el código de la extracción de las 
 #' anomalías directamente de Google Earth Engine. 
 #' 
-#' 1. Transformar el formato _wide_ a _long_, para tener el número de 
+#' 1. Al conjunto de datos de entidades se le agregará el valor nacional
+#' 2. Transformar el formato _wide_ a _long_, para tener el número de 
 #' meses como una columna. Para el caso de los datos anuales, 
 #' únicamente renombrar la columna `mean` a `pr`
-#' 2. Cambiar a número el valor de la precipitación.
 #' 3. Crear los respectivos `tibble`s de la normal de precipitación 
 #' para cada uno de los archivos.
 #' 4. Crear columnas de otras métricas de la precipitación, tales como:
@@ -194,6 +202,28 @@ slice_sample(.data = chirps_ent_month, n = 5)
 #'   * Anomalía de acumulación mensual de la precipitación en milímetros (`cumulative_anomaly_pr_mm`)
 #'   * Anomalía de acumulación mensual de la precipitación en proporción a la normal (`cumulative_anomaly_pr_prop`)
 #' 
+#' ## Agregar el promedio nacional a `chirps_ent_month` y `chirps_ent_year`
+#' 
+#' Se va a tratar la precipitación nacional como un estado extra
+
+#| label: create-chirps_ent_nac_month-and-chirps_ent_nac_year
+chirps_nac_month <- chirps_ent_month %>%
+  group_by(n_year) %>%
+  summarise(across(.cols = starts_with("x"), .fns = mean)) %>%
+  ungroup() %>%
+  mutate(cvegeo = "00") %>%
+  relocate(cvegeo, .before = n_year)
+
+chirps_nac_year <- chirps_ent_year %>%
+  group_by(n_year) %>%
+  summarise(mean = mean(mean)) %>%
+  ungroup() %>%
+  mutate(cvegeo = "00") %>%
+  relocate(cvegeo, .before = n_year)
+
+chirps_ent_nac_month <- bind_rows(chirps_nac_month, chirps_ent_month)
+chirps_ent_nac_year <- bind_rows(chirps_nac_year, chirps_ent_year)
+
 #' ## _Wide to Long_
 #' 
 #' Para facilitar la transformación se va crear una función que haga el 
@@ -208,27 +238,21 @@ func_wide2long <- function(df, periodo = "month") {
         names_to = "period", # <1>
         values_to = "pr_mm") %>% # <1>
       mutate( # <2>
-        pr_mm = as.numeric(pr_mm), # <2>
         period = str_remove_all( # <2>
           string = period, # <2>
           pattern = "x|_precipitation")) # <2>
     
     df_transformed <- rename(.data = df_pivoted, n_month = period) # <3>
 
-  } else { # <4>
-    df_transformed <- df %>% # <4>
-      rename(pr_mm = mean) %>% # <4>
-      mutate(pr_mm = as.numeric(pr_mm))} # <4>
+  } else {df_transformed <- rename(.data = df, pr_mm = mean)} # <4>
 
   return(df_transformed)} # <5>
 
 #' 1. Si el periodo es mensual se usa `pivot_longer`
-#' 2. Se cambia el valor de la precipitación a numérico y se eliminan las 
-#' `x` + `_precipitation` del número de meses.
-#' 3. Se renombra `period` a `n_month`, para el caso de precipitación mensual.
+#' 2. Se eliminan las `x` + `_precipitation` del número de meses
+#' 3. Se renombra `period` a `n_month`, para el caso de precipitación mensual
 #' 4. Si `periodo` no es `'month'` es porque el periodo es anual y 
-#' solamente se renombra la columna `mean` a `pr_mm` y se convierte a valor 
-#' numérico
+#' solamente se renombra la columna `mean` a `pr_mm`
 #' 5. Se regresa el conjunto de datos con los cambios
 #' 
 #' ### Sobre la precipitación acumulada a través del año en milímetros
@@ -248,8 +272,8 @@ func_wide2long <- function(df, periodo = "month") {
 
 #| label: create-long_chirps
 # - - Estados - - #
-chirps_ent_year_long <- func_wide2long(df = chirps_ent_year, periodo = "year")
-chirps_ent_month_long <- func_wide2long(df = chirps_ent_month, periodo = "month") %>%
+chirps_ent_nac_year_long <- func_wide2long(df = chirps_ent_nac_year, periodo = "year")
+chirps_ent_nac_month_long <- func_wide2long(df = chirps_ent_nac_month, periodo = "month") %>%
   group_by(cvegeo, n_year) %>%
   arrange(as.integer(n_month), .by_group = TRUE) %>%
   # Cálculo de la precipitación acumulada
@@ -265,19 +289,19 @@ chirps_mun_month_long <- func_wide2long(df = chirps_mun_month, periodo = "month"
   mutate(cumsum_pr_mm = cumsum(pr_mm)) %>%
   ungroup()
 
-#' **Muestra de `chirps_ent_month_long`**
+#' **Muestra de `chirps_ent_nac_month_long`**
 
-#| label: show_sample-chirps_ent_month_long
+#| label: show_sample-chirps_ent_nac_month_long
 #| echo: false
 set.seed(1)
-slice_sample(.data = chirps_ent_month_long, n = 5)
+slice_sample(.data = chirps_ent_nac_month_long, n = 5)
 
 #' ## Precipitación normal (1981 - 2010)
 #' 
 #' En palabras sencillas y directas, **la normal** es el promedio de una 
 #' variable climatológica durante un periodo largo, usualmente de 30 años.
 #' 
-#' _También le llamo "promedio histórico", para mayor claridad_
+#' > _También le llamo "promedio histórico", para mayor claridad_
 #' 
 #' Para facilitar el cálculo se va crear una función para tener la normal 
 #' anual o mensual.
@@ -307,8 +331,8 @@ func_normal_pr_mm <- function(df) {
 
 #| label: create-normal_pr_mm
 # - - Estados - - #
-normal_pr_mm_ent_year <- func_normal_pr_mm(df = chirps_ent_year_long)
-normal_pr_mm_ent_month <- func_normal_pr_mm(df = chirps_ent_month_long) %>%
+normal_pr_mm_ent_nac_year <- func_normal_pr_mm(df = chirps_ent_nac_year_long)
+normal_pr_mm_ent_nac_month <- func_normal_pr_mm(df = chirps_ent_nac_month_long) %>%
   group_by(cvegeo) %>%
   arrange(as.integer(n_month), .by_group = TRUE) %>%
   # Cálculo de la precipitación acumulada
@@ -326,7 +350,7 @@ normal_pr_mm_mun_month <- func_normal_pr_mm(df = chirps_mun_month_long) %>%
 
 #' **Muestra de `normal_pr_mm_mun_month`**
 
-#| label: show_sample-normal_pr_mm_ent_month
+#| label: show_sample-normal_pr_mm_ent_nac_month
 #| echo: false
 set.seed(1)
 slice_sample(.data = normal_pr_mm_mun_month, n = 5)
@@ -400,13 +424,13 @@ func_anomaly_pr <- function(df, df_normal) {
 
 #| label: create-anomalies_df
 # - - Estados - - #
-chirps_ent_year_anomalies <- func_anomaly_pr(
-    df = chirps_ent_year_long,
-    df_normal = normal_pr_mm_ent_year)
+chirps_ent_nac_year_anomalies <- func_anomaly_pr(
+    df = chirps_ent_nac_year_long,
+    df_normal = normal_pr_mm_ent_nac_year)
 
-chirps_ent_month_anomalies <- func_anomaly_pr(
-    df = chirps_ent_month_long,
-    df_normal = normal_pr_mm_ent_month)
+chirps_ent_nac_month_anomalies <- func_anomaly_pr(
+    df = chirps_ent_nac_month_long,
+    df_normal = normal_pr_mm_ent_nac_month)
 
 # - - Municipios - - #
 chirps_mun_year_anomalies <- func_anomaly_pr(
@@ -436,33 +460,38 @@ slice_sample(.data = chirps_mun_month_anomalies, n = 5)
 
 #| label: create-func_adjuntar_cve_nom_ent_mun
 db_cve_nom_ent_mun <- read_csv( # <1>
-    file = here::here("GobiernoMexicano", "cve_nom_municipios.csv")) # <1>
+    file = here::here("GobiernoMexicano", "cve_nom_municipios.csv")) %>% # <1>
+  bind_rows( # <2>
+    tribble( # <2>
+      ~cve_geo, ~nombre_estado, ~cve_ent, ~nombre_municipio, ~cve_mun, # <2>
+      "00000", "Nacional", "00", "Nacional", "000")) # <2>
 
 func_adjuntar_cve_nom_ent_mun <- function(df, region) {
-  if (region == "ent") { # <2>
-    df_con_nombres <- left_join( # <2>
-        x = df, # <2>
-        y = distinct(.data = db_cve_nom_ent_mun, cve_ent, nombre_estado), # <2>
-        by = join_by(cvegeo == cve_ent)) %>% # <2>
-      rename(cve_ent = cvegeo) %>% # <2>
-      relocate(nombre_estado, .after = cve_ent) # <2>
-  } else { # <3>
+  if (region == "ent") { # <3>
     df_con_nombres <- left_join( # <3>
         x = df, # <3>
-        y = db_cve_nom_ent_mun, # <3>
-        by = join_by(cvegeo == cve_geo)) %>% # <3>
-      select(-cve_mun) %>% # <3>
-      rename(cve_geo = cvegeo) %>% # <3>
-      relocate(cve_ent, .before = cve_geo) %>% # <3>
-      relocate(nombre_estado, .after = cve_ent) %>% # <3>
-      relocate(nombre_municipio, .after = cve_geo)} # <3>
+        y = distinct(.data = db_cve_nom_ent_mun, cve_ent, nombre_estado), # <3>
+        by = join_by(cvegeo == cve_ent)) %>% # <3>
+      rename(cve_ent = cvegeo) %>% # <3>
+      relocate(nombre_estado, .after = cve_ent) # <3>
+  } else { # <4>
+    df_con_nombres <- left_join( # <4>
+        x = df, # <4>
+        y = db_cve_nom_ent_mun, # <4>
+        by = join_by(cvegeo == cve_geo)) %>% # <4>
+      select(-cve_mun) %>% # <4>
+      rename(cve_geo = cvegeo) %>% # <4>
+      relocate(cve_ent, .before = cve_geo) %>% # <4>
+      relocate(nombre_estado, .after = cve_ent) %>% # <4>
+      relocate(nombre_municipio, .after = cve_geo)} # <4>
   
-  return(df_con_nombres)} # <4>
+  return(df_con_nombres)} # <5>
 
 #' 1. Carga de base de datos de nombres y claves de estados y municipios
-#' 2. Asignación y orden de nombres para estados
-#' 3. Asignación y orden de nombres para municipios
-#' 4. Se regresa el conjunto de datos con los nombres de las regiones
+#' 2. Agregar los codigos de "Nacional"
+#' 3. Asignación y orden de nombres para estados
+#' 4. Asignación y orden de nombres para municipios
+#' 5. Se regresa el conjunto de datos con los nombres de las regiones
 #' 
 #' ### Formato numérico y de fecha para periodos
 
@@ -482,13 +511,13 @@ func_string2numberdate <- function(df) {
 
 #| label: create-dbs_finales
 # - - Estados - - #
-db_pr_ent_year <- func_adjuntar_cve_nom_ent_mun(
-    df = chirps_ent_year_anomalies,
+db_pr_ent_nac_year <- func_adjuntar_cve_nom_ent_mun(
+    df = chirps_ent_nac_year_anomalies,
     region = "ent") %>%
   func_string2numberdate()
 
-db_pr_ent_month <- func_adjuntar_cve_nom_ent_mun(
-    df = chirps_ent_month_anomalies,
+db_pr_ent_nac_month <- func_adjuntar_cve_nom_ent_mun(
+    df = chirps_ent_nac_month_anomalies,
     region = "ent") %>%
   func_string2numberdate()
 
@@ -519,37 +548,37 @@ db_pr_mun_month <- func_adjuntar_cve_nom_ent_mun(
 #' 
 #' **Base de datos de métricas de precipitación anual a nivel estatal**
 #' 
-#' Se guarda bajo el nombre **`db_mex_pr_ent_year.csv`**
+#' Se guarda bajo el nombre **`db_mex_pr_ent_nac_year.csv`**
 
-#| label: save-db_pr_ent_year
+#| label: save-db_pr_ent_nac_year
 write_csv(
-  x = db_pr_ent_year,
-  file = here::here(path2chirpsdata, "estados", "db_mex_pr_ent_year.csv"),
+  x = db_pr_ent_nac_year,
+  file = here::here(path2chirpsdata, "estados", "db_mex_pr_ent_nac_year.csv"),
   na = "")
 
 #'
 
-#| label: show_sample-db_pr_ent_year
+#| label: show_sample-db_pr_ent_nac_year
 #| echo: false
 set.seed(1)
-slice_sample(.data = db_pr_ent_year, n = 5)
+slice_sample(.data = db_pr_ent_nac_year, n = 5)
 
 #' **Base de datos de métricas de precipitación mensual a nivel estatal**
 #' 
-#' Se guarda bajo el nombre **`db_mex_pr_ent_month.csv`**
+#' Se guarda bajo el nombre **`db_mex_pr_ent_nac_month.csv`**
 
-#| label: save-db_pr_ent_month
+#| label: save-db_pr_ent_nac_month
 write_csv(
-  x = db_pr_ent_month,
-  file = here::here(path2chirpsdata, "estados", "db_mex_pr_ent_month.csv"),
+  x = db_pr_ent_nac_month,
+  file = here::here(path2chirpsdata, "estados", "db_mex_pr_ent_nac_month.csv"),
   na = "")
 
 #' 
 
-#| label: show_sample-db_pr_ent_month
+#| label: show_sample-db_pr_ent_nac_month
 #| echo: false
 set.seed(1)
-slice_sample(.data = db_pr_ent_month, n = 5)
+slice_sample(.data = db_pr_ent_nac_month, n = 5)
 
 #' ### Municipios
 #' 
@@ -584,10 +613,10 @@ write_csv(
 #' 
 #' **Base de datos de métricas de precipitación normal anual a nivel estatal**
 #' 
-#' Se guarda bajo el nombre **`db_mex_pr_normal_ent_year.csv`**
+#' Se guarda bajo el nombre **`db_mex_pr_normal_ent_nac_year.csv`**
 
-#| label: save-normal_pr_mm_ent_year
-db_pr_normal_ent_year <- normal_pr_mm_ent_year %>%
+#| label: save-normal_pr_mm_ent_nac_year
+db_pr_normal_ent_nac_year <- normal_pr_mm_ent_nac_year %>%
   left_join(
     y = distinct(db_cve_nom_ent_mun, nombre_estado, cve_ent),
     by = join_by(cvegeo == cve_ent)) %>%
@@ -595,23 +624,23 @@ db_pr_normal_ent_year <- normal_pr_mm_ent_year %>%
   relocate(nombre_estado, .before = cve_ent)
 
 write_csv(
-  x = db_pr_normal_ent_year,
-  file = here::here(path2chirpsdata, "normal", "db_mex_pr_normal_ent_year.csv"),
+  x = db_pr_normal_ent_nac_year,
+  file = here::here(path2chirpsdata, "normal", "db_mex_pr_normal_ent_nac_year.csv"),
   na = "")
 
 #'
 
-#| label: show_sample_final-db_pr_normal_ent_year
+#| label: show_sample_final-db_pr_normal_ent_nac_year
 #| echo: false
 set.seed(1)
-slice_sample(.data = db_pr_normal_ent_year, n = 5)
+slice_sample(.data = db_pr_normal_ent_nac_year, n = 5)
 
 #' **Base de datos de métricas de precipitación normal mensual a nivel estatal**
 #' 
-#' Se guarda bajo el nombre **`db_mex_pr_normal_ent_month.csv`**
+#' Se guarda bajo el nombre **`db_mex_pr_normal_ent_nac_month.csv`**
 
-#| label: save-db_pr_normal_ent_month
-db_pr_normal_ent_month <- normal_pr_mm_ent_month %>%
+#| label: save-db_pr_normal_ent_nac_month
+db_pr_normal_ent_nac_month <- normal_pr_mm_ent_nac_month %>%
   left_join(
     y = distinct(db_cve_nom_ent_mun, nombre_estado, cve_ent),
     by = join_by(cvegeo == cve_ent)) %>%
@@ -619,16 +648,16 @@ db_pr_normal_ent_month <- normal_pr_mm_ent_month %>%
   relocate(nombre_estado, .before = cve_ent)
 
 write_csv(
-  x = db_pr_normal_ent_month,
-  file = here::here(path2chirpsdata, "normal", "db_mex_pr_normal_ent_month.csv"),
+  x = db_pr_normal_ent_nac_month,
+  file = here::here(path2chirpsdata, "normal", "db_mex_pr_normal_ent_nac_month.csv"),
   na = "")
 
 #' 
 
-#| label: show_sample_final-normal_pr_mm_ent_month
+#| label: show_sample_final-normal_pr_mm_ent_nac_month
 #| echo: false
 set.seed(1)
-slice_sample(.data = db_pr_normal_ent_month, n = 5)
+slice_sample(.data = db_pr_normal_ent_nac_month, n = 5)
 
 #' **Base de datos de métricas de precipitación normal anual a nivel municipal**
 #' 
