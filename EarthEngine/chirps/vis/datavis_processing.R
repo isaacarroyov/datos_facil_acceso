@@ -19,119 +19,73 @@
 #'   warning: false
 #' ---
  
-#| label: setworkingdir
-#| eval: false
-# ~ NOTE ~ #
-# 
-# Se puede observar que se cambia el directorio de trabajo a la carpeta 
-# **`/EarthEngine/chirps/scripts`** para después agregar `/../../..` en la 
-# variable **`path2main`**. Este cambio se hace para que al renderizar, el 
-# código se pueda ejecutar correctamente, ya que el archivo toma como 
-# directorio de trabajo la carpeta en la que se encuentra el script en el 
-# que se esta haciendo el código.
-setwd("./EarthEngine/chirps/estadisticas")
-
-#'
-
 #| label: load-libraries_paths_data
 #| output: false
 Sys.setlocale(locale = "es_ES")
+here::i_am("EarthEngine/chirps/vis/datavis_processing.R")
 library(tidyverse)
-library(ggtext)
-library(scales)
-library(ggrepel)
-library(MetBrewer)
 library(sf)
 
-path2main <- paste0(getwd(), "/../../..")
-path2ee <- paste0(path2main, "/EarthEngine")
-path2chirps <- paste0(path2ee, "/chirps")
-path2data <- paste0(path2chirps, "/data")
+path2repo <- here::here()
+path2ee <- here::here("EarthEngine")
+path2chirps <- here::here("EarthEngine", "chirps")
+path2data <- here::here("EarthEngine", "chirps", "data")
 
-text_source_chirps <- paste("Climate Hazards Center InfraRed",
-                            "Precipitation With Station Data (CHIPRS)")
-
-# TODO: Agregar en el procesamiento de datos, las estadísticas de la nación
+#' ## Objetivo del script
+#' 
+#' Se tiene como objetivo mostrar la situación actual y pasada de las 
+#' lluvias a nivel nacional, estatal y municipal.
+#' 
+#' Para ello se prepararán los datos con la suficiente información para 
+#' retratar las estadísticas básicas en tablas, gráficas y mapas.
+#' 
+#' Se tiene como objetivo crear la siguiente lista:
+#' 
+#' - _Grid_ de _line charts_ de acumulación mensual de lluvia en milimetros de los 32 estados
+#' - _Grid_ de _heat maps_ de anomalía de lluvia mensual en porcentaje de los 32 estados
+#' - _Grid_ de _stripes_ de anomalía de lluvia anual en porcentaje de los 32 estados
+#' - Mezcla de visualizaciones en una sola imagen:
+#'   - Mapa de anomalía de lluvia del mes actual en porcentaje a nivel municipal
+#'   - Mapa de anomalía de acumulación de lluvia al mes actual en porcentaje a nivel municipal
+#'   - _Line chart_ de acumulación mensual de lluvia en milimetros a nivel nacional
+#'   - _Stripes_ de anomalía de lluvia anual en porcentaje a nivel nacional
 
 # - - CHIRPS - - #
-# ~ Valores normales ~ #
+# ~ Normal ~ #
 # Estados
-normal_ent_year <- read_csv(
-    file = paste0(path2data,
-                  "/normal",
-                  "/db_pr_normal_ent_year.csv"))
-
-normal_ent_month <- read_csv(
-    file = paste0(path2data,
-                  "/normal",
-                  "/db_pr_normal_ent_month.csv"))
+normal_ent_nac_year <- read_csv(file = here::here(path2data, "normal", "db_mex_pr_normal_ent_nac_year.csv"))
+normal_ent_nac_month <- read_csv(file = here::here(path2data, "normal", "db_mex_pr_normal_ent_nac_month.csv"))
 
 # Municipios
-normal_mun_year <- read_csv(
-    file = paste0(path2data,
-                  "/normal",
-                  "/db_pr_normal_mun_year.csv"))
+normal_mun_year <- read_csv(file = here::here(path2data, "normal", "db_mex_pr_normal_mun_year.csv"))
+normal_mun_month <- read_csv(file = here::here(path2data, "normal", "db_mex_pr_normal_mun_month.csv"))
 
-normal_mun_month <- read_csv(
-    file = paste0(path2data,
-                  "/normal",
-                  "/db_pr_normal_mun_month.csv"))
+# ~ Precipitación ~ #
+# Estados
+chirps_ent_nac_year <- read_csv(file = here::here(path2data, "estados", "db_mex_pr_ent_nac_year.csv"))
+chirps_ent_nac_month <- read_csv(file = here::here(path2data, "estados", "db_mex_pr_ent_nac_month.csv"))
 
-# ~ Estados ~ #
-chirps_ent_year <- read_csv(
-    file = paste0(path2data,
-                  "/estados",
-                  "/db_pr_ent_year.csv"))
+# Municipios
+chirps_mun_year <- read_csv(file = here::here(path2data, "municipios", "db_mex_pr_mun_year.csv"))
+chirps_mun_month <- read_csv(file = here::here(path2data, "municipios", "db_mex_pr_mun_month.csv.bz2"))
 
-chirps_ent_month <- read_csv(
-    file = paste0(path2data,
-                  "/estados",
-                  "/db_pr_ent_month.csv"))
-
-# ~ Municipios ~ #
-chirps_mun_year <- read_csv(
-    file = paste0(path2data,
-                  "/municipios",
-                  "/db_pr_mun_year.csv"))
-
-chirps_mun_month <- read_csv(
-    file = paste0(path2data,
-                  "/municipios",
-                  "/db_pr_mun_month.csv.bz2"))
-
-text_recent_date <- chirps_ent_month %>%
+# - - Info extra - - #
+text_source <- "Climate Hazards Center InfraRed Precipitation With Station Data (CHIRPS)"
+date_data_as_of <- chirps_ent_nac_month %>%
   filter(!is.na(pr_mm)) %>%
   filter(max(date_year_month) == date_year_month) %>%
   distinct(date_year_month) %>%
-  pull(date_year_month) %>%
+  pull(date_year_month)
+
+text_recent_date_month <- date_data_as_of %>%
+  format(format = "%B") %>%
+  str_to_title()
+
+text_recent_date <- date_data_as_of %>%
   format(format = "%B %Y") %>%
   str_to_title() %>%
   paste0("Datos a ", .)
 
-# TODO: Datos a visualizar
-# 
-# Crear un conjunto de datos con los años 2011-presente + Normal
-# para los 32 estados + Nacional con las métricas:
-#   * pr_mm -> grafica de lineas por region (mes)
-#   * cumsum_pr_mm -> grafica de lineas por region (mes)
-#   * anomaly_pr_prop -> Heatmaps por region (mes y año) + mapas a nivel municipal (mes y año)
-#   * cumsum_anomaly_pr_prop -> Tabla de información para generar textos (mes)
-
-#' ## 01
-#' 
-#' Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean eu purus 
-#' mattis, ultrices enim eget, efficitur nisl. Nulla ipsum purus, efficitur 
-#' non dignissim eget, consectetur a erat. Vestibulum ante ipsum primis in 
-#' faucibus orci luctus et ultrices posuere cubilia curae; Vivamus feugiat 
-#' finibus urna, vel fermentum tortor sagittis eu. Vestibulum ultrices, 
-#' nunc quis mollis fermentum, nibh odio finibus ante, at scelerisque 
-#' turpis neque sed odio. Praesent ullamcorper velit dui, sed ultricies ex 
-#' eleifend id. Fusce molestie massa tempus odio ultrices, quis dignissim 
-#' libero maximus. Proin posuere vestibulum eros, at aliquam tellus 
-#' convallis in. Nunc a dictum mauris. Proin tincidunt erat erat, vitae 
-#' vulputate mi placerat vitae. Aenean scelerisque, turpis a varius congue, 
-#' diam mi consectetur metus, eu pulvinar dui nisl nec neque.
-#' 
 #' ## 02
 #' 
 #' Suspendisse egestas elementum convallis. Praesent cursus dictum magna, 
