@@ -6,26 +6,27 @@
   - [<span class="toc-section-number">2.1</span> Ubicación de los archivos](#ubicación-de-los-archivos)
   - [<span class="toc-section-number">2.2</span> Carga de los archivos](#carga-de-los-archivos)
   - [<span class="toc-section-number">2.3</span> Decisiones sobre los datos](#decisiones-sobre-los-datos)
-- [<span class="toc-section-number">3</span> *Wide to Long*](#wide-to-long)
-  - [<span class="toc-section-number">3.1</span> Sobre la precipitación acumulada a través del año en milímetros](#sobre-la-precipitación-acumulada-a-través-del-año-en-milímetros)
-- [<span class="toc-section-number">4</span> Precipitación normal (1981 - 2010)](#precipitación-normal-1981---2010)
-- [<span class="toc-section-number">5</span> Cálculo de métricas](#cálculo-de-métricas)
-  - [<span class="toc-section-number">5.1</span> Anomalía en milimetros](#anomalía-en-milimetros)
-  - [<span class="toc-section-number">5.2</span> Anomalía en proporción de la normal](#anomalía-en-proporción-de-la-normal)
-  - [<span class="toc-section-number">5.3</span> Anomalía de la precipitación acumulada en milimetros](#anomalía-de-la-precipitación-acumulada-en-milimetros)
-  - [<span class="toc-section-number">5.4</span> Anomalía de la precipitación acumulada en proporción de la normal](#anomalía-de-la-precipitación-acumulada-en-proporción-de-la-normal)
-  - [<span class="toc-section-number">5.5</span> Función para cálculo de anomalías](#función-para-cálculo-de-anomalías)
-- [<span class="toc-section-number">6</span> Detalles finales](#detalles-finales)
-  - [<span class="toc-section-number">6.1</span> Adjuntar nombre de estados y municipios](#adjuntar-nombre-de-estados-y-municipios)
-  - [<span class="toc-section-number">6.2</span> Formato numérico y de fecha para periodos](#formato-numérico-y-de-fecha-para-periodos)
-  - [<span class="toc-section-number">6.3</span> Creación de bases de datos de métricas de precipitación](#creación-de-bases-de-datos-de-métricas-de-precipitación)
-- [<span class="toc-section-number">7</span> Guardar bases de datos de métricas de precipitación](#guardar-bases-de-datos-de-métricas-de-precipitación)
-  - [<span class="toc-section-number">7.1</span> Estados](#estados)
-  - [<span class="toc-section-number">7.2</span> Municipios](#municipios)
-  - [<span class="toc-section-number">7.3</span> Precipitaciones normales](#precipitaciones-normales)
+- [<span class="toc-section-number">3</span> Agregar el promedio nacional a `chirps_ent_month` y `chirps_ent_year`](#agregar-el-promedio-nacional-a-chirps_ent_month-y-chirps_ent_year)
+- [<span class="toc-section-number">4</span> *Wide to Long*](#wide-to-long)
+  - [<span class="toc-section-number">4.1</span> Sobre la precipitación acumulada a través del año en milímetros](#sobre-la-precipitación-acumulada-a-través-del-año-en-milímetros)
+- [<span class="toc-section-number">5</span> Precipitación normal (1981 - 2010)](#precipitación-normal-1981---2010)
+- [<span class="toc-section-number">6</span> Cálculo de métricas](#cálculo-de-métricas)
+  - [<span class="toc-section-number">6.1</span> Anomalía en milimetros](#anomalía-en-milimetros)
+  - [<span class="toc-section-number">6.2</span> Anomalía en proporción de la normal](#anomalía-en-proporción-de-la-normal)
+  - [<span class="toc-section-number">6.3</span> Anomalía de la precipitación acumulada en milimetros](#anomalía-de-la-precipitación-acumulada-en-milimetros)
+  - [<span class="toc-section-number">6.4</span> Anomalía de la precipitación acumulada en proporción de la normal](#anomalía-de-la-precipitación-acumulada-en-proporción-de-la-normal)
+  - [<span class="toc-section-number">6.5</span> Función para cálculo de anomalías](#función-para-cálculo-de-anomalías)
+- [<span class="toc-section-number">7</span> Detalles finales](#detalles-finales)
+  - [<span class="toc-section-number">7.1</span> Adjuntar nombre de estados y municipios](#adjuntar-nombre-de-estados-y-municipios)
+  - [<span class="toc-section-number">7.2</span> Formato numérico y de fecha para periodos](#formato-numérico-y-de-fecha-para-periodos)
+  - [<span class="toc-section-number">7.3</span> Creación de bases de datos de métricas de precipitación](#creación-de-bases-de-datos-de-métricas-de-precipitación)
+- [<span class="toc-section-number">8</span> Guardar bases de datos de métricas de precipitación](#guardar-bases-de-datos-de-métricas-de-precipitación)
+  - [<span class="toc-section-number">8.1</span> Estados](#estados)
+  - [<span class="toc-section-number">8.2</span> Municipios](#municipios)
+  - [<span class="toc-section-number">8.3</span> Precipitaciones normales](#precipitaciones-normales)
 
 ``` r
-here::i_am("EarthEngine/chirps/scripts/documentacion_wide2long_chirps.R") 
+here::i_am("EarthEngine/chirps/scripts/documentacion_wide2long_chirps.R")
 ```
 
 ## Introducción y objetivos
@@ -107,7 +108,8 @@ chirps_ent_year <- map(
     .f = \(x) read_csv(file = x, col_types = cols(.default = "c"))) %>%
   bind_rows() %>%
   janitor::clean_names() %>%
-  select(cvegeo, n_year, mean)
+  select(cvegeo, n_year, mean) %>%
+  mutate(mean = as.numeric(mean))
 
 # ~ Mensual ~ #
 chirps_ent_month <- map(
@@ -115,7 +117,11 @@ chirps_ent_month <- map(
     .f = \(x) read_csv(file = x, col_types = cols(.default = "c"))) %>%
   bind_rows() %>%
   janitor::clean_names() %>%
-  select(c(cvegeo, n_year, starts_with("x")))
+  select(c(cvegeo, n_year, starts_with("x")))  %>%
+  mutate(
+    across(
+      .cols = starts_with("x"),
+      .fns = as.numeric))
 
 # - - Municipios - - #
 # ~ Anual ~ #
@@ -124,7 +130,8 @@ chirps_mun_year <- map(
     .f = \(x) read_csv(file = x, col_types = cols(.default = "c"))) %>%
   bind_rows() %>%
   janitor::clean_names() %>%
-  select(cvegeo, n_year, mean)
+  select(cvegeo, n_year, mean) %>%
+  mutate(mean = as.numeric(mean))
 
 # ~ Mensual ~ #
 chirps_mun_month <- map(
@@ -132,7 +139,8 @@ chirps_mun_month <- map(
     .f = \(x) read_csv(file = x, col_types = cols(.default = "c"))) %>%
   bind_rows() %>%
   janitor::clean_names() %>%
-  select(c(cvegeo, n_year, starts_with("x")))
+  select(c(cvegeo, n_year, starts_with("x"))) %>%
+  mutate(across(.cols = starts_with("x"), .fns = as.numeric))
 ```
 
 Línea 4  
@@ -150,26 +158,29 @@ Limpieza de nombres de columnas
 Línea 8  
 **Caso del periodo anual**: Las columnas de interés son las que tienen código de estado o municipio (`cvegeo`), el año de la información (`n_year`) y el nombre de la columna de información (`mean`)
 
-Línea 16  
-Las columnas de interés son las que tienen el código del estado o municipio (`cvegeo`), el año de la información (`n_year`) y el número de mes (después de usar `janitor::clean_names`, todas inician con `x`). **Muestra de datos: Precipitación en milímetros anual a nivel estatal**
+Línea 17  
+Las columnas de interés son las que tienen el código del estado o municipio (`cvegeo`), el año de la información (`n_year`) y el número de mes (después de usar `janitor::clean_names`, todas inician con `x`).
 
-| cvegeo | n_year | mean               |
-|:-------|:-------|:-------------------|
-| 25     | 2012   | 715.0737995472939  |
-| 07     | 2002   | 1890.8175706313602 |
-| 01     | 1985   | 554.5302252346366  |
-| 02     | 2010   | 161.18254985392224 |
-| 23     | 1995   | 1452.6002760836577 |
+Líneas 9,18-21  
+Las columnas de precipitación (`mean` y los meses) se convierten a numéricas **Muestra de datos: Precipitación en milímetros anual a nivel estatal**
+
+| cvegeo | n_year |      mean |
+|:-------|:-------|----------:|
+| 25     | 2012   |  715.0738 |
+| 07     | 2002   | 1890.8176 |
+| 01     | 1985   |  554.5302 |
+| 02     | 2010   |  161.1825 |
+| 23     | 1995   | 1452.6003 |
 
 **Muestra de datos: Precipitación en milímetros mensual a nivel estatal**
 
 | cvegeo | n_year | x01 | x02 | x03 | x04 | x05 | x06 | x07 | x08 | x09 | x10 | x11 | x12 |
-|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|
-| 25 | 2012 | 8.002081910771784 | 9.078194131860103 | 4.245432148995365 | 0.8111924063024587 | 0.4805014698503636 | 45.82847035007077 | 190.1685423222091 | 231.22429026141032 | 130.50970281837 | 44.509617813780174 | 7.114725168627959 | 43.10104874504511 |
-| 07 | 2002 | 38.99664121905262 | 66.95147406500753 | 33.7011112511111 | 25.343206725032886 | 118.42358376104104 | 322.695395564078 | 238.40081035341217 | 232.71763032382583 | 445.5615337497574 | 190.59085202793733 | 123.0281351469849 | 54.407196444117 |
-| 01 | 1985 | 9.558769440008394 | 3.828289024647326 | 4.465417296415644 | 8.787392602874972 | 20.101997511422404 | 152.7658437224622 | 115.62645598316148 | 96.1548473553145 | 58.1832005744891 | 58.2982545575875 | 7.853042337757421 | 18.906714828495836 |
-| 02 | 2010 | 38.997024648851976 | 28.909910132917226 | 21.02283924106932 | 12.614580033601074 | 0.3671345100617597 | 0.013355120032271831 | 2.093100650098661 | 5.015776877602795 | 4.319623976839639 | 12.638956789333117 | 6.912177347959977 | 28.278070525554362 |
-| 23 | 1995 | 35.742715619401295 | 18.74646313623549 | 37.483081691824644 | 57.27765378589855 | 47.082283174239876 | 195.79054514766395 | 173.8629484484224 | 154.99552701213273 | 286.91104010818935 | 306.97029565648137 | 52.00130581192142 | 85.7364164912458 |
+|:---|:---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| 25 | 2012 | 8.002082 | 9.078194 | 4.245432 | 0.8111924 | 0.4805015 | 45.8284704 | 190.168542 | 231.224290 | 130.509703 | 44.50962 | 7.114725 | 43.10105 |
+| 07 | 2002 | 38.996641 | 66.951474 | 33.701111 | 25.3432067 | 118.4235838 | 322.6953956 | 238.400810 | 232.717630 | 445.561534 | 190.59085 | 123.028135 | 54.40720 |
+| 01 | 1985 | 9.558769 | 3.828289 | 4.465417 | 8.7873926 | 20.1019975 | 152.7658437 | 115.626456 | 96.154847 | 58.183201 | 58.29825 | 7.853042 | 18.90671 |
+| 02 | 2010 | 38.997025 | 28.909910 | 21.022839 | 12.6145800 | 0.3671345 | 0.0133551 | 2.093101 | 5.015777 | 4.319624 | 12.63896 | 6.912177 | 28.27807 |
+| 23 | 1995 | 35.742716 | 18.746463 | 37.483082 | 57.2776538 | 47.0822832 | 195.7905451 | 173.862948 | 154.995527 | 286.911040 | 306.97030 | 52.001306 | 85.73642 |
 
 ### Decisiones sobre los datos
 
@@ -179,8 +190,8 @@ Las columnas de interés son las que tienen el código del estado o municipio (`
 >
 > Esta es una solución temporal, en lo que se encuentra la manera **óptima** de hacer este proceso en el código de la extracción de las anomalías directamente de Google Earth Engine.
 
-1.  Transformar el formato *wide* a *long*, para tener el número de meses como una columna. Para el caso de los datos anuales, únicamente renombrar la columna `mean` a `pr`
-2.  Cambiar a número el valor de la precipitación.
+1.  Al conjunto de datos de entidades se le agregará el valor nacional
+2.  Transformar el formato *wide* a *long*, para tener el número de meses como una columna. Para el caso de los datos anuales, únicamente renombrar la columna `mean` a `pr`
 3.  Crear los respectivos `tibble`s de la normal de precipitación para cada uno de los archivos.
 4.  Crear columnas de otras métricas de la precipitación, tales como:
 
@@ -190,6 +201,29 @@ Las columnas de interés son las que tienen el código del estado o municipio (`
 - Anomalía de precipitación en milímetros (`anomaly_pr_mm`)
 - Anomalía de acumulación mensual de la precipitación en milímetros (`cumulative_anomaly_pr_mm`)
 - Anomalía de acumulación mensual de la precipitación en proporción a la normal (`cumulative_anomaly_pr_prop`)
+
+## Agregar el promedio nacional a `chirps_ent_month` y `chirps_ent_year`
+
+Se va a tratar la precipitación nacional como un estado extra
+
+``` r
+chirps_nac_month <- chirps_ent_month %>%
+  group_by(n_year) %>%
+  summarise(across(.cols = starts_with("x"), .fns = mean)) %>%
+  ungroup() %>%
+  mutate(cvegeo = "00") %>%
+  relocate(cvegeo, .before = n_year)
+
+chirps_nac_year <- chirps_ent_year %>%
+  group_by(n_year) %>%
+  summarise(mean = mean(mean)) %>%
+  ungroup() %>%
+  mutate(cvegeo = "00") %>%
+  relocate(cvegeo, .before = n_year)
+
+chirps_ent_nac_month <- bind_rows(chirps_nac_month, chirps_ent_month)
+chirps_ent_nac_year <- bind_rows(chirps_nac_year, chirps_ent_year)
+```
 
 ## *Wide to Long*
 
@@ -204,17 +238,13 @@ func_wide2long <- function(df, periodo = "month") {
         names_to = "period",
         values_to = "pr_mm") %>%
       mutate(
-        pr_mm = as.numeric(pr_mm),
         period = str_remove_all(
           string = period,
           pattern = "x|_precipitation"))
     
     df_transformed <- rename(.data = df_pivoted, n_month = period)
 
-  } else {
-    df_transformed <- df %>%
-      rename(pr_mm = mean) %>%
-      mutate(pr_mm = as.numeric(pr_mm))}
+  } else {df_transformed <- rename(.data = df, pr_mm = mean)}
 
   return(df_transformed)}
 ```
@@ -222,16 +252,16 @@ func_wide2long <- function(df, periodo = "month") {
 Líneas 2-7  
 Si el periodo es mensual se usa `pivot_longer`
 
-Líneas 8-12  
-Se cambia el valor de la precipitación a numérico y se eliminan las `x` + `_precipitation` del número de meses.
+Líneas 8-11  
+Se eliminan las `x` + `_precipitation` del número de meses
 
-Línea 14  
-Se renombra `period` a `n_month`, para el caso de precipitación mensual.
+Línea 13  
+Se renombra `period` a `n_month`, para el caso de precipitación mensual
 
-Líneas 16-19  
-Si `periodo` no es `'month'` es porque el periodo es anual y solamente se renombra la columna `mean` a `pr_mm` y se convierte a valor numérico
+Línea 15  
+Si `periodo` no es `'month'` es porque el periodo es anual y solamente se renombra la columna `mean` a `pr_mm`
 
-Línea 21  
+Línea 17  
 Se regresa el conjunto de datos con los cambios
 
 ### Sobre la precipitación acumulada a través del año en milímetros
@@ -244,8 +274,8 @@ La precipitación acumulada es la suma de todos los meses hasta el mes de inter�
 
 ``` r
 # - - Estados - - #
-chirps_ent_year_long <- func_wide2long(df = chirps_ent_year, periodo = "year")
-chirps_ent_month_long <- func_wide2long(df = chirps_ent_month, periodo = "month") %>%
+chirps_ent_nac_year_long <- func_wide2long(df = chirps_ent_nac_year, periodo = "year")
+chirps_ent_nac_month_long <- func_wide2long(df = chirps_ent_nac_month, periodo = "month") %>%
   group_by(cvegeo, n_year) %>%
   arrange(as.integer(n_month), .by_group = TRUE) %>%
   # Cálculo de la precipitación acumulada
@@ -262,21 +292,21 @@ chirps_mun_month_long <- func_wide2long(df = chirps_mun_month, periodo = "month"
   ungroup()
 ```
 
-**Muestra de `chirps_ent_month_long`**
+**Muestra de `chirps_ent_nac_month_long`**
 
 | cvegeo | n_year | n_month |      pr_mm | cumsum_pr_mm |
 |:-------|:-------|:--------|-----------:|-------------:|
-| 09     | 2018   | 11      | 64.7932521 |  1123.866748 |
-| 25     | 2002   | 06      | 11.6097278 |    37.408283 |
-| 20     | 2004   | 03      | 22.5779114 |    51.563134 |
-| 16     | 2011   | 02      |  0.1041584 |     4.780574 |
-| 08     | 2003   | 06      | 43.6411635 |   101.380991 |
+| 32     | 1991   | 01      |  3.9955261 |     3.995526 |
+| 08     | 2018   | 11      |  8.2679125 |   440.885548 |
+| 24     | 2002   | 06      | 93.2840896 |   171.375414 |
+| 19     | 2004   | 03      | 45.9968598 |    80.093369 |
+| 15     | 2011   | 02      |  0.7355626 |     2.970850 |
 
 ## Precipitación normal (1981 - 2010)
 
 En palabras sencillas y directas, **la normal** es el promedio de una variable climatológica durante un periodo largo, usualmente de 30 años.
 
-*También le llamo “promedio histórico”, para mayor claridad*
+> *También le llamo “promedio histórico”, para mayor claridad*
 
 Para facilitar el cálculo se va crear una función para tener la normal anual o mensual.
 
@@ -311,8 +341,8 @@ Se regresa el conjunto de valores normales
 
 ``` r
 # - - Estados - - #
-normal_pr_mm_ent_year <- func_normal_pr_mm(df = chirps_ent_year_long)
-normal_pr_mm_ent_month <- func_normal_pr_mm(df = chirps_ent_month_long) %>%
+normal_pr_mm_ent_nac_year <- func_normal_pr_mm(df = chirps_ent_nac_year_long)
+normal_pr_mm_ent_nac_month <- func_normal_pr_mm(df = chirps_ent_nac_month_long) %>%
   group_by(cvegeo) %>%
   arrange(as.integer(n_month), .by_group = TRUE) %>%
   # Cálculo de la precipitación acumulada
@@ -409,13 +439,13 @@ Se regresa el conjunto de datos con las anomalías integradas
 
 ``` r
 # - - Estados - - #
-chirps_ent_year_anomalies <- func_anomaly_pr(
-    df = chirps_ent_year_long,
-    df_normal = normal_pr_mm_ent_year)
+chirps_ent_nac_year_anomalies <- func_anomaly_pr(
+    df = chirps_ent_nac_year_long,
+    df_normal = normal_pr_mm_ent_nac_year)
 
-chirps_ent_month_anomalies <- func_anomaly_pr(
-    df = chirps_ent_month_long,
-    df_normal = normal_pr_mm_ent_month)
+chirps_ent_nac_month_anomalies <- func_anomaly_pr(
+    df = chirps_ent_nac_month_long,
+    df_normal = normal_pr_mm_ent_nac_month)
 
 # - - Municipios - - #
 chirps_mun_year_anomalies <- func_anomaly_pr(
@@ -445,7 +475,11 @@ Como últimos pasos: \* Se agregan los nombres de los estados y municipios \* Pa
 
 ``` r
 db_cve_nom_ent_mun <- read_csv(
-    file = here::here("GobiernoMexicano", "cve_nom_municipios.csv"))
+    file = here::here("GobiernoMexicano", "cve_nom_municipios.csv")) %>%
+  bind_rows(
+    tribble(
+      ~cve_geo, ~nombre_estado, ~cve_ent, ~nombre_municipio, ~cve_mun,
+      "00000", "Nacional", "00", "Nacional", "000"))
 
 func_adjuntar_cve_nom_ent_mun <- function(df, region) {
   if (region == "ent") {
@@ -472,13 +506,16 @@ func_adjuntar_cve_nom_ent_mun <- function(df, region) {
 Líneas 1-2  
 Carga de base de datos de nombres y claves de estados y municipios
 
-Líneas 5-11  
+Líneas 3-6  
+Agregar los codigos de “Nacional”
+
+Líneas 9-15  
 Asignación y orden de nombres para estados
 
-Líneas 12-21  
+Líneas 16-25  
 Asignación y orden de nombres para municipios
 
-Línea 23  
+Línea 27  
 Se regresa el conjunto de datos con los nombres de las regiones
 
 ### Formato numérico y de fecha para periodos
@@ -500,13 +537,13 @@ func_string2numberdate <- function(df) {
 
 ``` r
 # - - Estados - - #
-db_pr_ent_year <- func_adjuntar_cve_nom_ent_mun(
-    df = chirps_ent_year_anomalies,
+db_pr_ent_nac_year <- func_adjuntar_cve_nom_ent_mun(
+    df = chirps_ent_nac_year_anomalies,
     region = "ent") %>%
   func_string2numberdate()
 
-db_pr_ent_month <- func_adjuntar_cve_nom_ent_mun(
-    df = chirps_ent_month_anomalies,
+db_pr_ent_nac_month <- func_adjuntar_cve_nom_ent_mun(
+    df = chirps_ent_nac_month_anomalies,
     region = "ent") %>%
   func_string2numberdate()
 
@@ -532,41 +569,41 @@ La carpeta `ee_imports` son los archivos creados a partir de Google Earth Engine
 
 **Base de datos de métricas de precipitación anual a nivel estatal**
 
-Se guarda bajo el nombre **`db_mex_pr_ent_year.csv`**
+Se guarda bajo el nombre **`db_mex_pr_ent_nac_year.csv`**
 
 ``` r
 write_csv(
-  x = db_pr_ent_year,
-  file = here::here(path2chirpsdata, "estados", "db_mex_pr_ent_year.csv"),
+  x = db_pr_ent_nac_year,
+  file = here::here(path2chirpsdata, "estados", "db_mex_pr_ent_nac_year.csv"),
   na = "")
 ```
 
-| cve_ent | nombre_estado   | n_year |     pr_mm | anomaly_pr_mm | anomaly_pr_prop |
-|:--------|:----------------|-------:|----------:|--------------:|----------------:|
-| 25      | Sinaloa         |   2012 |  715.0738 |      21.42257 |       0.0308838 |
-| 07      | Chiapas         |   2002 | 1890.8176 |    -107.02688 |      -0.0535712 |
-| 01      | Aguascalientes  |   1985 |  554.5302 |      25.29634 |       0.0477980 |
-| 02      | Baja California |   2010 |  161.1825 |      14.63347 |       0.0998537 |
-| 23      | Quintana Roo    |   1995 | 1452.6003 |     167.24272 |       0.1301138 |
+| cve_ent | nombre_estado | n_year |     pr_mm | anomaly_pr_mm | anomaly_pr_prop |
+|:--------|:--------------|-------:|----------:|--------------:|----------------:|
+| 12      | Guerrero      |   2011 | 1197.3495 |    -34.028199 |      -0.0276342 |
+| 26      | Sonora        |   2000 |  377.7181 |      2.225883 |       0.0059279 |
+| 20      | Oaxaca        |   1983 | 1314.8241 |   -111.629814 |      -0.0782569 |
+| 21      | Puebla        |   2008 | 1008.4133 |     40.582300 |       0.0419312 |
+| 10      | Durango       |   1994 |  555.5389 |    -54.224882 |      -0.0889277 |
 
 **Base de datos de métricas de precipitación mensual a nivel estatal**
 
-Se guarda bajo el nombre **`db_mex_pr_ent_month.csv`**
+Se guarda bajo el nombre **`db_mex_pr_ent_nac_month.csv`**
 
 ``` r
 write_csv(
-  x = db_pr_ent_month,
-  file = here::here(path2chirpsdata, "estados", "db_mex_pr_ent_month.csv"),
+  x = db_pr_ent_nac_month,
+  file = here::here(path2chirpsdata, "estados", "db_mex_pr_ent_nac_month.csv"),
   na = "")
 ```
 
 | cve_ent | nombre_estado | date_year_month | n_year | n_month | pr_mm | cumsum_pr_mm | anomaly_pr_mm | anomaly_pr_prop | cumulative_anomaly_pr_mm | cumulative_anomaly_pr_prop |
 |:---|:---|:---|---:|---:|---:|---:|---:|---:|---:|---:|
-| 09 | Ciudad de México | 2018-11-15 | 2018 | 11 | 64.7932521 | 1123.866748 | 43.4737866 | 2.0391593 | 173.3136935 | 0.1823293 |
-| 25 | Sinaloa | 2002-06-15 | 2002 | 6 | 11.6097278 | 37.408283 | -27.0175565 | -0.6994423 | -47.6071161 | -0.5599823 |
-| 20 | Oaxaca | 2004-03-15 | 2004 | 3 | 22.5779114 | 51.563134 | 8.8229937 | 0.6414429 | 7.8625653 | 0.1799191 |
-| 16 | Michoacán | 2011-02-15 | 2011 | 2 | 0.1041584 | 4.780574 | -3.3008471 | -0.9694102 | -12.5236876 | -0.7237343 |
-| 08 | Chihuahua | 2003-06-15 | 2003 | 6 | 43.6411635 | 101.380991 | 0.3073605 | 0.0070929 | -0.4212855 | -0.0041383 |
+| 32 | Zacatecas | 1991-01-15 | 1991 | 1 | 3.9955261 | 3.995526 | -10.666570 | -0.7274928 | -10.66657 | -0.7274928 |
+| 08 | Chihuahua | 2018-11-15 | 2018 | 11 | 8.2679125 | 440.885548 | -4.424353 | -0.3485866 | 15.88713 | 0.0373816 |
+| 24 | San Luis Potosí | 2002-06-15 | 2002 | 6 | 93.2840896 | 171.375414 | -1.835543 | -0.0192972 | -35.53158 | -0.1717273 |
+| 19 | Nuevo León | 2004-03-15 | 2004 | 3 | 45.9968598 | 80.093369 | 30.966427 | 2.0602484 | 28.49894 | 0.5523646 |
+| 15 | Estado de México | 2011-02-15 | 2011 | 2 | 0.7355626 | 2.970850 | -5.209193 | -0.8762670 | -15.68362 | -0.8407432 |
 
 ### Municipios
 
@@ -604,10 +641,10 @@ write_csv(
 
 **Base de datos de métricas de precipitación normal anual a nivel estatal**
 
-Se guarda bajo el nombre **`db_mex_pr_normal_ent_year.csv`**
+Se guarda bajo el nombre **`db_mex_pr_normal_ent_nac_year.csv`**
 
 ``` r
-db_pr_normal_ent_year <- normal_pr_mm_ent_year %>%
+db_pr_normal_ent_nac_year <- normal_pr_mm_ent_nac_year %>%
   left_join(
     y = distinct(db_cve_nom_ent_mun, nombre_estado, cve_ent),
     by = join_by(cvegeo == cve_ent)) %>%
@@ -615,25 +652,25 @@ db_pr_normal_ent_year <- normal_pr_mm_ent_year %>%
   relocate(nombre_estado, .before = cve_ent)
 
 write_csv(
-  x = db_pr_normal_ent_year,
-  file = here::here(path2chirpsdata, "normal", "db_mex_pr_normal_ent_year.csv"),
+  x = db_pr_normal_ent_nac_year,
+  file = here::here(path2chirpsdata, "normal", "db_mex_pr_normal_ent_nac_year.csv"),
   na = "")
 ```
 
-| nombre_estado   | cve_ent | normal_pr_mm |
-|:----------------|:--------|-------------:|
-| Sinaloa         | 25      |     693.6512 |
-| Campeche        | 04      |    1329.8219 |
-| Chiapas         | 07      |    1997.8444 |
-| Aguascalientes  | 01      |     529.2339 |
-| Baja California | 02      |     146.5491 |
+| nombre_estado       | cve_ent | normal_pr_mm |
+|:--------------------|:--------|-------------:|
+| Baja California Sur | 03      |     150.2270 |
+| Colima              | 06      |     890.7951 |
+| Nacional            | 00      |     877.6157 |
+| Aguascalientes      | 01      |     529.2339 |
+| Tamaulipas          | 28      |     702.0985 |
 
 **Base de datos de métricas de precipitación normal mensual a nivel estatal**
 
-Se guarda bajo el nombre **`db_mex_pr_normal_ent_month.csv`**
+Se guarda bajo el nombre **`db_mex_pr_normal_ent_nac_month.csv`**
 
 ``` r
-db_pr_normal_ent_month <- normal_pr_mm_ent_month %>%
+db_pr_normal_ent_nac_month <- normal_pr_mm_ent_nac_month %>%
   left_join(
     y = distinct(db_cve_nom_ent_mun, nombre_estado, cve_ent),
     by = join_by(cvegeo == cve_ent)) %>%
@@ -641,18 +678,18 @@ db_pr_normal_ent_month <- normal_pr_mm_ent_month %>%
   relocate(nombre_estado, .before = cve_ent)
 
 write_csv(
-  x = db_pr_normal_ent_month,
-  file = here::here(path2chirpsdata, "normal", "db_mex_pr_normal_ent_month.csv"),
+  x = db_pr_normal_ent_nac_month,
+  file = here::here(path2chirpsdata, "normal", "db_mex_pr_normal_ent_nac_month.csv"),
   na = "")
 ```
 
-| nombre_estado | cve_ent | n_month | normal_pr_mm | normal_cumsum_pr_mm |
-|:--------------|:--------|:--------|-------------:|--------------------:|
-| Tabasco       | 27      | 12      |    140.37264 |           1991.3807 |
-| Jalisco       | 14      | 11      |     12.97013 |            868.2651 |
-| Guanajuato    | 11      | 09      |    103.71007 |            538.0950 |
-| Sinaloa       | 25      | 11      |     18.12924 |            665.8746 |
-| Quintana Roo  | 23      | 06      |    174.96036 |            460.1294 |
+| nombre_estado   | cve_ent | n_month | normal_pr_mm | normal_cumsum_pr_mm |
+|:----------------|:--------|:--------|-------------:|--------------------:|
+| Sonora          | 26      | 12      |     30.92021 |            375.4922 |
+| Hidalgo         | 13      | 11      |     30.51419 |            803.6003 |
+| Durango         | 10      | 09      |    111.96207 |            536.1041 |
+| San Luis Potosí | 24      | 11      |     17.31390 |            590.1351 |
+| Querétaro       | 22      | 06      |    100.20587 |            201.7392 |
 
 **Base de datos de métricas de precipitación normal anual a nivel municipal**
 
